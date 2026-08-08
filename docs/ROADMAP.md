@@ -88,7 +88,7 @@ a tool that fails the rule just to grow the catalog.
 2. [x] Thumbnail tools: technical size keys replaced with friendly
       quality labels (Best · up to 1080p / 480p / 360p / 180p / 144p)
       in the UI; technical names kept in SEO copy.
-3. [x] Samples switched to real videos from the @notgamingplayz channel
+3. [x] Samples switched to real YouTube videos
       (watch?v=kpdVvvglzSo etc.) instead of generic links; hero demo
       pre-fills with the channel video.
 4. [x] Timestamp Generator UX fixes: warning state now amber (not

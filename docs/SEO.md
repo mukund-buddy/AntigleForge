@@ -10,7 +10,7 @@ operational layer.
    crawlable content.
 2. **One `<h1>` per page**, strict heading hierarchy (no skipped levels).
 3. **Unique title + meta description per page.** Format, tool pages:
-   `<Tool Name> — Free Minecraft Bedrock Generator | The Antigle`.
+   `<Tool Name> — Free Minecraft Bedrock Generator | AntigleForge`.
 4. **JSON-LD matches visible content exactly** (schema-drift rule —
    Google revokes rich results on drift).
 5. **Core Web Vitals are ranking signals.** LCP ≤ 2.5s, INP ≤ 200ms,

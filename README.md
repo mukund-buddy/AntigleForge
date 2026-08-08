@@ -1,8 +1,15 @@
-# The Antigle — tools platform (static site)
+# AntigleForge — tools platform (static site)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Free browser-based tools for Minecraft creators, web developers, students, and
-businesses. Deployed as a fully static site from this repository to
-Cloudflare Pages. **No backend. No build step.** The repo is the deploy.
+businesses — built and maintained by **The Antigle**. Deployed as a fully
+static site from this repository to Cloudflare Pages. **No backend. No build
+step.** The repo is the deploy.
+
+- Author: [The Antigle](https://github.com/mukund-buddy)
+- Project: [github.com/mukund-buddy/AntigleForge](https://github.com/mukund-buddy/AntigleForge)
+- License: [MIT](LICENSE)
 
 ## Product rules (from the brief — enforced here)
 

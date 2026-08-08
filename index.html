@@ -111,33 +111,49 @@
     <div aria-hidden="true" class="hero-bg">
       <div class="hero-grid"></div>
       <div class="hero-glow"></div>
+      <div class="hero-blob hero-blob--a"></div>
+      <div class="hero-blob hero-blob--b"></div>
     </div>
     <div class="container hero-content">
       <div class="hero-text">
-        <span class="hero-badge"><span class="hero-pulse"></span> 13 free browser tools · no sign-up</span>
-        <h1 class="hero-title" id="hero-title">Build tools for<br><span class="text-gradient">Minecraft, creation &amp; the web</span></h1>
-        <p class="hero-subtitle lead">Fast, free, private-by-default tools that run entirely in your browser — the Bedrock add-on family, plus a brand-new YouTube creator set. Nothing is uploaded, ever.</p>
+        <span class="hero-badge"><span class="hero-pulse"></span> AntigleForge · 47 free browser tools</span>
+        <h1 class="hero-title" id="hero-title">Serious tools for<br><span class="text-gradient">Minecraft, the web &amp; everyday work</span></h1>
+        <p class="hero-subtitle lead">Fast, free, private-by-default utilities that run 100% in your browser. Generate, convert, format, and check anything — no accounts, no uploads, no waiting.</p>
         <div class="hero-ctas">
           <a href="/tools/" class="btn btn-gold">Browse all tools</a>
-          <a href="/tools/thumbnail-fetcher/" class="btn btn-outline">New: YouTube toolset</a>
+          <a href="/tools/thumbnail-fetcher/" class="btn btn-outline">Try the YouTube toolset</a>
         </div>
         <ul class="hero-trust" aria-label="Platform promises">
           <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>No sign-up</li>
           <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Private by default</li>
           <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>Runs in your browser</li>
         </ul>
+        <dl class="hero-stats" aria-label="Platform numbers">
+          <div class="hero-stat">
+            <dt>47</dt>
+            <dd>live tools</dd>
+          </div>
+          <div class="hero-stat">
+            <dt>100%</dt>
+            <dd>free, forever</dd>
+          </div>
+          <div class="hero-stat">
+            <dt>0</dt>
+            <dd>servers or trackers</dd>
+          </div>
+        </dl>
       </div>
       <div class="hero-demo" id="heroDemo">
         <div class="hero-demo-head">
           <span class="hero-demo-yt" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.5 15.6V8.4L15.8 12l-6.3 3.6z"/></svg></span>
           <div class="hero-demo-meta">
             <p class="hero-demo-title">Thumbnail Fetcher</p>
-            <p class="hero-demo-sub">New · part of the YouTube set</p>
+            <p class="hero-demo-sub">Part of the YouTube creator set</p>
           </div>
-          <span class="hero-demo-new">Just shipped</span>
+          <span class="hero-demo-new">Try it live</span>
         </div>
         <div class="field">
-          <label for="heroDemoInput">Try it — paste any YouTube link</label>
+          <label for="heroDemoInput">Paste any YouTube link</label>
           <input class="input" id="heroDemoInput" type="url" placeholder="youtube.com/watch?v=kpdVvvglzSo" autocomplete="off" spellcheck="false">
         </div>
         <div class="hero-demo-preview" id="heroDemoPreview" aria-hidden="true">
@@ -148,10 +164,10 @@
         </div>
         <div class="hero-demo-foot">
           <svg class="hero-demo-spark" id="heroDemoSpark" width="88" height="22" viewBox="0 0 88 22" preserveAspectRatio="none" aria-hidden="true"></svg>
-          <span>13 live tools · zero trackers</span>
+          <span>47 live tools · zero trackers</span>
         </div>
-        <span class="hero-demo-float hero-demo-float--a" aria-hidden="true">Chapter Formatter</span>
-        <span class="hero-demo-float hero-demo-float--b" aria-hidden="true">Hashtag Formatter</span>
+        <span class="hero-demo-float hero-demo-float--a" aria-hidden="true">Barcode Generator</span>
+        <span class="hero-demo-float hero-demo-float--b" aria-hidden="true">Unit Converter</span>
       </div>
     </div>
   </section>
@@ -356,7 +372,7 @@
   </div>
   <div class="footer-bottom">
     <div class="container">
-      <p>© 2026 AntigleForge · by The Antigle. All rights reserved. Not affiliated with Mojang Studios or Microsoft.</p>
+      <p>© 2026 AntigleForge · by The Antigle. All rights reserved. Not affiliated with Mojang Studios or Microsoft. <a href="/LICENSE" rel="license">MIT License</a></p>
       <p class="footer-report"><a href="#" data-bug-report>Found a bug? Report it</a></p>
     </div>
   </div>
@@ -378,6 +394,8 @@
       <input class="input" type="text" id="bugPage" readonly>
       <label class="field-label-live" for="bugDesc">What went wrong?</label>
       <textarea class="input textarea" id="bugDesc" rows="5" placeholder="e.g. The timestamps did not update after I pasted my list" required></textarea>
+      <label class="field-label-live" for="bugContact">Your email or @username (optional)</label>
+      <input class="input" type="email" id="bugContact" placeholder="So the team can reply if needed" autocomplete="email">
       <label class="field-label-live" for="bugSteps">Steps to reproduce (optional)</label>
       <textarea class="input textarea" id="bugSteps" rows="3" placeholder="1. Opened the tool&#10;2. Pasted my list&#10;3. Saw an error"></textarea>
       <div class="bug-actions">

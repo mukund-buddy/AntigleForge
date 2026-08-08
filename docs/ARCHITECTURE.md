@@ -1,10 +1,10 @@
-# The Antigle — Architecture & Decision Record
+# AntigleForge — Architecture & Decision Record
 
 Status: MVP (Phase 1 — Manifest Generator only)
 Last updated: 2026-08-06
 
 This document records every significant architectural decision for the
-The Antigle tools platform, the **reason** it was chosen, the **trade-offs** it
+AntigleForge tools platform, the **reason** it was chosen, the **trade-offs** it
 carries, and the **alternatives** that were considered and rejected.
 
 It is the source of truth. If code and this document disagree, the document is
@@ -14,7 +14,7 @@ wrong — fix the document first.
 
 ## 1. Context
 
-The Antigle is a static web platform of free browser tools (Minecraft Bedrock
+AntigleForge is a static web platform of free browser tools (Minecraft Bedrock
 utilities, web development, YouTube, student, business, design, security, and
 file tools) monetized by advertising and by redirecting users to external
 premium products.

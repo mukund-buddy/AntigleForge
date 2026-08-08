@@ -1,4 +1,4 @@
-# The Antigle — robots.txt
+# AntigleForge — robots.txt
 # Allow everything; never block /assets (CSS/JS) — Googlebot needs them to render.
 
 User-agent: *
