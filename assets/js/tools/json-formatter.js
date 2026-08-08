@@ -4,7 +4,7 @@ import { formatJson, validateJson, parseErrorPosition } from '../validate/json-t
 
 const $ = (id) => document.getElementById(id);
 
-const SAMPLE = '{"name":"AntigleForge","tools":15,"free":true,"creator":null,"tags":["dev","creator","minecraft"],"links":{"youtube":"youtube.com/@notgamingplayz"}}';
+const SAMPLE = '{"name":"AntigleForge","tools":47,"free":true,"creator":null,"tags":["dev","creator","minecraft"],"links":{"github":"github.com/mukund-buddy/AntigleForge"}}';
 
 const STATE = { mode: 'pretty' };
 

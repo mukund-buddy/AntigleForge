@@ -1504,6 +1504,60 @@
         "case-converter"
       ],
       "sortOrder": 670
+    },
+    {
+      "id": "barcode-generator",
+      "slug": "barcode-generator",
+      "name": "Barcode Generator",
+      "category": "business",
+      "categoryLabel": "Business",
+      "tagline": "Create Code 128, Code 39, EAN-13, or UPC-A barcodes and download them as PNG.",
+      "status": "live",
+      "href": "/tools/barcode-generator/",
+      "keywords": [
+        "barcode",
+        "code 128",
+        "code 39",
+        "ean-13",
+        "upc-a",
+        "label",
+        "product",
+        "scan"
+      ],
+      "related": [
+        "qrcode-generator",
+        "qr-code-scanner"
+      ],
+      "sortOrder": 560
+    },
+    {
+      "id": "unit-converter",
+      "slug": "unit-converter",
+      "name": "Unit Converter",
+      "category": "business",
+      "categoryLabel": "Business",
+      "tagline": "Convert length, mass, temperature, volume, area, time, data, and speed instantly.",
+      "status": "live",
+      "href": "/tools/unit-converter/",
+      "keywords": [
+        "unit",
+        "convert",
+        "length",
+        "mass",
+        "temperature",
+        "volume",
+        "area",
+        "time",
+        "data",
+        "speed",
+        "metric",
+        "imperial"
+      ],
+      "related": [
+        "percentage-calculator",
+        "barcode-generator"
+      ],
+      "sortOrder": 570
     }
   ]
 }
