@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#05070F">
+<meta name="theme-color" id="themeColorMeta" content="#05070F">
+<script src="/assets/js/theme-init.js"></script>
 <title>YouTube Thumbnail Downloader — Save Thumbnails in HD | AntigleForge</title>
-<meta name="description" content="Preview and save YouTube video thumbnails at every size — maxresdefault, sddefault, hqdefault, mqdefault, and default — in their true resolution. Free, browser-based, no login.">
+<meta name="description" content="Preview and save YouTube video thumbnails at every size — maxresdefault, sddefault, hqdefault, mqdefault, and default — with one-tap download on any device. Free, browser-based, no login.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://YOUR-DOMAIN.example/tools/thumbnail-downloader/">
 
@@ -53,17 +54,22 @@
         {
           "@type": "Question",
           "name": "How do I download a YouTube thumbnail in HD?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Paste the video link, pick a size tab (maxresdefault is the highest at 1280×720 when it exists), then click Open in new tab and choose Save image as. The tool always shows the real resolution the file is served at." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Paste the video link, pick a size tab (maxresdefault is the highest at 1280×720 when it exists), then tap Download — the original file is saved as-is. On phones you can also press and hold the preview image and choose Save Image, or tap Open in new tab. The tool always shows the real resolution the file is served at." }
         },
         {
           "@type": "Question",
           "name": "Why does my download come out grey or tiny?",
-          "acceptedAnswer": { "@type": "Answer", "text": "maxresdefault and sddefault are not generated for every video. When a size is missing YouTube serves a 120×90 grey placeholder instead of an error, so the downloader checks each file's real dimensions and flags missing sizes." }
+          "acceptedAnswer": { "@type": "Answer", "text": "maxresdefault and sddefault are not generated for every video. When a size is missing YouTube serves a 120×90 grey placeholder instead of an error, so the downloader checks each file's real dimensions, flags missing sizes, and disables Download for them." }
         },
         {
           "@type": "Question",
-          "name": "Why is there no direct download button?",
-          "acceptedAnswer": { "@type": "Answer", "text": "YouTube's image servers do not send CORS headers, so browsers block scripts from reading the image pixels and forcing a download. Opening the image in a new tab and using Save image as always works and keeps the original quality untouched." }
+          "name": "Is there a direct download button?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. YouTube's thumbnail servers allow browser downloads, so the tool fetches the original file and saves it under a clean name. If a browser blocks it, press-and-hold or Open in new tab followed by Save image as works too — the saved file is identical." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work on phones?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. On Android, tap Download and the file saves to your device. On iPhone or iPad, tap Download to open the save sheet, or press and hold the preview image and choose Save Image. Everything runs in your browser." }
         },
         {
           "@type": "Question",
@@ -96,6 +102,10 @@
       <span class="search-toggle-label">Search</span>
       <kbd class="search-kbd">Ctrl&nbsp;K</kbd>
     </button>
+    <button class="theme-toggle theme-toggle--desktop" type="button" aria-label="Switch to light theme" aria-pressed="false">
+      <svg class="theme-icon theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8"/></svg>
+      <svg class="theme-icon theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>
+    </button>
     <a href="/tools/" class="nav-cta">Explore Tools</a>
     <button class="nav-hamburger" id="hamburgerBtn" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileNav">
       <span></span><span></span><span></span>
@@ -108,6 +118,11 @@
   <a href="/tools/" aria-current="page">Tools</a>
   <a href="/about/">About</a>
   <button class="mobile-search" id="mobileSearchBtn" type="button" aria-haspopup="dialog" aria-controls="searchOverlay">Search tools…</button>
+  <button class="theme-toggle theme-toggle--mobile" type="button" aria-label="Switch theme">
+    <svg class="theme-icon theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8"/></svg>
+    <svg class="theme-icon theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>
+    <span class="theme-toggle-label">Switch theme</span>
+  </button>
 </div>
 
 <!-- Site-wide search overlay -->
@@ -145,7 +160,7 @@
       </nav>
       <div class="section-tag section-tag--plain">YouTube · Free tool</div>
       <h1>YouTube Thumbnail Downloader</h1>
-      <p class="lead">Preview a video's thumbnail at every available size, confirm its true resolution, and save the original file — no compression, no watermark, no account.</p>
+      <p class="lead">Preview a video's thumbnail at every available size, confirm its true resolution, and save the original file with one tap — on your phone or desktop. No compression, no watermark, no account.</p>
     </div>
   </section>
 
@@ -170,7 +185,7 @@
             <button class="btn btn-outline" type="button" id="fSample">Try a sample</button>
           </div>
           <div class="callout">
-            <p>Direct programmatic downloads are blocked by YouTube's image servers (no CORS headers). The reliable way is <strong>Open in new tab → Save image as</strong>, which keeps the original file untouched.</p>
+            <p><strong>Download</strong> saves the original file directly — no re-encoding. On phones, press and hold the image to save it, or tap Download (Android) / use the save sheet (iPhone).</p>
           </div>
         </div>
 
@@ -184,8 +199,10 @@
           </div>
           <p class="thumb-note" id="previewNote" hidden></p>
           <div class="tool-actions" id="actions" hidden>
-            <a class="btn btn-gold" id="openTab" href="#" target="_blank" rel="noopener">Open in new tab</a>
+            <button class="btn btn-gold" type="button" id="downloadBtn">Download</button>
+            <a class="btn btn-outline" id="openTab" href="#" target="_blank" rel="noopener">Open in new tab</a>
           </div>
+          <p class="thumb-note" id="dlHint" hidden></p>
           <p class="thumb-note" id="gridNote" hidden></p>
           <div class="thumb-grid" id="thumbGrid" hidden></div>
         </div>
@@ -220,7 +237,7 @@
         <div class="step">
           <div>
             <h3>Save it</h3>
-            <p>Open the size in a new tab and use your browser's <strong>Save image as</strong>. What you save is the exact original file — never re-encoded by this tool.</p>
+            <p>Tap <strong>Download</strong> to save the original file straight to your device — or press and hold the image and choose <strong>Save image</strong>. Open in new tab is a reliable fallback that never re-encodes the file.</p>
           </div>
         </div>
       </div>
@@ -237,15 +254,19 @@
       <div class="faq">
         <details>
           <summary>How do I download a YouTube thumbnail in HD?</summary>
-          <div><p>Paste the video link, pick a size tab (maxresdefault is the highest at 1280×720 when it exists), then click Open in new tab and choose Save image as. The tool always shows the real resolution the file is served at.</p></div>
+          <div><p>Paste the video link, pick a size tab (maxresdefault is the highest at 1280×720 when it exists), then tap <strong>Download</strong> — the original file is saved as-is. On phones you can also press and hold the preview image and choose Save Image, or tap Open in new tab. The tool always shows the real resolution the file is served at.</p></div>
         </details>
         <details>
           <summary>Why does my download come out grey or tiny?</summary>
-          <div><p>maxresdefault and sddefault are not generated for every video. When a size is missing YouTube serves a 120×90 grey placeholder instead of an error, so the downloader checks each file's real dimensions and flags missing sizes.</p></div>
+          <div><p>maxresdefault and sddefault are not generated for every video. When a size is missing YouTube serves a 120×90 grey placeholder instead of an error, so the downloader checks each file's real dimensions, flags missing sizes, and disables Download for them. Use a size shown in full colour instead.</p></div>
         </details>
         <details>
-          <summary>Why is there no direct download button?</summary>
-          <div><p>YouTube's image servers do not send CORS headers, so browsers block scripts from reading the image pixels and forcing a download. Opening the image in a new tab and using Save image as always works and keeps the original quality untouched.</p></div>
+          <summary>Is there a direct download button?</summary>
+          <div><p>Yes. YouTube's thumbnail servers allow browser downloads, so the tool fetches the original file and saves it under a clean name like <code>notgamingplayz-thumbnail-downloader-maxresdefault.jpg</code>. If a browser blocks it (some iOS versions), the fallback is press-and-hold the image or Open in new tab → Save image as — the saved file is identical either way.</p></div>
+        </details>
+        <details>
+          <summary>Does it work on phones?</summary>
+          <div><p>Yes. On Android, tap Download and the file saves to your device. On iPhone or iPad, tap Download to open the save sheet, or press and hold the preview image and choose Save Image. Everything runs in your browser — nothing is uploaded anywhere.</p></div>
         </details>
         <details>
           <summary>Is the thumbnail downloader free?</summary>
@@ -361,6 +382,7 @@
     </form>
   </div>
 </div>
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/main.js"></script>
 </body>
 </html>
