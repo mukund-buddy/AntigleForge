@@ -296,10 +296,16 @@ free tools must remain fully usable without AI; AI is an optional layer.
 
 Delivered via `_headers` (Cloudflare Pages):
 
-- `Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; media-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests`
+- `Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://i.ytimg.com https://www.youtube.com; media-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests`
   — inline `<script type="application/ld+json">` is data, not executable,
   and is permitted under this policy (CSP does not block non-executable
   script types). All behavior comes from external files.
+- `https://i.ytimg.com` is in `connect-src` solely for the Thumbnail
+  Downloader's direct download (fetch + blob). Image-only host, no scripts
+  or credentials.
+- `https://www.youtube.com` is in `connect-src` for the Thumbnail
+  Downloader's `oEmbed` title lookup — returns title/author only, fails
+  silently, never gates the tool flow.
 - `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
   `Referrer-Policy: strict-origin-when-cross-origin`,
   `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()`,
@@ -332,6 +338,37 @@ Delivered via `_headers` (Cloudflare Pages):
 - The MPA choice (§3) is itself the core SEO decision.
 - Target: Lighthouse Performance/Accessibility/SEO/Best-Practices ≥ 95 on
   every page, verified per release (procedure in SEO.md).
+
+---
+
+## 11a. Theme system (dark-first, light opt-in) — since 2026-08-08
+
+- **Dark theme is the source of truth.** The `:root` tokens in `assets/css/app.css`
+  are the dark palette and must never change. The light theme is a pure
+  override block, `html[data-theme="light"] { … }`, that swaps token values
+  only — same layout, spacing, animation, and glass language (no
+  `filter: invert()`, no redesigns).
+- **Adaptive tokens.** Hardcoded translucent colors (white tints, dark
+  scrims, shadows, scrollbar) live as tokens in `:root` with light values
+  under `[data-theme="light"]`. Keep hardcoded rgba/hex out of component
+  rules; use these tokens so both themes stay in sync.
+- **Mechanism.** `assets/js/theme-init.js` (in `<head>`, anti-flash) reads
+  `localStorage["af-theme"]` ("light"|"dark"), falls back to
+  `prefers-color-scheme: light`, and sets `data-theme` on `<html>`.
+  `assets/js/theme.js` (before `main.js`) wires the toggles, keeps
+  `aria-pressed` in sync, updates the `theme-color` meta
+  (needs `id="themeColorMeta"`), and adds a 420 ms `html.theme-anim`
+  cross-fade (respects `prefers-reduced-motion`).
+- **Markup.** Desktop toggle (`.theme-toggle--desktop`) lives in the header
+  next to the search toggle; mobile toggle (`.theme-toggle--mobile`) lives in
+  the mobile menu. `templates/nav.html` is the canonical source — copy it
+  into every page verbatim and keep it in sync.
+- **Page requirements.** Every page needs, in order: the `themeColorMeta`
+  meta tag, `theme-init.js` immediately after it in `<head>`, `theme.js`
+  before `main.js`. `404.html` has no nav and therefore no toggles, but
+  still loads both scripts.
+- **Cache note.** `/assets/*` is immutable for 1 year — after changing
+  `app.css`/`theme*.js`, purge the Cloudflare cache at deploy.
 
 ---
 

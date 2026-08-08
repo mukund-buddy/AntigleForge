@@ -8,7 +8,7 @@ content, clickjacking, MIME sniffing, referrer leakage, ad-network injection.
 
 ```ini
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; media-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://i.ytimg.com; media-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -25,6 +25,13 @@ Notes:
   inline JS, redesign the widget.
 - When AI tools ship: add `https://generativelanguage.googleapis.com` to
   `connect-src` for the tool path only (verify CORS per ARCHITECTURE §2.4).
+- `https://i.ytimg.com` is in `connect-src` (2026-08-08) for the Thumbnail
+  Downloader's fetch+blob direct download; `img-src https:` covers the image
+  loads. It is an image-only host — no scripts, no credentials.
+- `https://www.youtube.com` is in `connect-src` (2026-08-08) for the
+  Thumbnail Downloader's `oEmbed` title lookup (`/oembed?url=…&format=json`).
+  The endpoint returns title/author only, requires no credentials, and the
+  call fails silently — it never gates the tool's core flow.
 - When ads ship: add the network's script host to `script-src` AND its
   beacon host to `connect-src` (two entries, per Cloudflare's docs).
 - `frame-ancestors 'none'` + `X-Frame-Options: DENY` both present (defense

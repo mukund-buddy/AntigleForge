@@ -65,8 +65,9 @@ a tool that fails the rule just to grow the catalog.
 
 1. [x] Thumbnail Fetcher — five sizes from any link; missing sizes
       detected via real `naturalWidth` probes (`youtube.js`).
-2. [x] Thumbnail Downloader — size tabs + verified real resolution;
-      save via "open in new tab" (i.ytimg.com sends no CORS headers).
+2. [x] Thumbnail Downloader — size tabs + verified real resolution +
+      one-tap fetch/blob download (i.ytimg.com now sends CORS headers);
+      updated 2026-08-08 with mobile support.
 3. [x] Timestamp Generator — durations → absolute timestamps
       (`buildChaptersFromDurations` in `chapters.js`).
 4. [x] Chapter Formatter — messy notes → `00:00`-normalized lines with
@@ -95,6 +96,23 @@ a tool that fails the rule just to grow the catalog.
       green), cleaner wording, and pasting existing timestamps (e.g.
       "0:30 Intro") now explains the tool expects durations and links
       to the Chapter Formatter.
+
+## Phase 4.2 — Polish round 2: themes + downloader upgrade (shipped 2026-08-08)
+
+1. [x] Light theme with toggle (dark stays the untouched source of truth):
+      `data-theme="light"` token overrides in `app.css`, `theme-init.js`
+      (anti-flash, localStorage `af-theme`, prefers-color-scheme fallback),
+      `theme.js` (toggle wiring, `themeColorMeta` sync, 420 ms cross-fade
+      that respects reduced-motion). Desktop + mobile toggles in
+      `templates/nav.html` (canonical; copied to every page; 404.html gets
+      scripts only, no toggles).
+2. [x] Thumbnail Downloader download filename → `notgamingplayz-thumbnail-downloader-<size>.jpg`
+      (branded; was `videoId-<size>.jpg`).
+3. [x] Thumbnail Downloader presentation: text rows → thumbnail cards with
+      real previews, resolution badges, "Best quality" marker (promotes to
+      first available size when maxres is missing), missing-size overlay,
+      per-card Download / Open / Copy URL, and the video title via YouTube
+      `oEmbed` (CSP: added `https://www.youtube.com` to `connect-src`).
 
 ## Phase 5 — Student, Design, Security, File batches
 
