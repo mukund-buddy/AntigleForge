@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Generate manifest.json for Minecraft Bedrock Edition behavior packs, resource packs, and script modules.">
+  <meta name="description" content="Generate a valid manifest.json for Minecraft Bedrock resource packs, behavior packs, and world templates. Free, browser-based, with Script API support.">
   <meta name="author" content="Mukund">
   <meta name="theme-color" content="#0a0a0f">
   <title>Manifest Generator - AntigleForge</title>
@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://antigleforge.pages.dev/tools/manifest-generator">
   <meta property="og:title" content="Manifest Generator - AntigleForge">
-  <meta property="og:description" content="Generate manifest.json for Minecraft Bedrock packs.">
+  <meta property="og:description" content="Generate a valid manifest.json for Bedrock packs with UUIDs, versions, and Script API support.">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,43 +33,15 @@
       align-items: start;
     }
     @media (max-width: 800px) { .gen-grid { grid-template-columns: 1fr; } }
-    
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-    @media (max-width: 500px) { .input-row { grid-template-columns: 1fr; } }
-    
-    .uuid-row {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-    .uuid-row .input-field { flex: 1; }
-    
-    .version-row {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .version-input {
-      width: 100%;
-      text-align: center;
-      padding: 0.45rem 0.3rem;
-    }
-    .version-dot {
-      color: rgba(255,255,255,0.2);
-      font-size: 1.1rem;
-      font-weight: 300;
-    }
-    
-    .btn-sm {
-      padding: 0.45rem 0.75rem;
-      font-size: 0.72rem;
-      white-space: nowrap;
-    }
-    
+
+    .input-row { display: flex; gap: 0.75rem; }
+    .input-row > * { flex: 1; }
+    @media (max-width: 500px) { .input-row { flex-direction: column; } }
+
+    .version-row { display: flex; align-items: center; gap: 4px; }
+    .version-input { width: 100%; text-align: center; padding: 0.45rem 0.3rem; }
+    .version-dot { color: rgba(255,255,255,0.2); font-size: 1.1rem; font-weight: 300; }
+
     .section-label {
       font-family: 'Oxanium', sans-serif;
       font-size: 0.7rem;
@@ -77,39 +49,59 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: rgba(255,255,255,0.3);
-      margin: 1rem 0 0.5rem;
+      margin: 1.25rem 0 0.5rem;
       padding-bottom: 0.3rem;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 0.5rem;
+    .section-label-hint {
+      color: rgba(255,255,255,0.2);
+      font-weight: 300;
+      text-transform: none;
+      letter-spacing: 0;
     }
+
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.4rem; }
     .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 8px;
-      background: rgba(0,221,255,0.08);
-      border: 1px solid rgba(0,221,255,0.15);
-      border-radius: 6px;
-      font-size: 0.72rem;
-      color: rgba(255,255,255,0.6);
-    }
-    .tag button {
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.3);
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
       cursor: pointer;
-      font-size: 0.8rem;
-      padding: 0;
-      line-height: 1;
+      transition: all 0.15s;
+    }
+    .tag:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+    .tag.active { background: rgba(0,221,255,0.1); border-color: rgba(0,221,255,0.25); color: #00ddff; }
+    .tag button {
+      background: none; border: none; color: rgba(255,255,255,0.3);
+      cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1;
     }
     .tag button:hover { color: #ff6b6b; }
-    
+
+    .pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .pill:hover { background: rgba(255,255,255,0.08); }
+    .pill input { accent-color: #00ddff; }
+    .pill code { color: #00ddff; font-size: 0.75rem; }
+
+    .hint {
+      display: block;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.25);
+      margin-top: 0.25rem;
+    }
+
     .output-box {
       background: rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.06);
@@ -117,44 +109,100 @@
       overflow: hidden;
     }
     .output-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
       padding: 0.6rem 1rem;
       background: rgba(255,255,255,0.03);
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .output-title {
       font-family: 'Oxanium', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 400;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-size: 0.75rem; font-weight: 400;
+      text-transform: uppercase; letter-spacing: 0.05em;
       color: rgba(255,255,255,0.4);
-    }
-    .output-actions {
-      display: flex;
-      gap: 6px;
     }
     .output-code {
       padding: 1rem;
       font-family: 'Courier New', monospace;
-      font-size: 0.78rem;
-      line-height: 1.5;
+      font-size: 0.78rem; line-height: 1.5;
       color: rgba(255,255,255,0.8);
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 500px;
-      overflow-y: auto;
+      white-space: pre-wrap; word-break: break-all;
+      max-height: 500px; overflow-y: auto;
     }
     .output-code::-webkit-scrollbar { width: 4px; }
     .output-code::-webkit-scrollbar-track { background: transparent; }
     .output-code::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-    
+
     .json-key { color: #00ddff; }
     .json-str { color: #22c55e; }
     .json-num { color: #f59e0b; }
     .json-bool { color: #a78bfa; }
+
+    .guide-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 600px) { .guide-steps { grid-template-columns: 1fr; } }
+    .guide-step {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .guide-step h3 {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.85rem; font-weight: 400;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 0.4rem;
+    }
+    .guide-step p {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+    }
+
+    .faq { margin-top: 1rem; }
+    .faq details {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+    .faq summary {
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .faq summary:hover { background: rgba(255,255,255,0.03); }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::before {
+      content: '▸'; margin-right: 0.5rem;
+      color: rgba(255,255,255,0.2);
+      transition: transform 0.15s;
+    }
+    .faq details[open] summary::before { transform: rotate(90deg); }
+    .faq details > div {
+      padding: 0 1rem 0.75rem;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+
+    .callout {
+      background: rgba(0,221,255,0.04);
+      border: 1px solid rgba(0,221,255,0.1);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+    }
+    .callout code { color: #00ddff; }
   </style>
 </head>
 <body>
@@ -176,9 +224,7 @@
       </ul>
       <div class="navbar-actions">
         <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
         </a>
       </div>
     </div>
@@ -193,145 +239,189 @@
             <span class="badge badge-bedrock">Bedrock</span>
           </div>
           <h1 class="tool-title">Manifest Generator</h1>
-          <p class="tool-subtitle">Generate manifest.json for behavior packs, resource packs, and script modules.</p>
+          <p class="tool-subtitle">Create a valid <code style="color:#00ddff">manifest.json</code> for resource packs, behavior packs, and world templates — with UUIDs, versions, and optional Script API support handled for you.</p>
         </div>
 
-        <div class="tool-container">
+        <div class="gen-grid">
+          <!-- Form -->
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-              </svg>
-              Manifest Generator
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Pack Details
             </div>
 
-            <!-- Pack Type -->
-            <label class="input-label">Pack Type</label>
-            <div class="tag-row" id="packTypeRow">
-              <button class="tag active" data-type="behavior">Behavior Pack</button>
-              <button class="tag" data-type="resource">Resource Pack</button>
-              <button class="tag" data-type="script">Script Module</button>
-              <button class="tag" data-type="world">World Template</button>
+            <label class="input-label" for="fName">Pack name</label>
+            <input type="text" id="fName" class="input-field" maxlength="80" placeholder="e.g. My Resource Pack" value="">
+
+            <label class="input-label" for="fDesc">Description</label>
+            <input type="text" id="fDesc" class="input-field" maxlength="120" placeholder="Shown in-game below the pack name" value="">
+
+            <label class="input-label" for="fType">Pack type</label>
+            <select id="fType" class="input-field">
+              <option value="behavior">Behavior Pack</option>
+              <option value="resource">Resource Pack</option>
+              <option value="world">World Template</option>
+            </select>
+
+            <div class="section-label">Version</div>
+            <label class="input-label">Pack version</label>
+            <div class="version-row" id="fVersion">
+              <input type="number" class="input-field version-input" data-part="major" min="0" max="255" value="1" placeholder="1">
+              <span class="version-dot">.</span>
+              <input type="number" class="input-field version-input" data-part="minor" min="0" max="255" value="0" placeholder="0">
+              <span class="version-dot">.</span>
+              <input type="number" class="input-field version-input" data-part="patch" min="0" max="255" value="0" placeholder="0">
+            </div>
+            <span class="hint">Formatted as [major, minor, patch]. Raising it lets updated packs replace older imports.</span>
+
+            <div id="fMinEngineField">
+              <label class="input-label">Minimum engine version</label>
+              <div class="version-row" id="fMinEngine">
+                <input type="number" class="input-field version-input" data-part="major" min="0" max="255" value="1" placeholder="1">
+                <span class="version-dot">.</span>
+                <input type="number" class="input-field version-input" data-part="minor" min="0" max="255" value="21" placeholder="21">
+                <span class="version-dot">.</span>
+                <input type="number" class="input-field version-input" data-part="patch" min="0" max="255" value="0" placeholder="0">
+              </div>
+              <span class="hint">Required for resource and behavior packs.</span>
             </div>
 
-            <!-- Header -->
-            <div class="section-label">Header</div>
-            
-            <div class="input-row">
-              <div>
-                <label class="input-label" for="packName">Pack Name</label>
-                <input type="text" id="packName" class="input-field" value="My Behavior Pack" placeholder="Pack name">
-              </div>
-              <div>
-                <label class="input-label" for="packDesc">Description</label>
-                <input type="text" id="packDesc" class="input-field" value="A custom behavior pack" placeholder="Short description">
-              </div>
-            </div>
-            
-            <label class="input-label">Pack UUID</label>
-            <div class="uuid-row">
-              <input type="text" id="packUuid" class="input-field" readonly>
-              <button class="btn btn-sm" onclick="generateUuid('packUuid')">New UUID</button>
-            </div>
-            
-            <div class="input-row">
-              <div>
-                <label class="input-label">Version</label>
-                <div class="version-row">
-                  <input type="number" id="verMajor" class="input-field version-input" value="1" min="0" max="999">
-                  <span class="version-dot">.</span>
-                  <input type="number" id="verMinor" class="input-field version-input" value="0" min="0" max="999">
-                  <span class="version-dot">.</span>
-                  <input type="number" id="verPatch" class="input-field version-input" value="0" min="0" max="999">
-                </div>
-              </div>
-              <div>
-                <label class="input-label">Min Engine Version</label>
-                <div class="version-row">
-                  <input type="number" id="engineMajor" class="input-field version-input" value="1" min="1" max="99">
-                  <span class="version-dot">.</span>
-                  <input type="number" id="engineMinor" class="input-field version-input" value="21" min="0" max="99">
-                  <span class="version-dot">.</span>
-                  <input type="number" id="enginePatch" class="input-field version-input" value="0" min="0" max="99">
-                </div>
-              </div>
+            <div id="fScopeField" style="display:none">
+              <label class="input-label" for="fScope">Pack scope <span class="hint">(resource packs only)</span></label>
+              <select id="fScope" class="input-field">
+                <option value="any">Any (default)</option>
+                <option value="global">Global only</option>
+                <option value="world">World only</option>
+              </select>
             </div>
 
-            <!-- Module -->
-            <div class="section-label">Module</div>
-            
-            <div class="input-row">
-              <div>
-                <label class="input-label">Module UUID</label>
-                <div class="uuid-row">
-                  <input type="text" id="moduleUuid" class="input-field" readonly>
-                  <button class="btn btn-sm" onclick="generateUuid('moduleUuid')">New UUID</button>
-                </div>
-              </div>
-              <div>
-                <label class="input-label" for="moduleDesc">Module Description</label>
-                <input type="text" id="moduleDesc" class="input-field" value="" placeholder="Optional">
-              </div>
+            <!-- Script Module -->
+            <div class="section-label">Script API <span class="section-label-hint">(optional)</span></div>
+            <label class="pill" id="fScriptToggle">
+              <input type="checkbox" id="fScript">
+              Add a <code>script</code> module
+            </label>
+            <span class="hint">Adds a JavaScript script module with an @minecraft/server dependency.</span>
+
+            <div id="fScriptPanel" style="display:none; margin-top:0.75rem">
+              <label class="input-label" for="fScriptEntry">Script entry file</label>
+              <input type="text" id="fScriptEntry" class="input-field" placeholder="scripts/main.js" value="scripts/main.js">
+
+              <label class="input-label" for="fServerVersion">@minecraft/server version</label>
+              <select id="fServerVersion" class="input-field">
+                <option value="1.0.0">1.0.0</option>
+                <option value="1.1.0">1.1.0</option>
+                <option value="1.2.0">1.2.0</option>
+                <option value="1.3.0">1.3.0</option>
+                <option value="1.4.0">1.4.0</option>
+                <option value="1.5.0">1.5.0</option>
+                <option value="1.6.0">1.6.0</option>
+                <option value="1.7.0">1.7.0</option>
+                <option value="1.8.0">1.8.0</option>
+                <option value="1.9.0" selected>1.9.0</option>
+                <option value="1.10.0">1.10.0</option>
+                <option value="1.11.0">1.11.0</option>
+                <option value="1.12.0">1.12.0</option>
+                <option value="1.13.0">1.13.0</option>
+                <option value="1.14.0">1.14.0</option>
+                <option value="1.15.0">1.15.0</option>
+                <option value="1.16.0">1.16.0</option>
+                <option value="1.17.0">1.17.0</option>
+              </select>
+              <span class="hint">Minecraft loads the built-in module at this version.</span>
             </div>
 
-            <!-- Dependencies -->
-            <div class="section-label">Dependencies <span style="color:rgba(255,255,255,0.2); font-weight:300; text-transform:none; letter-spacing:0">(e.g. linked Resource Pack for Behavior Pack)</span></div>
-            
-            <div class="tag-row" id="depTags"></div>
-            <div class="input-row" style="margin-top:0.5rem">
-              <div>
-                <label class="input-label" for="depUuid">Dependency UUID</label>
-                <input type="text" id="depUuid" class="input-field" placeholder="UUID of required pack">
-              </div>
-              <div>
-                <label class="input-label">Version</label>
-                <div class="version-row">
-                  <input type="number" id="depVerMajor" class="input-field version-input" value="1" min="0">
-                  <span class="version-dot">.</span>
-                  <input type="number" id="depVerMinor" class="input-field version-input" value="0" min="0">
-                  <span class="version-dot">.</span>
-                  <input type="number" id="depVerPatch" class="input-field version-input" value="0" min="0">
-                </div>
-              </div>
-            </div>
-            <button class="btn btn-sm" onclick="addDependency()" style="margin-top:0.5rem">+ Add Dependency</button>
+            <div class="section-label">Capabilities</div>
+            <label class="pill" id="fCapToggle">
+              <input type="checkbox" id="fCapScriptEval" checked disabled>
+              <code>script_eval</code> <span style="color:rgba(255,255,255,0.3)">(required for scripts)</span>
+            </label>
+
+            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.06); margin:1.25rem 0">
 
             <!-- Metadata -->
-            <div class="section-label">Metadata (optional)</div>
-            
-            <label class="input-label" for="metaAuthors">Authors</label>
-            <input type="text" id="metaAuthors" class="input-field" placeholder="Comma-separated names">
-            
+            <div class="section-label">Metadata <span class="section-label-hint">(optional)</span></div>
             <div class="input-row">
               <div>
-                <label class="input-label" for="metaLicense">License</label>
-                <input type="text" id="metaLicense" class="input-field" value="MIT" placeholder="MIT">
+                <label class="input-label" for="fAuthor">Author</label>
+                <input type="text" id="fAuthor" class="input-field" placeholder="Your name">
               </div>
               <div>
-                <label class="input-label" for="metaUrl">URL</label>
-                <input type="text" id="metaUrl" class="input-field" placeholder="https://...">
+                <label class="input-label" for="fLicense">License</label>
+                <input type="text" id="fLicense" class="input-field" placeholder="e.g. MIT">
               </div>
             </div>
 
-            <div class="btn-group" style="margin-top:1.25rem">
-              <button class="btn btn-primary" onclick="generate()">Generate Manifest</button>
-              <button class="btn" onclick="copyJson()">Copy JSON</button>
-              <button class="btn" onclick="downloadJson()">Download</button>
+            <div class="callout">
+              Output uses <code>format_version: 2</code> with integer version arrays — the current stable format. Your inputs never leave this browser.
             </div>
           </div>
 
           <!-- Output -->
-          <div class="output-box reveal stagger-2">
-            <div class="output-header">
-              <span class="output-title">manifest.json</span>
-              <div class="output-actions">
+          <div class="reveal stagger-2">
+            <div class="output-box">
+              <div class="output-header">
+                <span class="output-title">manifest.json</span>
                 <button class="btn btn-sm" onclick="copyJson()">Copy</button>
-                <button class="btn btn-sm" onclick="downloadJson()">Download</button>
               </div>
+              <div class="output-code" id="jsonOutput"></div>
             </div>
-            <div class="output-code" id="jsonOutput"></div>
+            <div class="btn-group" style="margin-top:0.75rem">
+              <button class="btn btn-primary" onclick="copyJson()">Copy JSON</button>
+              <button class="btn" onclick="downloadJson()">Download</button>
+              <button class="btn" onclick="generateUuids()">New UUIDs</button>
+            </div>
           </div>
+        </div>
+
+        <!-- Guide -->
+        <div class="section-label" style="margin-top:2rem; font-size:0.8rem; border-bottom:none; margin-bottom:0">How it works</div>
+        <div class="guide-steps reveal">
+          <div class="guide-step">
+            <h3>1. Pick your pack type</h3>
+            <p>Choose resource pack (textures, sounds), behavior pack (entities, loot, functions), or world template. The form adapts: world templates skip min_engine_version, and resource packs get a pack_scope option.</p>
+          </div>
+          <div class="guide-step">
+            <h3>2. Fill in the basics</h3>
+            <p>Name and description appear in-game. Set your pack version — bump it whenever you publish an update so Minecraft replaces older imports.</p>
+          </div>
+          <div class="guide-step">
+            <h3>3. Add a scripting module (optional)</h3>
+            <p>Enable <strong>Add a script module</strong> for Script API features. Set the entry file and the @minecraft/server version. The manifest gets dependencies and script_eval capability automatically.</p>
+          </div>
+          <div class="guide-step">
+            <h3>4. Copy or download</h3>
+            <p>UUIDs are generated securely in your browser. Hit Copy JSON to paste into your project, or Download and drop manifest.json into your pack's root folder.</p>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="section-label" style="margin-top:2rem; font-size:0.8rem; border-bottom:none; margin-bottom:0">FAQ</div>
+        <div class="faq reveal">
+          <details>
+            <summary>What is a manifest.json in Minecraft Bedrock?</summary>
+            <div><p>manifest.json is the identity file every resource pack, behavior pack, and world template needs. It defines the pack name, description, unique UUID, version, and the modules the pack provides so Minecraft can load it correctly.</p></div>
+          </details>
+          <details>
+            <summary>What does the Manifest Generator create?</summary>
+            <div><p>It generates a format_version 2 manifest for resource packs, behavior packs, and world templates, including pack UUIDs, module UUIDs, min_engine_version, an optional scripting module with @minecraft/server dependency, capabilities, and metadata — ready to copy or download as manifest.json.</p></div>
+          </details>
+          <details>
+            <summary>Is the manifest.json generator free?</summary>
+            <div><p>Yes. Every tool on AntigleForge is free and runs entirely in your browser. Nothing is uploaded, stored, or processed on a server.</p></div>
+          </details>
+          <details>
+            <summary>Do I need to generate my own UUIDs?</summary>
+            <div><p>No. The generator creates secure random UUIDs for your pack and every module automatically. Use the New UUIDs button if you ever need a new set.</p></div>
+          </details>
+          <details>
+            <summary>Where do I put the generated manifest.json?</summary>
+            <div><p>Download it and place it in the root folder of your resource or behavior pack, next to your pack's contents. The pack folder can then be zipped and imported into Minecraft Bedrock.</p></div>
+          </details>
+          <details>
+            <summary>Why does my script module need a @minecraft/server version?</summary>
+            <div><p>Script modules use the Minecraft Script API, and the manifest declares which version of the built-in @minecraft/server module your code was written against. Minecraft loads that module version automatically.</p></div>
+          </details>
         </div>
       </div>
     </section>
@@ -351,19 +441,13 @@
         </nav>
         <div class="footer-social">
           <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="YouTube">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
           </a>
           <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
           </a>
           <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
           </a>
         </div>
       </div>
@@ -379,83 +463,46 @@
   <script src="../assets/js/components.js"></script>
   <script>
   (function() {
-    var packType = 'behavior';
-    var dependencies = [];
-    var MODULE_TYPES = {
-      behavior: 'data',
-      resource: 'resources',
-      script: 'script',
-      world: 'world_template'
-    };
+    var packUuid = '', moduleUuid = '';
 
-    // Pack type selector
-    document.getElementById('packTypeRow').addEventListener('click', function(e) {
-      var btn = e.target.closest('.tag');
-      if (!btn) return;
-      document.querySelectorAll('#packTypeRow .tag').forEach(function(t) { t.classList.remove('active'); });
-      btn.classList.add('active');
-      packType = btn.dataset.type;
-      document.getElementById('packScopeWrap').style.display = packType === 'resource' ? 'block' : 'none';
-      generate();
-    });
-
-    // Auto-generate UUIDs on load
-    generateUuid('packUuid');
-    generateUuid('moduleUuid');
-
-    // Generate UUID v4
-    window.generateUuid = function(inputId) {
-      var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    function genUuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0;
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
       });
-      document.getElementById(inputId).value = uuid;
-      generate();
-    };
-
-    // Add dependency
-    window.addDependency = function() {
-      var uuid = document.getElementById('depUuid').value.trim();
-      var major = parseInt(document.getElementById('depVerMajor').value) || 1;
-      var minor = parseInt(document.getElementById('depVerMinor').value) || 0;
-      var patch = parseInt(document.getElementById('depVerPatch').value) || 0;
-      if (!uuid) return;
-      dependencies.push({ uuid: uuid, version: [major, minor, patch] });
-      document.getElementById('depUuid').value = '';
-      renderDeps();
-      generate();
-    };
-
-    window.removeDep = function(idx) {
-      dependencies.splice(idx, 1);
-      renderDeps();
-      generate();
-    };
-
-    function renderDeps() {
-      var container = document.getElementById('depTags');
-      container.innerHTML = '';
-      dependencies.forEach(function(dep, i) {
-        var tag = document.createElement('span');
-        tag.className = 'tag';
-        tag.innerHTML = dep.uuid.substring(0, 8) + '... [' + dep.version.join('.') + '] <button onclick="removeDep(' + i + ')">&times;</button>';
-        container.appendChild(tag);
-      });
     }
 
-    // Generate manifest JSON
-    window.generate = function() {
-      var name = document.getElementById('packName').value || 'My Pack';
-      var desc = document.getElementById('packDesc').value || '';
-      var packUuid = document.getElementById('packUuid').value;
-      var moduleUuid = document.getElementById('moduleUuid').value;
-      var moduleDesc = document.getElementById('moduleDesc').value;
-      var major = parseInt(document.getElementById('verMajor').value) || 1;
-      var minor = parseInt(document.getElementById('verMinor').value) || 0;
-      var patch = parseInt(document.getElementById('verPatch').value) || 0;
-      var engMajor = parseInt(document.getElementById('engineMajor').value) || 1;
-      var engMinor = parseInt(document.getElementById('engineMinor').value) || 21;
-      var engPatch = parseInt(document.getElementById('enginePatch').value) || 0;
+    function getVersion(rowId) {
+      var row = document.getElementById(rowId);
+      var inputs = row.querySelectorAll('input');
+      return [
+        parseInt(inputs[0].value) || 0,
+        parseInt(inputs[1].value) || 0,
+        parseInt(inputs[2].value) || 0
+      ];
+    }
+
+    function getVal(id) { return document.getElementById(id).value.trim(); }
+
+    window.generateUuids = function() {
+      packUuid = genUuid();
+      moduleUuid = genUuid();
+      generate();
+    };
+
+    function generate() {
+      var name = getVal('fName') || 'My Pack';
+      var desc = getVal('fDesc') || '';
+      var type = getVal('fType');
+      var version = getVersion('fVersion');
+      var minEngine = getVersion('fMinEngine');
+      var author = getVal('fAuthor');
+      var license = getVal('fLicense');
+      var scriptEnabled = document.getElementById('fScript').checked;
+      var scriptEntry = getVal('fScriptEntry') || 'scripts/main.js';
+      var serverVersion = getVal('fServerVersion');
+
+      var MODULE_TYPES = { behavior: 'data', resource: 'resources', world: 'world_template' };
 
       var manifest = {
         format_version: 2,
@@ -463,46 +510,48 @@
           name: name,
           description: desc,
           uuid: packUuid,
-          version: [major, minor, patch],
-          min_engine_version: [engMajor, engMinor, engPatch]
+          version: version,
+          min_engine_version: minEngine
         },
         modules: [{
-          type: MODULE_TYPES[packType],
+          type: MODULE_TYPES[type],
           uuid: moduleUuid,
-          version: [major, minor, patch]
+          version: version
         }]
       };
 
-      if (moduleDesc) {
-        manifest.modules[0].description = moduleDesc;
-      }
-
-      if (packType === 'resource') {
-        var scope = document.getElementById('packScope').value;
+      // Pack scope (resource only)
+      if (type === 'resource') {
+        var scope = getVal('fScope');
         if (scope !== 'any') manifest.header.pack_scope = scope;
       }
 
-      if (dependencies.length > 0) {
-        manifest.dependencies = dependencies.map(function(d) {
-          return { uuid: d.uuid, version: d.version };
+      // Script module
+      if (scriptEnabled && type !== 'world') {
+        var scriptUuid = genUuid();
+        manifest.modules.push({
+          type: 'script',
+          uuid: scriptUuid,
+          version: [1, 0, 0],
+          entry: scriptEntry
         });
+        manifest.dependencies = [
+          { module_name: '@minecraft/server', version: serverVersion }
+        ];
+        manifest.capabilities = ['script_eval'];
       }
 
       // Metadata
-      var authors = document.getElementById('metaAuthors').value.trim();
-      var license = document.getElementById('metaLicense').value.trim();
-      var url = document.getElementById('metaUrl').value.trim();
-      if (authors || license || url) {
+      if (author || license) {
         manifest.metadata = {};
-        if (authors) manifest.metadata.authors = authors.split(',').map(function(a) { return a.trim(); });
+        if (author) manifest.metadata.authors = [author];
         if (license) manifest.metadata.license = license;
-        if (url) manifest.metadata.url = url;
       }
 
       var json = JSON.stringify(manifest, null, 2);
       document.getElementById('jsonOutput').innerHTML = syntaxHighlight(json);
       window._lastJson = json;
-    };
+    }
 
     function syntaxHighlight(json) {
       return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -532,13 +581,34 @@
       URL.revokeObjectURL(a.href);
     };
 
-    // Auto-generate on input change
+    // Toggle script panel
+    document.getElementById('fScript').addEventListener('change', function() {
+      var panel = document.getElementById('fScriptPanel');
+      panel.style.display = this.checked ? 'block' : 'none';
+      generate();
+    });
+
+    // Show/hide fields based on pack type
+    document.getElementById('fType').addEventListener('change', function() {
+      var t = this.value;
+      document.getElementById('fMinEngineField').style.display = t === 'world' ? 'none' : 'block';
+      document.getElementById('fScopeField').style.display = t === 'resource' ? 'block' : 'none';
+      document.getElementById('fScriptToggle').style.display = t === 'world' ? 'none' : 'flex';
+      if (t === 'world') {
+        document.getElementById('fScript').checked = false;
+        document.getElementById('fScriptPanel').style.display = 'none';
+      }
+      generate();
+    });
+
+    // Auto-generate
     document.querySelectorAll('input, select').forEach(function(el) {
       el.addEventListener('input', generate);
       el.addEventListener('change', generate);
     });
 
-    generate();
+    // Init
+    generateUuids();
   })();
   </script>
 </body>
