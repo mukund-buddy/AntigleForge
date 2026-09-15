@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate XP needed for enchanting, levels lost on death, and Mending repair costs for Minecraft.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>XP Calculator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/xp-calculator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/xp-calculator">
+  <meta property="og:title" content="XP Calculator - AntigleForge">
+  <meta property="og:description" content="Calculate XP needed for enchanting, levels lost on death, and Mending repair costs.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .xp-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .xp-tab {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.45);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .xp-tab:hover { border-color: rgba(0,221,255,0.25); color: rgba(255,255,255,0.7); }
+    .xp-tab.active { background: rgba(0,221,255,0.1); border-color: rgba(0,221,255,0.3); color: #00ddff; }
+    
+    .xp-section { display: none; }
+    .xp-section.active { display: block; }
+    
+    .xp-input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 600px) { .xp-input-group { grid-template-columns: 1fr; } }
+    
+    .xp-result-box {
+      background: rgba(0,221,255,0.06);
+      border: 1px solid rgba(0,221,255,0.15);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .xp-result-label {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.4rem;
+    }
+    .xp-result-value {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #00ddff;
+      line-height: 1.2;
+    }
+    .xp-result-sub {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 0.3rem;
+    }
+    
+    .xp-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .xp-table th, .xp-table td {
+      padding: 0.5rem;
+      text-align: left;
+      font-size: 0.8rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .xp-table th {
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .xp-table td {
+      color: rgba(255,255,255,0.7);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+    }
+    .xp-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .xp-table .highlight { color: #00ddff; font-weight: 400; }
+    
+    .mob-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .mob-card {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    .mob-name {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 0.3rem;
+    }
+    .mob-xp {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #a78bfa;
+    }
+    .mob-xp-unit {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.35);
+    }
+    
+    .xp-bar-container {
+      margin-top: 1rem;
+    }
+    .xp-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.3rem;
+    }
+    .xp-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #a78bfa, #00ddff);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: transparent;
+      color: rgba(255,255,255,0.4);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 0.75rem;
+    }
+    .copy-btn:hover { border-color: rgba(0,221,255,0.3); color: #00ddff; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <div class="tool-badges">
+            <span class="badge badge-java">Java</span>
+            <span class="badge badge-bedrock">Bedrock</span>
+          </div>
+          <h1 class="tool-title">XP Calculator</h1>
+          <p class="tool-subtitle">Calculate XP needed for enchanting, levels lost on death, and Mending repair costs.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              XP Calculator
+            </div>
+            
+            <!-- Tabs -->
+            <div class="xp-tabs">
+              <button class="xp-tab active" data-tab="enchant">Enchanting XP</button>
+              <button class="xp-tab" data-tab="death">Death Penalty</button>
+              <button class="xp-tab" data-tab="mending">Mending Repair</button>
+              <button class="xp-tab" data-tab="mobs">Mob XP Reference</button>
+            </div>
+            
+            <!-- Enchanting XP Section -->
+            <div class="xp-section active" id="section-enchant">
+              <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:1rem;">
+                Calculate how much XP you need to reach a target enchanting level.
+              </p>
+              
+              <div class="xp-input-group">
+                <div>
+                  <label class="input-label" for="currentLevel">Current Level</label>
+                  <input type="number" id="currentLevel" class="input-field" value="0" min="0" max="100">
+                </div>
+                <div>
+                  <label class="input-label" for="targetLevel">Target Level</label>
+                  <input type="number" id="targetLevel" class="input-field" value="30" min="1" max="100">
+                </div>
+              </div>
+              
+              <div class="xp-result-box">
+                <div class="xp-result-label">Total XP Needed</div>
+                <div class="xp-result-value" id="enchantResult">1,395</div>
+                <div class="xp-result-sub" id="enchantSub">From level 0 to level 30</div>
+              </div>
+              
+              <div class="xp-bar-container">
+                <div class="xp-bar-label">
+                  <span>Progress</span>
+                  <span id="enchantPercent">0%</span>
+                </div>
+                <div class="xp-bar">
+                  <div class="xp-bar-fill" id="enchantBar" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <button class="copy-btn" onclick="copyResult('enchantResult')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy
+              </button>
+            </div>
+            
+            <!-- Death Penalty Section -->
+            <div class="xp-section" id="section-death">
+              <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:1rem;">
+                Calculate how many XP levels you lose when you die.
+              </p>
+              
+              <div class="xp-input-group">
+                <div>
+                  <label class="input-label" for="deathLevel">Level at Death</label>
+                  <input type="number" id="deathLevel" class="input-field" value="30" min="0" max="100">
+                </div>
+                <div>
+                  <label class="input-label" for="keepInventory">Keep Inventory?</label>
+                  <select id="keepInventory" class="input-field">
+                    <option value="no">No (lose XP)</option>
+                    <option value="yes">Yes (keep XP)</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="xp-result-box">
+                <div class="xp-result-label">Levels Lost</div>
+                <div class="xp-result-value" id="deathResult">7</div>
+                <div class="xp-result-sub" id="deathSub">Dropped as XP orbs</div>
+              </div>
+              
+              <div class="xp-result-box" style="margin-top:0.75rem;">
+                <div class="xp-result-label">Remaining Level</div>
+                <div class="xp-result-value" id="deathRemaining" style="font-size:1.4rem;">23</div>
+                <div class="xp-result-sub" id="deathRemainingSub">Level after respawn</div>
+              </div>
+              
+              <button class="copy-btn" onclick="copyResult('deathResult')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy
+              </button>
+            </div>
+            
+            <!-- Mending Section -->
+            <div class="xp-section" id="section-mending">
+              <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:1rem;">
+                Calculate how many items you need to repair a Mending item.
+              </p>
+              
+              <div class="xp-input-group">
+                <div>
+                  <label class="input-label" for="mendingDurability">Durability to Repair</label>
+                  <input type="number" id="mendingDurability" class="input-field" value="100" min="1" max="2032">
+                </div>
+                <div>
+                  <label class="input-label" for="mendingXpPerItem">XP per Item</label>
+                  <select id="mendingXpPerItem" class="input-field">
+                    <option value="1">Coal (1 XP)</option>
+                    <option value="2">Lapis/Redstone (2 XP)</option>
+                    <option value="3">Emerald/Diamond (3 XP)</option>
+                    <option value="5">Bottle o' Enchanting (5 XP)</option>
+                    <option value="7">Nether Quartz (3.5 XP)</option>
+                    <option value="10">Mob Kill (5-10 XP)</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="xp-result-box">
+                <div class="xp-result-label">Items Needed</div>
+                <div class="xp-result-value" id="mendingResult">20</div>
+                <div class="xp-result-sub" id="mendingSub">To fully repair the item</div>
+              </div>
+              
+              <div class="xp-result-box" style="margin-top:0.75rem;">
+                <div class="xp-result-label">Total XP Required</div>
+                <div class="xp-result-value" id="mendingXp" style="font-size:1.4rem;">100</div>
+                <div class="xp-result-sub" id="mendingXpSub">XP points needed</div>
+              </div>
+              
+              <button class="copy-btn" onclick="copyResult('mendingResult')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy
+              </button>
+            </div>
+            
+            <!-- Mob XP Reference Section -->
+            <div class="xp-section" id="section-mobs">
+              <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-bottom:1rem;">
+                XP dropped by common mobs (before Looting bonus).
+              </p>
+              
+              <div class="mob-grid">
+                <div class="mob-card">
+                  <div class="mob-name">Zombie</div>
+                  <div class="mob-xp">5 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Skeleton</div>
+                  <div class="mob-xp">5 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Creeper</div>
+                  <div class="mob-xp">5 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Spider</div>
+                  <div class="mob-xp">5 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Enderman</div>
+                  <div class="mob-xp">5 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Blaze</div>
+                  <div class="mob-xp">10 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Guardian</div>
+                  <div class="mob-xp">10 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Piglin Brute</div>
+                  <div class="mob-xp">20 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Baby Zombie</div>
+                  <div class="mob-xp">12 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Slime</div>
+                  <div class="mob-xp">1-3 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Magma Cube</div>
+                  <div class="mob-xp">1-3 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Wither</div>
+                  <div class="mob-xp">50 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Ender Dragon</div>
+                  <div class="mob-xp">12,000 <span class="mob-xp-unit">XP</span></div>
+                </div>
+                <div class="mob-card">
+                  <div class="mob-name">Boss (First)</div>
+                  <div class="mob-xp">12,000 <span class="mob-xp-unit">XP</span></div>
+                </div>
+              </div>
+              
+              <div class="xp-result-box" style="margin-top:1rem;">
+                <div class="xp-result-label">XP Farm Rate Estimator</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-top:0.5rem;">
+                  <div>
+                    <label class="input-label" for="farmMobType">Mob Type</label>
+                    <select id="farmMobType" class="input-field">
+                      <option value="5">Zombie/Skeleton/Creeper (5 XP)</option>
+                      <option value="10">Blaze/Guardian (10 XP)</option>
+                      <option value="20">Piglin Brute (20 XP)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="input-label" for="farmKillsPerHour">Kills per Hour</label>
+                    <input type="number" id="farmKillsPerHour" class="input-field" value="300" min="1" max="10000">
+                  </div>
+                </div>
+                <div class="xp-result-box" style="margin-top:0.75rem; background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.2);">
+                  <div class="xp-result-label">Estimated XP per Hour</div>
+                  <div class="xp-result-value" id="farmResult" style="color:#a78bfa;">1,500</div>
+                  <div class="xp-result-sub" id="farmSub">~0 levels per hour (depends on current level)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
+          <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+        </div>
+        <nav class="footer-nav">
+          <a href="../index.html" class="footer-link">Home</a>
+          <a href="../tools.html" class="footer-link">Tools</a>
+        </nav>
+        <div class="footer-social">
+          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-link">YouTube</a>
+          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-link">Instagram</a>
+          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        </div>
+      </div>
+      <p class="footer-text">Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  (function() {
+    // XP tables
+    var XP_TABLE = [
+      0, 7, 17, 29, 43, 59, 77, 97, 119, 143,
+      169, 197, 227, 259, 293, 329, 367, 407, 449, 493,
+      539, 587, 637, 689, 743, 799, 857, 917, 979, 1043,
+      1109, 1177, 1247, 1319, 1393, 1469, 1547, 1627, 1709, 1793,
+      1879, 1967, 2057, 2149, 2243, 2339, 2437, 2537, 2639, 2743,
+      2849, 2957, 3067, 3179, 3293, 3409, 3527, 3647, 3769, 3893,
+      4019, 4147, 4277, 4409, 4543, 4679, 4817, 4957, 5099, 5243,
+      5389, 5537, 5687, 5839, 5993, 6149, 6307, 6467, 6629, 6793,
+      6959, 7127, 7297, 7469, 7643, 7819, 7997, 8177, 8359, 8543,
+      8729, 8917, 9107, 9299, 9493, 9689, 9887, 10087, 10289, 10493
+    ];
+    
+    // Death penalty XP table (1.8+)
+    var DEATH_TABLE = [
+      0, 7, 17, 29, 43, 59, 77, 97, 119, 143,
+      169, 197, 227, 259, 293, 329, 367, 407, 449, 493,
+      539, 587, 637, 689, 743, 799, 857, 917, 979, 1043,
+      1109, 1177, 1247, 1319, 1393, 1469, 1547, 1627, 1709, 1793,
+      1879, 1967, 2057, 2149, 2243, 2339, 2437, 2537, 2639, 2743,
+      2849, 2957, 3067, 3179, 3293, 3409, 3527, 3647, 3769, 3893,
+      4019, 4147, 4277, 4409, 4543, 4679, 4817, 4957, 5099, 5243,
+      5389, 5537, 5687, 5839, 5993, 6149, 6307, 6467, 6629, 6793,
+      6959, 7127, 7297, 7469, 7643, 7819, 7997, 8177, 8359, 8543,
+      8729, 8917, 9107, 9299, 9493, 9689, 9887, 10087, 10289, 10493
+    ];
+    
+    // Tabs
+    var tabs = document.querySelectorAll('.xp-tab');
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.xp-section').forEach(function(s) { s.classList.remove('active'); });
+        tab.classList.add('active');
+        document.getElementById('section-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+    
+    // Calculate XP between levels
+    function xpBetween(from, to) {
+      if (to > from) {
+        return XP_TABLE[to] - XP_TABLE[from];
+      }
+      return 0;
+    }
+    
+    // Calculate death penalty
+    function calculateDeathPenalty(level) {
+      if (level <= 16) {
+        return Math.floor(level * level / 2 + 6 * level);
+      } else if (level <= 31) {
+        return Math.floor(2.5 * level * level - 40.5 * level + 360);
+      } else {
+        return Math.floor(4.5 * level * level - 162.5 * level + 2220);
+      }
+    }
+    
+    // Update enchanting result
+    function updateEnchant() {
+      var current = parseInt(document.getElementById('currentLevel').value) || 0;
+      var target = parseInt(document.getElementById('targetLevel').value) || 1;
+      
+      if (current < 0) current = 0;
+      if (current > 100) current = 100;
+      if (target < 1) target = 1;
+      if (target > 100) target = 100;
+      
+      var xpNeeded = xpBetween(current, target);
+      var totalForTarget = XP_TABLE[target];
+      var percent = Math.min(100, Math.round((current / target) * 100));
+      
+      document.getElementById('enchantResult').textContent = xpNeeded.toLocaleString();
+      document.getElementById('enchantSub').textContent = 'From level ' + current + ' to level ' + target;
+      document.getElementById('enchantPercent').textContent = percent + '%';
+      document.getElementById('enchantBar').style.width = percent + '%';
+    }
+    
+    // Update death penalty
+    function updateDeath() {
+      var level = parseInt(document.getElementById('deathLevel').value) || 0;
+      var keepInv = document.getElementById('keepInventory').value === 'yes';
+      
+      if (level < 0) level = 0;
+      if (level > 100) level = 100;
+      
+      if (keepInv) {
+        document.getElementById('deathResult').textContent = '0';
+        document.getElementById('deathSub').textContent = 'Keep Inventory is enabled';
+        document.getElementById('deathRemaining').textContent = level;
+        document.getElementById('deathRemainingSub').textContent = 'Level after respawn';
+      } else {
+        var xpLost = calculateDeathPenalty(level);
+        var levelsLost = 0;
+        
+        for (var i = level; i >= 0; i--) {
+          if (XP_TABLE[i] >= XP_TABLE[level] - xpLost) {
+            levelsLost = level - i;
+          } else {
+            break;
+          }
+        }
+        
+        var remaining = level - levelsLost;
+        document.getElementById('deathResult').textContent = levelsLost;
+        document.getElementById('deathSub').textContent = 'Dropped as XP orbs';
+        document.getElementById('deathRemaining').textContent = remaining;
+        document.getElementById('deathRemainingSub').textContent = 'Level after respawn';
+      }
+    }
+    
+    // Update Mending
+    function updateMending() {
+      var durability = parseInt(document.getElementById('mendingDurability').value) || 100;
+      var xpPerItem = parseInt(document.getElementById('mendingXpPerItem').value) || 5;
+      
+      if (durability < 1) durability = 1;
+      if (durability > 2032) durability = 2032;
+      
+      var itemsNeeded = Math.ceil(durability / xpPerItem);
+      var totalXp = durability;
+      
+      document.getElementById('mendingResult').textContent = itemsNeeded;
+      document.getElementById('mendingSub').textContent = 'To fully repair the item';
+      document.getElementById('mendingXp').textContent = totalXp.toLocaleString();
+      document.getElementById('mendingXpSub').textContent = 'XP points needed';
+    }
+    
+    // Update farm rate
+    function updateFarm() {
+      var xpPerMob = parseInt(document.getElementById('farmMobType').value) || 5;
+      var killsPerHour = parseInt(document.getElementById('farmKillsPerHour').value) || 300;
+      
+      var xpPerHour = xpPerMob * killsPerHour;
+      document.getElementById('farmResult').textContent = xpPerHour.toLocaleString();
+      document.getElementById('farmSub').textContent = '~0 levels per hour (depends on current level)';
+    }
+    
+    // Copy result
+    window.copyResult = function(id) {
+      var text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var btn = event.target.closest('.copy-btn');
+        var originalText = btn.innerHTML;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+        setTimeout(function() { btn.innerHTML = originalText; }, 1500);
+      });
+    };
+    
+    // Event listeners
+    document.getElementById('currentLevel').addEventListener('input', updateEnchant);
+    document.getElementById('targetLevel').addEventListener('input', updateEnchant);
+    document.getElementById('deathLevel').addEventListener('input', updateDeath);
+    document.getElementById('keepInventory').addEventListener('change', updateDeath);
+    document.getElementById('mendingDurability').addEventListener('input', updateMending);
+    document.getElementById('mendingXpPerItem').addEventListener('change', updateMending);
+    document.getElementById('farmMobType').addEventListener('change', updateFarm);
+    document.getElementById('farmKillsPerHour').addEventListener('input', updateFarm);
+    
+    // Initial calculations
+    updateEnchant();
+    updateDeath();
+    updateMending();
+    updateFarm();
+  })();
+  </script>
+</body>
+</html>

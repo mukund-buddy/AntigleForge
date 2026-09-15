@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete Minecraft potion brewing guide. All recipes with ingredients, effects, and durations for Bedrock and Java Edition.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Potion Brewing Guide - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/potion-brewing-guide">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/potion-brewing-guide">
+  <meta property="og:title" content="Potion Brewing Guide - AntigleForge">
+  <meta property="og:description" content="All Minecraft potion recipes with ingredients and effects.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .filter-bar {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .filter-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.4);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .filter-btn.active {
+      background: rgba(0,221,255,0.12);
+      border-color: rgba(0,221,255,0.3);
+      color: #00ddff;
+    }
+    .filter-btn:hover:not(.active) { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
+    .potion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .potion-card {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 1rem;
+      transition: all 0.2s;
+    }
+    .potion-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+    .potion-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+    .potion-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .potion-name {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .potion-type-badge {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-left: auto;
+    }
+    .badge-positive { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .badge-negative { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .badge-neutral { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+    .potion-recipe {
+      background: rgba(0,0,0,0.2);
+      border-radius: 6px;
+      padding: 0.5rem 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+    .recipe-label {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .recipe-steps {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      margin-top: 0.3rem;
+    }
+    .recipe-step {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: #ccc;
+      background: rgba(255,255,255,0.05);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .recipe-arrow {
+      color: rgba(255,255,255,0.2);
+      font-size: 0.8rem;
+    }
+    .potion-effect {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.3rem;
+    }
+    .potion-duration {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 0.2rem;
+    }
+    .potion-variants {
+      display: flex;
+      gap: 0.3rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .variant-tag {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .variant-regular { background: rgba(0,221,255,0.1); color: #00ddff; }
+    .variant-splash { background: rgba(255,170,0,0.1); color: #ffaa00; }
+    .variant-lingering { background: rgba(167,139,250,0.1); color: #a78bfa; }
+    .variant-tip { background: rgba(34,197,94,0.1); color: #22c55e; }
+    .section-divider {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 1.5rem 0 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .brewing-note {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.25);
+      line-height: 1.6;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Potion Brewing Guide</h1>
+          <p class="tool-subtitle">Complete brewing reference for all Minecraft potions. Ingredients, effects, and durations.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 3h6v4H9zM7 7l-4 13h18L17 7"/>
+              </svg>
+              Brewing Recipes
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar" id="filterBar">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="positive">Positive</button>
+              <button class="filter-btn" data-filter="negative">Negative</button>
+              <button class="filter-btn" data-filter="combat">Combat</button>
+              <button class="filter-btn" data-filter="utility">Utility</button>
+            </div>
+
+            <div class="brewing-note">
+              <strong style="color:rgba(255,255,255,0.4);">How brewing works:</strong> All potions start from an <strong style="color:#00ddff;">Awkward Potion</strong> (Nether Wart + Water Bottle). Add an ingredient to get the base effect, then optionally add Redstone (extends duration) or Glowstone (enhances effect but reduces duration). Add Gunpowder to make it Splash, or Dragon's Breath to make it Lingering.
+            </div>
+
+            <div id="potionList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is the base for all potions?', a: 'All potions start from an Awkward Potion, made by brewing Nether Wart into a Water Bottle. The Awkward Potion has no effect on its own but is the base ingredient for every useful potion.' },
+    { q: 'What does Redstone do?', a: 'Redstone extends the duration of a potion. For example, a regular Potion of Swiftness lasts 3:00, but with Redstone it becomes 8:00. Not all potions can be extended — some enhanced versions cannot use Redstone.' },
+    { q: 'What does Glowstone do?', a: 'Glowstone enhances the effect level but reduces the duration. For example, Potion of Healing I becomes Potion of Healing II (restores more health but lasts half as long). Enhanced potions cannot be extended with Redstone.' },
+    { q: 'How do I make Splash or Lingering potions?', a: 'Add Gunpowder to any potion to make it a Splash potion (throwable). Add Dragon\'s Breath to a Splash potion to make it Lingering (creates a cloud effect). Both reduce the effect duration slightly.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var POTIONS = [
+      // POSITIVE
+      { name: 'Healing', icon: '❤️', color: '#ff5555', type: 'positive', category: 'combat',
+        steps: ['Nether Wart', 'Magma Cream'],
+        effect: 'Restores health',
+        duration: 'Instant',
+        variants: ['I', 'II (Glowstone)'] },
+      { name: 'Regeneration', icon: '💗', color: '#ff55ff', type: 'positive', category: 'combat',
+        steps: ['Nether Wart', 'Ghast Tear'],
+        effect: 'Regenerates health over time',
+        duration: '0:45 / 1:30 (Redstone)',
+        variants: ['I', 'II (Glowstone)', '0:22 (Extended II)'] },
+      { name: 'Resistance', icon: '🛡️', color: '#aaaaaa', type: 'positive', category: 'combat',
+        steps: ['Potion of Fire Resistance', 'Turtle Shell'],
+        effect: 'Reduces damage taken',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['I', 'II (Glowstone)'] },
+      { name: 'Fire Resistance', icon: '🔥', color: '#ffaa00', type: 'positive', category: 'utility',
+        steps: ['Nether Wart', 'Magma Cream'],
+        effect: 'Immune to fire and lava',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+      { name: 'Swiftness', icon: '💨', color: '#55ffff', type: 'positive', category: 'utility',
+        steps: ['Nether Wart', 'Sugar'],
+        effect: 'Increases movement speed',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['I', 'II (Glowstone)'] },
+      { name: 'Leaping', icon: '🦘', color: '#55ff55', type: 'positive', category: 'utility',
+        steps: ['Nether Wart', 'Rabbit Foot'],
+        effect: 'Jump higher and take no fall damage',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['I', 'II (Glowstone)'] },
+      { name: 'Strength', icon: '💪', color: '#aa0000', type: 'positive', category: 'combat',
+        steps: ['Nether Wart', 'Blaze Powder'],
+        effect: 'Increases melee damage',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['I', 'II (Glowstone)'] },
+      { name: 'Night Vision', icon: '👁️', color: '#5555ff', type: 'positive', category: 'utility',
+        steps: ['Nether Wart', 'Golden Carrot'],
+        effect: 'See in the dark',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+      { name: 'Water Breathing', icon: '🫧', color: '#00aaaa', type: 'positive', category: 'utility',
+        steps: ['Nether Wart', 'Pufferfish'],
+        effect: 'Breathe underwater',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+      { name: 'Invisibility', icon: '👻', color: '#aaaaaa', type: 'positive', category: 'utility',
+        steps: ['Potion of Night Vision', 'Fermented Spider Eye'],
+        effect: 'Become invisible',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+      { name: 'Slow Falling', icon: '🪶', color: '#ff55ff', type: 'positive', category: 'utility',
+        steps: ['Nether Wart', 'Phantom Membrane'],
+        effect: 'Fall slowly, no fall damage',
+        duration: '1:30 / 4:00 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+
+      // NEGATIVE
+      { name: 'Poison', icon: '🤢', color: '#55aa55', type: 'negative', category: 'combat',
+        steps: ['Nether Wart', 'Spider Eye'],
+        effect: 'Deals damage over time',
+        duration: '0:45 / 1:30 (Redstone)',
+        variants: ['I', 'II (Glowstone)'] },
+      { name: 'Harming', icon: '💀', color: '#aa0000', type: 'negative', category: 'combat',
+        steps: ['Potion of Healing/Poison', 'Fermented Spider Eye'],
+        effect: 'Instantly deals damage',
+        duration: 'Instant',
+        variants: ['I', 'II (from Healing II / Poison II)'] },
+      { name: 'Weakness', icon: '😩', color: '#888888', type: 'negative', category: 'combat',
+        steps: ['Water Bottle', 'Fermented Spider Eye'],
+        effect: 'Reduces melee damage',
+        duration: '1:30 / 4:00 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+      { name: 'Slowness', icon: '🐌', color: '#555555', type: 'negative', category: 'combat',
+        steps: ['Potion of Swiftness/Leaping', 'Fermented Spider Eye'],
+        effect: 'Reduces movement speed',
+        duration: '1:30 / 4:00 (Redstone)',
+        variants: ['I', 'II (from Swiftness II)', 'Extended'] },
+      { name: 'Fatigue', icon: '😴', color: '#8b4513', type: 'negative', category: 'combat',
+        steps: ['Potion of Mining', 'Fermented Spider Eye'],
+        effect: 'Slows mining speed',
+        duration: '0:20 / 0:40 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+
+      // UTILITY / SPECIAL
+      { name: 'Water Breathing (Pufferfish)', icon: '🐟', color: '#00aaaa', type: 'positive', category: 'utility',
+        steps: ['Nether Wart', 'Pufferfish'],
+        effect: 'Breathe underwater',
+        duration: '3:00 / 8:00 (Redstone)',
+        variants: ['Regular', 'Extended'] },
+      { name: 'Turtle Master', icon: '🐢', color: '#00aa00', type: 'neutral', category: 'combat',
+        steps: ['Nether Wart', 'Turtle Shell'],
+        effect: 'Resistance + Slowness',
+        duration: '0:20 / 0:40 (Redstone)',
+        variants: ['I', 'II (Glowstone)'] },
+    ];
+
+    var filterBar = document.getElementById('filterBar');
+    var potionList = document.getElementById('potionList');
+    var currentFilter = 'all';
+
+    filterBar.addEventListener('click', function(e) {
+      var btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      filterBar.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderPotions();
+    });
+
+    function renderPotions() {
+      potionList.innerHTML = '';
+      var filtered = POTIONS.filter(function(p) {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'positive') return p.type === 'positive';
+        if (currentFilter === 'negative') return p.type === 'negative';
+        if (currentFilter === 'combat') return p.category === 'combat';
+        if (currentFilter === 'utility') return p.category === 'utility';
+        return true;
+      });
+
+      // Group by type
+      var groups = {};
+      filtered.forEach(function(p) {
+        var group = p.type === 'positive' ? 'Positive Effects' : p.type === 'negative' ? 'Negative Effects' : 'Neutral Effects';
+        if (!groups[group]) groups[group] = [];
+        groups[group].push(p);
+      });
+
+      Object.keys(groups).forEach(function(groupName) {
+        var divider = document.createElement('div');
+        divider.className = 'section-divider';
+        divider.textContent = groupName;
+        potionList.appendChild(divider);
+
+        var grid = document.createElement('div');
+        grid.className = 'potion-grid';
+
+        groups[groupName].forEach(function(p) {
+          var badgeClass = p.type === 'positive' ? 'badge-positive' : p.type === 'negative' ? 'badge-negative' : 'badge-neutral';
+          var card = document.createElement('div');
+          card.className = 'potion-card';
+          card.innerHTML =
+            '<div class="potion-card-header">' +
+              '<div class="potion-icon" style="background:' + p.color + '22;color:' + p.color + ';">' + p.icon + '</div>' +
+              '<div class="potion-name">' + p.name + '</div>' +
+              '<div class="potion-type-badge ' + badgeClass + '">' + p.type + '</div>' +
+            '</div>' +
+            '<div class="potion-recipe">' +
+              '<div class="recipe-label">Brewing Steps</div>' +
+              '<div class="recipe-steps">' +
+                '<span class="recipe-step">Water Bottle</span>' +
+                '<span class="recipe-arrow">→</span>' +
+                '<span class="recipe-step">Nether Wart</span>' +
+                '<span class="recipe-arrow">→</span>' +
+                '<span class="recipe-step">' + p.steps[1] + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="potion-effect">' + p.effect + '</div>' +
+            '<div class="potion-duration">Duration: ' + p.duration + '</div>' +
+            '<div class="potion-variants">' +
+              p.variants.map(function(v) {
+                var cls = v.toLowerCase().includes('extended') ? 'variant-splash' : v.toLowerCase().includes('ii') ? 'variant-lingering' : 'variant-regular';
+                return '<span class="variant-tag ' + cls + '">' + v + '</span>';
+              }).join('') +
+              '<span class="variant-tag variant-splash">Splash (Gunpowder)</span>' +
+              '<span class="variant-tag variant-lingering">Lingering (Dragon\'s Breath)</span>' +
+            '</div>';
+          grid.appendChild(card);
+        });
+
+        potionList.appendChild(grid);
+      });
+    }
+
+    renderPotions();
+  })();
+  </script>
+</body>
+</html>

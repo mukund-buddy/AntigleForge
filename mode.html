@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AntigleForge - Switch between Visual and Performance mode.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Mode - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/mode">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/mode">
+  <meta property="og:title" content="Mode - AntigleForge">
+  <meta property="og:description" content="Switch between Visual and Performance mode.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="./assets/images/logo.png">
+  
+  <style>
+    .mode-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .mode-container {
+      max-width: 500px;
+      width: 100%;
+    }
+    .mode-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .mode-title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+    }
+    .mode-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+    .mode-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .mode-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .mode-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-elevated);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+    .mode-card:hover::before {
+      opacity: 1;
+    }
+    .mode-card.active {
+      border-color: var(--primary);
+      background: rgba(6, 182, 212, 0.05);
+    }
+    .mode-card.active::before {
+      opacity: 1;
+    }
+    .mode-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0.75rem;
+    }
+    .mode-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mode-icon-vm {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--primary);
+    }
+    .mode-icon-pm {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent);
+    }
+    .mode-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+    .mode-card-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .mode-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .mode-tag {
+      font-size: 0.7rem;
+      font-weight: 400;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .mode-status {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.02);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+    .mode-status-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .mode-status-value {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--primary);
+    }
+    .mode-back {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+    .mode-back:hover {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <main class="mode-page">
+    <div class="mode-container">
+      <div class="mode-header">
+        <h1 class="mode-title">Choose Mode</h1>
+        <p class="mode-subtitle">Select how AntigleForge should run on your device.</p>
+      </div>
+
+      <div class="mode-cards">
+        <!-- Visual Mode -->
+        <div class="mode-card" id="cardVisual" data-mode="visual">
+          <div class="mode-card-header">
+            <div class="mode-icon mode-icon-vm">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            </div>
+            <h2 class="mode-card-title">Visual Mode</h2>
+          </div>
+          <p class="mode-card-desc">Full visual experience with animations, transitions, and all visual effects enabled.</p>
+          <div class="mode-features">
+            <span class="mode-tag">Animations</span>
+            <span class="mode-tag">Transitions</span>
+            <span class="mode-tag">Glow effects</span>
+            <span class="mode-tag">Smooth scroll</span>
+            <span class="mode-tag">Card hover</span>
+          </div>
+        </div>
+
+        <!-- Performance Mode -->
+        <div class="mode-card" id="cardPerformance" data-mode="performance">
+          <div class="mode-card-header">
+            <div class="mode-icon mode-icon-pm">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <h2 class="mode-card-title">Performance Mode</h2>
+          </div>
+          <p class="mode-card-desc">Reduced visual workload for smoother experience on lower-end devices.</p>
+          <div class="mode-features">
+            <span class="mode-tag">No animations</span>
+            <span class="mode-tag">No transitions</span>
+            <span class="mode-tag">No glow effects</span>
+            <span class="mode-tag">Instant responses</span>
+            <span class="mode-tag">Lightweight</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mode-status">
+        <div class="mode-status-label">Current Mode</div>
+        <div class="mode-status-value" id="currentMode">Visual Mode</div>
+      </div>
+
+      <a href="./index.html" class="mode-back">← Back to AntigleForge</a>
+    </div>
+  </main>
+
+  <script>
+  (function() {
+    var STORAGE_KEY = 'antigleforge_perf_mode';
+    var cardVisual = document.getElementById('cardVisual');
+    var cardPerformance = document.getElementById('cardPerformance');
+    var currentModeEl = document.getElementById('currentMode');
+
+    function getMode() {
+      try {
+        return localStorage.getItem(STORAGE_KEY);
+      } catch(e) {
+        return null;
+      }
+    }
+
+    function setMode(mode) {
+      try {
+        localStorage.setItem(STORAGE_KEY, mode);
+      } catch(e) {}
+    }
+
+    function updateUI() {
+      var mode = getMode();
+      if (mode === 'true') {
+        cardVisual.classList.remove('active');
+        cardPerformance.classList.add('active');
+        currentModeEl.textContent = 'Performance Mode';
+        currentModeEl.style.color = '#f59e0b';
+        document.body.classList.add('performance-mode');
+      } else {
+        cardVisual.classList.add('active');
+        cardPerformance.classList.remove('active');
+        currentModeEl.textContent = 'Visual Mode';
+        currentModeEl.style.color = '#06b6d4';
+        document.body.classList.remove('performance-mode');
+      }
+    }
+
+    cardVisual.addEventListener('click', function() {
+      setMode('false');
+      updateUI();
+    });
+
+    cardPerformance.addEventListener('click', function() {
+      setMode('true');
+      updateUI();
+    });
+
+    updateUI();
+  })();
+  </script>
+</body>
+</html>

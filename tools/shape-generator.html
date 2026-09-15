@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create custom 3D Minecraft shapes with live preview. Export as .mcstructure for Bedrock Edition.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Shape Generator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/shape-generator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/shape-generator">
+  <meta property="og:title" content="Shape Generator - AntigleForge">
+  <meta property="og:description" content="Create custom 3D Minecraft shapes with live preview.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <style>
+    .gen-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start}
+    @media(max-width:900px){.gen-grid{grid-template-columns:1fr}}
+    .gen-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);overflow:hidden}
+    .gen-card-header{padding:.8rem 1rem;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:.5rem;font-family:var(--font-heading);font-size:.95rem;color:var(--primary);background:rgba(6,182,212,.04)}
+    .gen-card-header svg{width:16px;height:16px;flex-shrink:0}
+    .gen-card-body{padding:1rem}
+    .gen-card+.gen-card{margin-top:1rem}
+    .gen-label{display:block;font-size:.78rem;color:var(--text-muted);margin-bottom:.3rem;font-weight:500}
+    .gen-input,.gen-select{width:100%;padding:.5rem .7rem;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-body);font-size:.85rem;transition:border-color .2s;box-sizing:border-box}
+    .gen-input:focus,.gen-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(6,182,212,.15)}
+    .gen-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.7rem}
+    .gen-row .gen-col{flex:1;min-width:120px}
+    .shape-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .shape-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:8px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s}
+    .shape-btn:hover{border-color:var(--text-muted)}
+    .shape-btn.active{border-color:var(--primary);background:rgba(6,182,212,.1);color:var(--primary)}
+    .shape-btn svg{width:22px;height:22px}
+    .shape-btn span{font-size:9px;color:var(--text-muted)}
+    .shape-btn.active span{color:var(--primary)}
+    .orient-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+    .orient-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:5px;cursor:pointer;font-size:10px;color:var(--text-muted);text-align:center;transition:all .15s}
+    .orient-btn:hover{border-color:var(--text-muted)}
+    .orient-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(6,182,212,.1)}
+    .tri-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+    .tri-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:5px;cursor:pointer;font-size:10px;color:var(--text-muted);text-align:center;transition:all .15s}
+    .tri-btn:hover{border-color:var(--text-muted)}
+    .tri-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(6,182,212,.1)}
+    .block-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .block-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--bg-elevated);border:2px solid var(--border-color);border-radius:6px;padding:4px;cursor:pointer;transition:all .15s}
+    .block-btn:hover{border-color:var(--text-muted);transform:scale(1.05)}
+    .block-btn.active{border-color:var(--primary);box-shadow:0 0 0 2px rgba(6,182,212,.2)}
+    .block-btn img{width:28px;height:28px;border-radius:3px;image-rendering:pixelated;pointer-events:none}
+    .block-btn span{font-size:8px;color:var(--text-muted);line-height:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+    .block-btn.active span{color:var(--primary)}
+    .gen-generate{width:100%;padding:.6rem;background:linear-gradient(135deg,var(--accent),var(--secondary));border:none;border-radius:var(--radius-sm);color:#fff;font-family:var(--font-heading);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+    .gen-generate:hover{filter:brightness(1.15);transform:translateY(-1px)}
+    .gen-generate:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .toggle-row{display:flex;align-items:center;gap:.5rem;cursor:pointer;min-height:28px}
+    .toggle-track{position:relative;width:34px;height:18px;background:var(--border-color);border-radius:9px;transition:background .2s;flex-shrink:0}
+    .toggle-track::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
+    .toggle-row input{display:none}
+    .toggle-row input:checked+.toggle-track{background:var(--accent)}
+    .toggle-row input:checked+.toggle-track::after{transform:translateX(16px)}
+    .viewport-wrap{position:relative;background:linear-gradient(180deg,#87CEEB 0%,#5BA3D9 40%,#4A90C4 60%,#5D8B4A 60%,#4A7A3A 100%);border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border-color)}
+    #viewport3d{width:100%;height:450px}
+    .viewport-wrap canvas{width:100%!important;height:100%!important;display:block}
+    .gen-generate-overlay{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10;padding:.55rem 2rem;background:linear-gradient(135deg,var(--accent),var(--secondary));border:none;border-radius:24px;color:#fff;font-family:var(--font-heading);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;box-shadow:0 4px 20px rgba(109,93,252,.5);white-space:nowrap}
+    .gen-generate-overlay:hover{filter:brightness(1.15);transform:translateX(-50%) translateY(-2px);box-shadow:0 6px 25px rgba(109,93,252,.6)}
+    .gen-generate-overlay:disabled{opacity:.6;cursor:not-allowed;transform:translateX(-50%);filter:none}
+    .gen-bottom{display:flex;align-items:center;gap:.5rem;padding:.6rem .8rem;background:var(--bg-card);border-top:1px solid var(--border-color);flex-wrap:wrap}
+    .gen-stats{display:flex;gap:1rem;font-size:.75rem;color:var(--text-muted);font-family:'Consolas',monospace}
+    .gen-stats b{color:var(--text-primary)}
+    .gen-actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+    .gen-actions .btn,.gen-actions .vp-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:5px 12px;cursor:pointer;font-size:.75rem;font-weight:500;color:var(--text-primary);transition:all .15s}
+    .gen-actions .btn:hover,.gen-actions .vp-btn:hover{border-color:var(--primary);color:var(--primary)}
+    .gen-actions .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    .gen-actions .btn.primary:hover{background:#2ba0e8}
+    .dim-hide{display:none!important}
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span>AntigleForge</span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      <div class="navbar-actions"></div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h1 class="section-title">Shape Generator</h1>
+          <p style="color:var(--text-muted);margin-top:.3rem;">Create 3D Minecraft shapes with live preview. Export as .mcstructure for Bedrock Edition.</p>
+        </div>
+
+        <div class="gen-grid">
+          <!-- Controls -->
+          <div>
+            <!-- Shape -->
+            <div class="gen-card">
+              <div class="gen-card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
+                Shape
+              </div>
+              <div class="gen-card-body">
+                <div class="shape-grid" id="shapeGrid"></div>
+              </div>
+            </div>
+
+            <!-- Dimensions -->
+            <div class="gen-card">
+              <div class="gen-card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 3H3v18h18V3z"/><path d="M9 3v18"/><path d="M3 9h18"/></svg>
+                Dimensions
+              </div>
+              <div class="gen-card-body">
+                <div class="gen-row" id="dimR" style="display:none">
+                  <div class="gen-col"><label class="gen-label">Radius</label><input class="gen-input" type="number" id="dimRadius" value="11" min="1" max="64"></div>
+                </div>
+                <div class="gen-row" id="dimWH">
+                  <div class="gen-col" id="dimW"><label class="gen-label">Width</label><input class="gen-input" type="number" id="dimWidth" value="11" min="1" max="64"></div>
+                  <div class="gen-col" id="dimH"><label class="gen-label">Height</label><input class="gen-input" type="number" id="dimHeight" value="5" min="1" max="256"></div>
+                </div>
+                <div class="gen-row" id="dimD" style="display:none">
+                  <div class="gen-col"><label class="gen-label">Depth</label><input class="gen-input" type="number" id="dimDepth" value="11" min="1" max="64"></div>
+                </div>
+                <div class="gen-row" id="dimS" style="display:none">
+                  <div class="gen-col"><label class="gen-label">Shear</label><input class="gen-input" type="number" id="dimShear" value="2" min="0" max="10"></div>
+                </div>
+                <div class="gen-row" id="dimP" style="display:none">
+                  <div class="gen-col"><label class="gen-label">Points</label><input class="gen-input" type="number" id="dimPoints" value="5" min="3" max="12"></div>
+                </div>
+                <div class="gen-row" id="dimTriType" style="display:none">
+                  <div class="gen-col">
+                    <label class="gen-label">Triangle Type</label>
+                    <div class="tri-grid">
+                      <button class="tri-btn active" data-tri="equilateral" onclick="selectTriType('equilateral')">Equilateral</button>
+                      <button class="tri-btn" data-tri="right" onclick="selectTriType('right')">Right-Angled</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Options -->
+            <div class="gen-card">
+              <div class="gen-card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Options
+              </div>
+              <div class="gen-card-body">
+                <label class="toggle-row" style="margin-bottom:.7rem">
+                  <input type="checkbox" id="hollowToggle">
+                  <span class="toggle-track"></span>
+                  <span style="font-size:.82rem;color:var(--text-secondary)">Hollow</span>
+                </label>
+                <label class="gen-label">Orientation</label>
+                <div class="orient-grid">
+                  <button class="orient-btn active" data-orient="xz" onclick="selectOrientation('xz')">XZ Flat</button>
+                  <button class="orient-btn" data-orient="xy" onclick="selectOrientation('xy')">XY Wall</button>
+                  <button class="orient-btn" data-orient="yz" onclick="selectOrientation('yz')">YZ Wall</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Block -->
+            <div class="gen-card">
+              <div class="gen-card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 3v18"/></svg>
+                Block
+              </div>
+              <div class="gen-card-body">
+                <div class="block-grid" id="blockGrid"></div>
+              </div>
+            </div>
+
+            <!-- Export Settings -->
+            <div class="gen-card">
+              <div class="gen-card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export
+              </div>
+              <div class="gen-card-body">
+                <label class="gen-label">MC Version</label>
+                <select class="gen-select" id="mcVersion">
+                  <option value="1.21.4">1.21.4 (latest)</option>
+                  <option value="1.21.0">1.21.0</option>
+                  <option value="1.20.6">1.20.6</option>
+                  <option value="1.20.4">1.20.4</option>
+                  <option value="1.20.2" selected>1.20.2</option>
+                  <option value="1.20.1">1.20.1</option>
+                  <option value="1.19.4">1.19.4</option>
+                  <option value="1.18.2">1.18.2</option>
+                  <option value="1.16.5">1.16.5</option>
+                  <option value="1.12.2">1.12.2 (legacy)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Viewport -->
+          <div>
+            <div class="viewport-wrap">
+              <button class="gen-generate-overlay" id="generateBtn" onclick="doGenerate()">Generate Shape</button>
+              <div id="viewport3d"></div>
+              <div class="gen-bottom">
+                <div class="gen-stats">
+                  <span>Blocks: <b id="statBlocks">0</b></span>
+                  <span>Size: <b id="statSize">0x0x0</b></span>
+                  <span>Block: <b id="statBlock">stone</b></span>
+                </div>
+                <div class="gen-actions">
+                  <button class="vp-btn" onclick="resetCamera()">Reset Camera</button>
+                  <button class="vp-btn" onclick="toggleGrid()">Grid</button>
+                  <button class="btn" onclick="exportPNG()">PNG</button>
+                  <button class="btn primary" onclick="exportMCStructure()">.mcstructure</button>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:.8rem;padding:.7rem 1rem;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);border-radius:var(--radius-sm);font-size:.8rem;color:var(--text-secondary);line-height:1.5;">
+              <strong style="color:var(--primary);">Note:</strong> 3D preview sirf visual hai — agar preview load nahi ho rahi toh shape generator pe koi farq nahi padta. Sab options (shape, dimensions, block, hollow) select karo, phir <strong>"Generate Shape"</strong> button zaroor dabao. Download (.mcstructure) hamesha sahi kaam karega chahe preview dikh ya na dikhe.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'Which shapes are available?', a: '9 shapes: <strong>Circle</strong>, <strong>Oval</strong>, <strong>Rectangle</strong>, <strong>Triangle (Equilateral)</strong>, <strong>Triangle (Right-Angled)</strong>, <strong>Parallelogram</strong>, <strong>Star</strong>, <strong>Diamond</strong>, <strong>Hexagon</strong>.' },
+    { q: 'Preview not loading — will shape still generate?', a: '<strong>Yes!</strong> 3D preview is just visual. Shape will generate correctly even if preview is blank. Just select options and click <strong>"Generate Shape"</strong>.' },
+    { q: 'How to use .mcstructure file?', a: 'Click download → Open Minecraft Bedrock → Place Structure Block → Right-click → Load mode → Click Load button.' },
+    { q: 'How to change block?', a: 'In left panel <strong>"Block" section</strong> — 33 blocks available. Select any block.' },
+    { q: 'How to make hollow shape?', a: 'Toggle <strong>"Hollow"</strong> in Options section — only outer surface blocks generate.' },
+    { q: 'Maximum shape size?', a: '<strong>64 x 256 x 64 blocks</strong> (Width x Height x Depth).' }
+  ]);
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+
+ <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }}
+  </script>
+  <script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  const SHAPES=['circle','oval','rectangle','triangle','parallelogram','star','diamond','hexagon'];
+  const SHAPE_ICONS={
+    circle:'<circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+    oval:'<ellipse cx="11" cy="11" rx="10" ry="7" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+    rectangle:'<rect x="2" y="4" width="18" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+    triangle:'<polygon points="11,2 21,20 1,20" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+    parallelogram:'<polygon points="6,4 21,4 16,20 1,20" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+    star:'<polygon points="11,1 14,8 22,9 16,14 18,22 11,17 4,22 6,14 0,9 8,8" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+    diamond:'<polygon points="11,1 21,11 11,21 1,11" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+    hexagon:'<polygon points="11,1 20,5.5 20,16.5 11,21 2,16.5 2,5.5" stroke="currentColor" stroke-width="1.5" fill="none"/>'
+  };
+  const BLOCK_TEX='../assets/images/blocks/';
+  const BLOCKS=[
+    {id:'minecraft:stone',textureUrl:BLOCK_TEX+'stone.png',name:'Stone',color:'#808080'},
+    {id:'minecraft:cobblestone',textureUrl:BLOCK_TEX+'cobblestone.png',name:'Cobble',color:'#7a7a7a'},
+    {id:'minecraft:stone_bricks',textureUrl:BLOCK_TEX+'stonebrick.png',name:'Bricks',color:'#7a7a7a'},
+    {id:'minecraft:smooth_stone',textureUrl:BLOCK_TEX+'sandstone_smooth.png',name:'Smooth',color:'#c8c8b0'},
+    {id:'minecraft:deepslate',textureUrl:BLOCK_TEX+'deepslate_top.png',name:'Deepslate',color:'#4a4a4a'},
+    {id:'minecraft:granite',textureUrl:BLOCK_TEX+'stone_granite.png',name:'Granite',color:'#9a7a6a'},
+    {id:'minecraft:diorite',textureUrl:BLOCK_TEX+'stone_diorite.png',name:'Diorite',color:'#b0b0b0'},
+    {id:'minecraft:andesite',textureUrl:BLOCK_TEX+'stone_andesite.png',name:'Andesite',color:'#8a8a8a'},
+    {id:'minecraft:sandstone',textureUrl:BLOCK_TEX+'sandstone_top.png',name:'Sand',color:'#d8c8a0'},
+    {id:'minecraft:oak_planks',textureUrl:BLOCK_TEX+'planks_oak.png',name:'Oak',color:'#b09060'},
+    {id:'minecraft:spruce_planks',textureUrl:BLOCK_TEX+'planks_spruce.png',name:'Spruce',color:'#604830'},
+    {id:'minecraft:bricks',textureUrl:BLOCK_TEX+'brick.png',name:'Bricks',color:'#9a4a3a'},
+    {id:'minecraft:obsidian',textureUrl:BLOCK_TEX+'obsidian.png',name:'Obsidian',color:'#1a1028'},
+    {id:'minecraft:end_stone',textureUrl:BLOCK_TEX+'end_stone.png',name:'End',color:'#d8d8a0'},
+    {id:'minecraft:netherrack',textureUrl:BLOCK_TEX+'netherrack.png',name:'Nether',color:'#6a2020'},
+    {id:'minecraft:glowstone',textureUrl:BLOCK_TEX+'glowstone.png',name:'Glow',color:'#d8b870'},
+    {id:'minecraft:diamond_block',textureUrl:BLOCK_TEX+'diamond_block.png',name:'Diamond',color:'#60d8d8'},
+    {id:'minecraft:gold_block',textureUrl:BLOCK_TEX+'gold_block.png',name:'Gold',color:'#f8d830'},
+    {id:'minecraft:iron_block',textureUrl:BLOCK_TEX+'iron_block.png',name:'Iron',color:'#d8d8d0'},
+    {id:'minecraft:emerald_block',textureUrl:BLOCK_TEX+'emerald_block.png',name:'Emerald',color:'#20a050'},
+    {id:'minecraft:redstone_block',textureUrl:BLOCK_TEX+'redstone_block.png',name:'Redstone',color:'#a81010'},
+    {id:'minecraft:white_concrete',textureUrl:BLOCK_TEX+'concrete_white.png',name:'White',color:'#e8e8e8'},
+    {id:'minecraft:orange_concrete',textureUrl:BLOCK_TEX+'concrete_orange.png',name:'Orange',color:'#e88020'},
+    {id:'minecraft:yellow_concrete',textureUrl:BLOCK_TEX+'concrete_yellow.png',name:'Yellow',color:'#e8d820'},
+    {id:'minecraft:lime_concrete',textureUrl:BLOCK_TEX+'concrete_lime.png',name:'Lime',color:'#80d820'},
+    {id:'minecraft:pink_concrete',textureUrl:BLOCK_TEX+'concrete_pink.png',name:'Pink',color:'#e8a8c0'},
+    {id:'minecraft:gray_concrete',textureUrl:BLOCK_TEX+'concrete_gray.png',name:'Gray',color:'#606060'},
+    {id:'minecraft:cyan_concrete',textureUrl:BLOCK_TEX+'concrete_cyan.png',name:'Cyan',color:'#20a0c0'},
+    {id:'minecraft:purple_concrete',textureUrl:BLOCK_TEX+'concrete_purple.png',name:'Purple',color:'#a030c0'},
+    {id:'minecraft:blue_concrete',textureUrl:BLOCK_TEX+'concrete_blue.png',name:'Blue',color:'#3040a0'},
+    {id:'minecraft:green_concrete',textureUrl:BLOCK_TEX+'concrete_green.png',name:'Green',color:'#30a030'},
+    {id:'minecraft:red_concrete',textureUrl:BLOCK_TEX+'concrete_red.png',name:'Red',color:'#a02020'},
+    {id:'minecraft:black_concrete',textureUrl:BLOCK_TEX+'concrete_black.png',name:'Black',color:'#181818'}
+  ];
+  const BLOCK_VERSIONS={
+    '1.21.4':18453889,'1.21.0':18363220,'1.20.6':18168865,'1.20.4':18085424,
+    '1.20.2':18085424,'1.20.1':18085252,'1.19.4':17101547,'1.18.2':17099482,
+    '1.16.5':16313844,'1.12.2':13434026
+  };
+
+  const state={shape:'circle',orientation:'xz',triType:'equilateral',block:'minecraft:stone',blocks:new Map()};
+
+  function initShapeGrid(){
+    const g=document.getElementById('shapeGrid');
+    SHAPES.forEach(s=>{
+      const b=document.createElement('button');
+      b.className='shape-btn'+(s===state.shape?' active':'');
+      b.dataset.shape=s;
+      b.innerHTML=`<svg viewBox="0 0 22 22">${SHAPE_ICONS[s]}</svg><span>${s}</span>`;
+      b.onclick=()=>selectShape(s);
+      g.appendChild(b);
+    });
+  }
+  function initBlockGrid(){
+    const g=document.getElementById('blockGrid');
+    BLOCKS.forEach(b=>{
+      const d=document.createElement('button');
+      d.className='block-btn'+(b.id===state.block?' active':'');
+      d.innerHTML=`<img src="${b.textureUrl}" alt="${b.name}" loading="lazy" onerror="this.style.background='${b.color}';this.style.border='2px solid #fff'"><span>${b.name}</span>`;
+      d.title=b.name+' — '+b.id;
+      d.onclick=()=>selectBlock(b.id);
+      g.appendChild(d);
+    });
+  }
+
+  window.selectShape=function(s){
+    state.shape=s;
+    document.querySelectorAll('.shape-btn').forEach(b=>b.classList.toggle('active',b.dataset.shape===s));
+    const isR=['circle','star','diamond','hexagon'].includes(s);
+    document.getElementById('dimR').style.display=isR?'':'none';
+    document.getElementById('dimW').style.display=isR?'none':'';
+    document.getElementById('dimH').style.display='';
+    document.getElementById('dimD').style.display=isR?'none':'';
+    document.getElementById('dimS').style.display=s==='parallelogram'?'':'none';
+    document.getElementById('dimP').style.display=s==='star'?'':'none';
+    document.getElementById('dimTriType').style.display=s==='triangle'?'':'none';
+  };
+  window.selectOrientation=function(o){
+    state.orientation=o;
+    document.querySelectorAll('.orient-btn').forEach(b=>b.classList.toggle('active',b.dataset.orient===o));
+  };
+  window.selectTriType=function(t){
+    state.triType=t;
+    document.querySelectorAll('.tri-btn').forEach(b=>b.classList.toggle('active',b.dataset.tri===t));
+  };
+  window.selectBlock=function(id){
+    state.block=id;
+    document.querySelectorAll('.block-btn').forEach((b,i)=>b.classList.toggle('active',BLOCKS[i].id===id));
+    document.getElementById('statBlock').textContent=id.split(':')[1].replace(/_/g,' ');
+  };
+  window.regenerate=function(){generateShape();update3D();updateStats()};
+  window.doGenerate=function(){
+    const btn=document.getElementById('generateBtn');
+    btn.textContent='Generating...';btn.disabled=true;
+    setTimeout(()=>{regenerate();btn.textContent='Generate Shape';btn.disabled=false},50);
+  };
+
+  function bounds(arr){
+    let mnX=Infinity,mxX=-Infinity,mnY=Infinity,mxY=-Infinity,mnZ=Infinity,mxZ=-Infinity;
+    for(const b of arr){mnX=Math.min(mnX,b.x);mxX=Math.max(mxX,b.x);mnY=Math.min(mnY,b.y);mxY=Math.max(mxY,b.y);mnZ=Math.min(mnZ,b.z);mxZ=Math.max(mxZ,b.z)}
+    return{mnX,mxX,mnY,mxY,mnZ,mxZ,sx:mxX-mnX+1,sy:mxY-mnY+1,sz:mxZ-mnZ+1};
+  }
+  function rotate(lx,ly,lz){
+    const o=state.orientation;
+    if(o==='xz')return{x:lx,y:ly,z:lz};
+    if(o==='xy')return{x:lx,y:lz,z:ly};
+    return{x:ly,y:lx,z:lz};
+  }
+  function addWorld(x,y,z){state.blocks.set(x+','+y+','+z,{x,y,z})}
+
+  function genCircleLocal(W,D){
+    const r=Math.floor(Math.min(W,D)/2),out=[];
+    for(let lx=-r;lx<=r;lx++)for(let lz=-r;lz<=r;lz++)if(Math.sqrt(lx*lx+lz*lz)<=r+0.5)out.push({lx,lz});
+    return out;
+  }
+  function genOvalLocal(W,D){
+    const rx=Math.floor(W/2),rz=Math.floor(D/2),out=[];
+    for(let lx=-rx;lx<=rx;lx++)for(let lz=-rz;lz<=rz;lz++)if((lx*lx)/(rx*rx)+(lz*lz)/(rz*rz)<=1.05)out.push({lx,lz});
+    return out;
+  }
+  function genRectLocal(W,D){
+    const hw=Math.floor(W/2),hd=Math.floor(D/2),out=[];
+    for(let lx=-hw;lx<=hw-((W%2===0)?1:0);lx++)for(let lz=-hd;lz<=hd-((D%2===0)?1:0);lz++)out.push({lx,lz});
+    return out;
+  }
+  function genTriangleLocal(W,D,type){
+    const hw=Math.floor(W/2),hd=Math.floor(D/2),out=[];
+    if(type==='right'){
+      for(let lz=0;lz<hd;lz++){const frac=1-lz/(hd||1);const maxX=Math.floor(frac*hw);for(let lx=0;lx<=maxX;lx++)out.push({lx,lz})}
+    }else{
+      for(let lx=-hw;lx<=hw;lx++){const frac=1-Math.abs(lx)/(hw||1);const maxZ=Math.floor(frac*hd);for(let lz=-maxZ;lz<=maxZ;lz++)out.push({lx,lz})}
+    }
+    return out;
+  }
+  function genParallelogramLocal(W,D,shear){
+    const hw=Math.floor(W/2),hd=Math.floor(D/2),out=[];
+    for(let lz=-hd;lz<=hd;lz++){const off=Math.round(lz*shear/(D||1));for(let lx=-hw+off;lx<=hw+off;lx++)out.push({lx,lz})}
+    return out;
+  }
+  function genStarLocal(W,D,points){
+    const r=Math.floor(Math.min(W,D)/2),ri=r*0.4,out=[];
+    for(let lx=-r;lx<=r;lx++)for(let lz=-r;lz<=r;lz++){
+      const a=Math.atan2(lz,lx),d=Math.sqrt(lx*lx+lz*lz);const a2=((a+Math.PI)/(2*Math.PI))*points;const ang=a2-Math.floor(a2)-0.5;
+      const maxR=ri+(r-ri)*(1-Math.abs(ang)*2);if(d<=maxR+0.5)out.push({lx,lz});
+    }
+    return out;
+  }
+  function genDiamondLocal(W,D,H){
+    const r=Math.floor(Math.min(W,D)/2),profile=[];
+    for(let lx=-r;lx<=r;lx++)for(let lz=-r;lz<=r;lz++)if(Math.abs(lx)+Math.abs(lz)<=r+0.5)profile.push({lx,lz});
+    const out=[];
+    for(let ly=0;ly<H;ly++){
+      const t=H>1?ly/(H-1):0.5;const scale=1-Math.abs(t-0.5)*2;
+      for(const p of profile){
+        const slx=Math.round(p.lx*scale),slz=Math.round(p.lz*scale);
+        if(Math.abs(slx)+Math.abs(slz)<=r+0.5)out.push({lx:slx,ly,lz:slz});
+      }
+    }
+    return out;
+  }
+  function genHexagonLocal(W,D){
+    const r=Math.floor(Math.min(W,D)/2),out=[];
+    for(let lx=-r;lx<=r;lx++)for(let lz=-r;lz<=r;lz++){
+      const a=Math.abs(lx),b=Math.abs(lz),c=Math.abs(lx+lz);if(Math.max(a,b,c)<=r+0.5)out.push({lx,lz});
+    }
+    return out;
+  }
+
+  window.generateShape=function(){
+    state.blocks.clear();
+    const isR=['circle','star','diamond','hexagon'].includes(state.shape);
+    let W,H,D;
+    if(isR){const R=parseInt(document.getElementById('dimRadius').value)||11;W=R*2;D=R*2;H=parseInt(document.getElementById('dimHeight').value)||5}
+    else{W=parseInt(document.getElementById('dimWidth').value)||11;D=parseInt(document.getElementById('dimDepth').value)||W;H=parseInt(document.getElementById('dimHeight').value)||5}
+    const S=parseInt(document.getElementById('dimShear').value)||2;
+    const P=parseInt(document.getElementById('dimPoints').value)||5;
+    const hollow=document.getElementById('hollowToggle').checked;
+
+    let profile=[];
+    switch(state.shape){
+      case'circle':profile=genCircleLocal(W,D);break;
+      case'oval':profile=genOvalLocal(W,D);break;
+      case'rectangle':profile=genRectLocal(W,D);break;
+      case'triangle':profile=genTriangleLocal(W,D,state.triType);break;
+      case'parallelogram':profile=genParallelogramLocal(W,D,S);break;
+      case'star':profile=genStarLocal(W,D,P);break;
+      case'diamond':profile=genDiamondLocal(W,D,H);break;
+      case'hexagon':profile=genHexagonLocal(W,D);break;
+    }
+
+    if(hollow&&profile.length){
+      const profileSet=new Set(profile.map(p=>p.lx+','+p.lz));
+      profile=profile.filter(p=>{const n=[[1,0],[-1,0],[0,1],[0,-1]];return n.some(([dx,dz])=>!profileSet.has((p.lx+dx)+','+(p.lz+dz)))});
+    }
+
+    if(state.shape==='diamond'){
+      for(const p of profile){const w=rotate(p.lx,p.ly,p.lz);addWorld(w.x,w.y,w.z)}
+    }else{
+      for(const p of profile){for(let ly=0;ly<H;ly++){const w=rotate(p.lx,ly,p.lz);addWorld(w.x,w.y,w.z)}}
+    }
+  };
+
+  let scene,camera,renderer,controls,instancedMesh,showGrid=true,gridHelper;
+  const texLoader=new THREE.TextureLoader();
+  const texCache={};
+  function getBlockTexture(id){
+    if(texCache[id]!==undefined)return texCache[id];
+    const blk=BLOCKS.find(b=>b.id===id);if(!blk){texCache[id]=null;return null}
+    try{
+      const tex=texLoader.load(blk.textureUrl);
+      tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;
+      texCache[id]=tex;return tex;
+    }catch(e){texCache[id]=null;return null}
+  }
+  function init3D(){
+    const el=document.getElementById('viewport3d');
+    scene=new THREE.Scene();
+    camera=new THREE.PerspectiveCamera(50,el.clientWidth/el.clientHeight,.1,1000);
+    renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(el.clientWidth,el.clientHeight);
+    renderer.setClearColor(0x000000,0);
+    el.appendChild(renderer.domElement);
+    controls=new OrbitControls(camera,renderer.domElement);
+    controls.enableDamping=true;controls.dampingFactor=.08;
+    scene.add(new THREE.AmbientLight(0xffffff,.7));
+    const dl=new THREE.DirectionalLight(0xffffff,.9);dl.position.set(50,80,50);scene.add(dl);
+    const dl2=new THREE.DirectionalLight(0x8ec8f0,.3);dl2.position.set(-30,40,-30);scene.add(dl2);
+    const grassTex=getBlockTexture('minecraft:oak_planks');
+    const groundGeo=new THREE.PlaneGeometry(64,64);
+    const groundMat=grassTex?new THREE.MeshLambertMaterial({map:grassTex}):new THREE.MeshLambertMaterial({color:0x5D8B4A,side:THREE.DoubleSide});
+    const ground=new THREE.Mesh(groundGeo,groundMat);
+    ground.rotation.x=-Math.PI/2;ground.position.y=-0.5;ground.receiveShadow=true;scene.add(ground);
+    gridHelper=new THREE.GridHelper(32,32,0x444444,0x333333);gridHelper.position.y=0.01;scene.add(gridHelper);
+    camera.position.set(15,12,15);controls.target.set(0,0,0);
+    window.addEventListener('resize',()=>{camera.aspect=el.clientWidth/el.clientHeight;camera.updateProjectionMatrix();renderer.setSize(el.clientWidth,el.clientHeight)});
+    animLoop();
+  }
+  function animLoop(){requestAnimationFrame(animLoop);controls.update();renderer.render(scene,camera)}
+  window.resetCamera=function(){
+    const arr=Array.from(state.blocks.values());if(!arr.length)return;
+    const b=bounds(arr),cx=(b.mnX+b.mxX)/2,cy=(b.mnY+b.mxY)/2,cz=(b.mnZ+b.mxZ)/2;
+    const sp=Math.max(b.sx,b.sy,b.sz)+4;camera.position.set(cx+sp,cy+sp*.7,cz+sp);controls.target.set(cx,cy,cz);
+  };
+  window.toggleGrid=function(){showGrid=!showGrid;gridHelper.visible=showGrid};
+
+  function update3D(){
+    if(instancedMesh){scene.remove(instancedMesh);instancedMesh.geometry.dispose();instancedMesh.material.dispose()}
+    const arr=Array.from(state.blocks.values());
+    if(!arr.length){instancedMesh=null;return}
+    const tex=getBlockTexture(state.block);
+    const blk=BLOCKS.find(b=>b.id===state.block);
+    const fallbackColor=blk?parseInt(blk.color.replace('#',''),16):0x7f7f7f;
+    const geo=new THREE.BoxGeometry(.95,.95,.95);
+    const mat=tex?new THREE.MeshLambertMaterial({map:tex}):new THREE.MeshLambertMaterial({color:fallbackColor});
+    instancedMesh=new THREE.InstancedMesh(geo,mat,arr.length);
+    const dummy=new THREE.Object3D();
+    arr.forEach((block,i)=>{dummy.position.set(block.x,block.y,block.z);dummy.updateMatrix();instancedMesh.setMatrixAt(i,dummy.matrix)});
+    instancedMesh.instanceMatrix.needsUpdate=true;
+    scene.add(instancedMesh);
+    const b=bounds(arr),cx=(b.mnX+b.mxX)/2,cy=(b.mnY+b.mxY)/2,cz=(b.mnZ+b.mxZ)/2;
+    controls.target.set(cx,cy,cz);
+  }
+  function updateStats(){
+    const arr=Array.from(state.blocks.values());
+    const b=arr.length?bounds(arr):{sx:0,sy:0,sz:0};
+    document.getElementById('statBlocks').textContent=arr.length;
+    document.getElementById('statSize').textContent=b.sx+'x'+b.sy+'x'+b.sz;
+    document.getElementById('statBlock').textContent=state.block.split(':')[1].replace(/_/g,' ');
+  }
+
+  window.exportPNG=function(){
+    renderer.render(scene,camera);
+    const src=renderer.domElement,cv=document.createElement('canvas');
+    const pad=Math.max(70,Math.round(src.height*0.12));
+    cv.width=src.width;cv.height=src.height+pad;
+    const c=cv.getContext('2d');
+    const sky=c.createLinearGradient(0,0,0,src.height);
+    sky.addColorStop(0,'#87CEEB');sky.addColorStop(0.5,'#5BA3D9');sky.addColorStop(0.6,'#5D8B4A');sky.addColorStop(1,'#4A7A3A');
+    c.fillStyle=sky;c.fillRect(0,0,cv.width,cv.height);
+    c.drawImage(src,0,0);
+    const arr=Array.from(state.blocks.values()),b=arr.length?bounds(arr):{sx:0,sy:0,sz:0};
+    c.fillStyle='#38BDF8';c.font='bold '+Math.round(pad*.32)+'px sans-serif';
+    c.fillText(state.shape.toUpperCase()+'  '+b.sx+' x '+b.sy+' x '+b.sz,16,src.height+Math.round(pad*.38));
+    c.fillStyle='#94A3B8';c.font=Math.round(pad*.28)+'px monospace';
+    c.fillText(arr.length+' blocks  '+state.block.split(':')[1].replace(/_/g,' '),16,src.height+Math.round(pad*.78));
+    const a=document.createElement('a');a.download='shape-'+state.shape+'.png';a.href=cv.toDataURL('image/png');a.click();
+  };
+
+  const TAG={END:0,BYTE:1,SHORT:2,INT:3,LONG:4,FLOAT:5,DOUBLE:6,BYTE_ARRAY:7,STRING:8,LIST:9,COMPOUND:10,INT_ARRAY:11,LONG_ARRAY:12};
+  function wTagLE(p,n,t,v){p.push(TAG[t.toUpperCase()]??0);wStrLE(p,n||'');wPayLE(p,t,v)}
+  function wPayLE(p,t,v){
+    switch(t){
+      case'byte':p.push(v&0xff);break;
+      case'short':p.push(v&0xff,(v>>8)&0xff);break;
+      case'int':p.push(v&0xff,(v>>8)&0xff,(v>>16)&0xff,(v>>24)&0xff);break;
+      case'long':for(let i=0;i<8;i++)p.push(Number((BigInt(v)>>BigInt(i*8))&0xffn));break;
+      case'float':{const b=new ArrayBuffer(4);new Float32Array(b)[0]=v;for(const x of new Uint8Array(b))p.push(x);break}
+      case'double':{const b=new ArrayBuffer(8);new Float64Array(b)[0]=v;for(const x of new Uint8Array(b))p.push(x);break}
+      case'string':wStrLE(p,v);break;
+      case'byte_array':{wIntLE(p,v.length);for(const x of v)p.push(x&0xff);break}
+      case'int_array':{wIntLE(p,v.length);for(const x of v)wIntLE(p,typeof x==='object'?x.value:x);break}
+      case'long_array':{wIntLE(p,v.length);for(const x of v){const n=typeof x==='object'?BigInt(x.value):BigInt(x);for(let i=0;i<8;i++)p.push(Number((n>>BigInt(i*8))&0xffn))}break}
+      case'list':{const inner=v.type,it=TAG[inner.toUpperCase()]??0,items=v.value;p.push(it);wIntLE(p,items.length);for(const item of items){if(inner==='compound')wCompLE(p,item.value);else if(inner==='list')wPayLE(p,'list',item.value);else wPayLE(p,inner,typeof item==='object'?item.value:item)}break}
+      case'compound':{for(const[k,va]of Object.entries(v))wTagLE(p,k,va.type,va.value);p.push(TAG.END);break}
+    }
+  }
+  function wCompLE(p,o){for(const[k,v]of Object.entries(o))wTagLE(p,k,v.type,v.value);p.push(TAG.END)}
+  function wStrLE(p,s){const e=new TextEncoder().encode(s);p.push(e.length&0xff,(e.length>>8)&0xff);for(const b of e)p.push(b)}
+  function wIntLE(p,v){p.push(v&0xff,(v>>8)&0xff,(v>>16)&0xff,(v>>24)&0xff)}
+  function serLE(nbt){const p=[];wTagLE(p,nbt.name,nbt.type,nbt.value);return new Uint8Array(p)}
+
+  window.exportMCStructure=function(){
+    const arr=Array.from(state.blocks.values());if(!arr.length){alert('No blocks to export!');return}
+    const{mnX,mnY,mnZ,sx,sy,sz}=bounds(arr);
+    const total=sx*sy*sz;
+    const blockVer=BLOCK_VERSIONS[document.getElementById('mcVersion').value]||18085424;
+    const primary=new Array(total).fill(-1),secondary=new Array(total).fill(-1);
+    for(const b of arr){const lx=b.x-mnX,ly=b.y-mnY,lz=b.z-mnZ;primary[sz*sy*lx+sz*ly+lz]=0}
+    const nbt={name:'',type:'compound',value:{
+      format_version:{type:'int',value:1},
+      size:{type:'list',value:{type:'int',value:[{type:'int',value:sx},{type:'int',value:sy},{type:'int',value:sz}]}},
+      structure:{type:'compound',value:{
+        block_indices:{type:'list',value:{type:'list',value:[
+          {type:'list',value:{type:'int',value:primary.map(v=>({type:'int',value:v}))}},
+          {type:'list',value:{type:'int',value:secondary.map(v=>({type:'int',value:v}))}}
+        ]}},
+        entities:{type:'list',value:{type:'compound',value:[]}},
+        palette:{type:'compound',value:{default:{type:'compound',value:{
+          block_palette:{type:'list',value:{type:'compound',value:[{type:'compound',value:{
+            name:{type:'string',value:state.block},states:{type:'compound',value:{}},version:{type:'int',value:blockVer}
+          }}]}},
+          block_position_data:{type:'compound',value:{}}
+        }}}}
+      }},
+      structure_world_origin:{type:'list',value:{type:'int',value:[{type:'int',value:0},{type:'int',value:0},{type:'int',value:0}]}}
+    }};
+    const buffer=serLE(nbt);
+    const blob=new Blob([buffer],{type:'application/octet-stream'});
+    const a=document.createElement('a');a.download='shape-'+state.shape+'.mcstructure';a.href=URL.createObjectURL(blob);a.click();URL.revokeObjectURL(a.href);
+  };
+  // Init
+  initShapeGrid();initBlockGrid();init3D();regenerate();
+  </script>
+</body>
+</html>

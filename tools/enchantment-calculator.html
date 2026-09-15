@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Minecraft enchantment calculator. Check compatibility, levels, and anvil costs for all enchantments.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Enchantment Calculator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/enchantment-calculator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/enchantment-calculator">
+  <meta property="og:title" content="Enchantment Calculator - AntigleForge">
+  <meta property="og:description" content="Check enchantment compatibility and anvil costs.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .enchant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .enchant-grid { grid-template-columns: 1fr; } }
+    .enchant-list {
+      max-height: 400px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+    .enchant-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .enchant-item:hover { background: rgba(255,255,255,0.04); }
+    .enchant-item.selected { background: rgba(0,221,255,0.1); }
+    .enchant-item.conflict { background: rgba(239,68,68,0.1); opacity: 0.5; }
+    .enchant-item .en-name {
+      flex: 1;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+    .enchant-item .en-max {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.3);
+    }
+    .selected-enchantments {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.75rem;
+      min-height: 120px;
+    }
+    .sel-header {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .sel-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.5rem;
+      background: rgba(0,221,255,0.08);
+      border-radius: 5px;
+      margin-bottom: 0.3rem;
+    }
+    .sel-item .sel-name {
+      flex: 1;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: #00ddff;
+    }
+    .sel-item .sel-level {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+    }
+    .sel-item .sel-remove {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.2);
+      cursor: pointer;
+      padding: 2px;
+      display: flex;
+    }
+    .sel-item .sel-remove:hover { color: #ff5555; }
+    .level-adjust {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .level-adjust button {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+    .level-adjust button:hover { border-color: rgba(0,221,255,0.3); color: #00ddff; }
+    .cost-summary {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+    }
+    .cost-label { color: rgba(255,255,255,0.4); }
+    .cost-value { color: #00ddff; font-weight: 600; }
+    .cost-value.high { color: #ff5555; }
+    .conflict-warning {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #ef4444;
+      display: none;
+    }
+    .conflict-warning.show { display: block; }
+    .filter-row {
+      display: flex;
+      gap: 0.3rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .filter-pill {
+      padding: 0.3rem 0.6rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 5px;
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.35);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .filter-pill.active { background: rgba(0,221,255,0.12); border-color: rgba(0,221,255,0.3); color: #00ddff; }
+    .filter-pill:hover:not(.active) { color: rgba(255,255,255,0.5); }
+    .clear-all-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid rgba(255,85,85,0.2);
+      border-radius: 6px;
+      background: transparent;
+      color: rgba(255,85,85,0.5);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .clear-all-btn:hover { border-color: rgba(255,85,85,0.4); color: #ff5555; }
+    .info-text {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.2);
+      line-height: 1.5;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Enchantment Calculator</h1>
+          <p class="tool-subtitle">Check enchantment compatibility and calculate anvil costs. Plan your perfect gear setup.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              Enchantment Planner
+            </div>
+
+            <div class="enchant-grid">
+              <!-- Available enchantments -->
+              <div>
+                <div class="sel-header">Available Enchantments</div>
+                <div class="filter-row" id="filterRow">
+                  <button class="filter-pill active" data-filter="all">All</button>
+                  <button class="filter-pill" data-filter="sword">Sword</button>
+                  <button class="filter-pill" data-filter="pickaxe">Pickaxe</button>
+                  <button class="filter-pill" data-filter="bow">Bow</button>
+                  <button class="filter-pill" data-filter="armor">Armor</button>
+                  <button class="filter-pill" data-filter="tool">Tool</button>
+                </div>
+                <div class="enchant-list" id="enchantList"></div>
+              </div>
+
+              <!-- Selected enchantments -->
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+                  <div class="sel-header" style="margin:0;">Selected Enchantments</div>
+                  <button class="clear-all-btn" id="clearAllBtn">Clear All</button>
+                </div>
+                <div class="selected-enchantments" id="selectedList">
+                  <div style="color:rgba(255,255,255,0.2);font-size:0.8rem;padding:1rem;text-align:center;">Click enchantments to add them</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Conflicts -->
+            <div class="conflict-warning" id="conflictWarning"></div>
+
+            <!-- Cost summary -->
+            <div class="cost-summary" id="costSummary">
+              <div class="sel-header">Anvil Cost Estimate</div>
+              <div class="cost-row"><span class="cost-label">Total Enchantments</span><span class="cost-value" id="totalEnchants">0</span></div>
+              <div class="cost-row"><span class="cost-label">Estimated Anvil Levels</span><span class="cost-value" id="totalLevels">0</span></div>
+              <div class="cost-row"><span class="cost-label">Recommended Min. Level</span><span class="cost-value" id="minLevel">0</span></div>
+              <div class="info-text">Anvil cost depends on the order you apply enchantments. Apply cheaper ones first for lower total cost. The "Too Expensive" limit is 39 levels on Java / 100 levels on Bedrock.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What enchantments conflict?', a: 'Some enchantments cannot be combined: Sharpness/Smite/Bothon Swords, Protection/Fire Protection/Projectile Protection/Blast Protection on Armor, Infinity/Mending on Bows, Silk Touch/ Fortune on Tools, and Efficiency cannot conflict (all levels stack).' },
+    { q: "What is the 'Too Expensive' limit?", a: 'On Java Edition, anvil operations that cost more than 39 levels are rejected with "Too Expensive." On Bedrock Edition, the limit is 100 levels. Plan your enchantment order to stay under these limits.' },
+    { q: 'How does anvil cost work?', a: 'Each enchantment has a base cost in levels. Combining two items adds their costs. The renamed item also adds 1 level. Applying enchantments in order from cheapest to most expensive minimizes total cost.' },
+    { q: 'Does enchantment order matter?', a: 'Yes! The order you apply enchantments in the anvil affects the total cost. Apply lower-cost enchantments first, then higher-cost ones. This can save you many levels on expensive enchantments like Mending or Silk Touch.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var ENCHANTMENTS = [
+      // SWORD
+      { id: 'sharpness', name: 'Sharpness', max: 5, slot: 'sword', cost: 1, conflicts: ['smite', 'bane_of_arthropods'] },
+      { id: 'smite', name: 'Smite', max: 5, slot: 'sword', cost: 1, conflicts: ['sharpness', 'bane_of_arthropods'] },
+      { id: 'bane_of_arthropods', name: 'Bane of Arthropods', max: 5, slot: 'sword', cost: 1, conflicts: ['sharpness', 'smite'] },
+      { id: 'knockback', name: 'Knockback', max: 2, slot: 'sword', cost: 1, conflicts: [] },
+      { id: 'fire_aspect', name: 'Fire Aspect', max: 2, slot: 'sword', cost: 1, conflicts: [] },
+      { id: 'looting', name: 'Looting', max: 3, slot: 'sword', cost: 1, conflicts: [] },
+      { id: 'sweeping', name: 'Sweeping Edge', max: 3, slot: 'sword', cost: 1, conflicts: [] },
+      { id: 'unbreaking_sword', name: 'Unbreaking', max: 3, slot: 'sword', cost: 1, conflicts: [] },
+      { id: 'mending_sword', name: 'Mending', max: 1, slot: 'sword', cost: 2, conflicts: [] },
+
+      // PICKAXE / TOOL
+      { id: 'efficiency', name: 'Efficiency', max: 5, slot: 'tool', cost: 1, conflicts: [] },
+      { id: 'silk_touch', name: 'Silk Touch', max: 1, slot: 'tool', cost: 1, conflicts: ['fortune'] },
+      { id: 'fortune', name: 'Fortune', max: 3, slot: 'tool', cost: 1, conflicts: ['silk_touch'] },
+      { id: 'unbreaking_tool', name: 'Unbreaking', max: 3, slot: 'tool', cost: 1, conflicts: [] },
+      { id: 'mending_tool', name: 'Mending', max: 1, slot: 'tool', cost: 2, conflicts: [] },
+
+      // BOW
+      { id: 'power', name: 'Power', max: 5, slot: 'bow', cost: 1, conflicts: [] },
+      { id: 'punch', name: 'Punch', max: 2, slot: 'bow', cost: 1, conflicts: [] },
+      { id: 'flame', name: 'Flame', max: 1, slot: 'bow', cost: 1, conflicts: [] },
+      { id: 'infinity', name: 'Infinity', max: 1, slot: 'bow', cost: 1, conflicts: ['mending_bow'] },
+      { id: 'mending_bow', name: 'Mending', max: 1, slot: 'bow', cost: 2, conflicts: ['infinity'] },
+
+      // ARMOR
+      { id: 'protection', name: 'Protection', max: 4, slot: 'armor', cost: 1, conflicts: ['fire_protection', 'projectile_protection', 'blast_protection'] },
+      { id: 'fire_protection', name: 'Fire Protection', max: 4, slot: 'armor', cost: 1, conflicts: ['protection', 'projectile_protection', 'blast_protection'] },
+      { id: 'projectile_protection', name: 'Projectile Protection', max: 4, slot: 'armor', cost: 1, conflicts: ['protection', 'fire_protection', 'blast_protection'] },
+      { id: 'blast_protection', name: 'Blast Protection', max: 4, slot: 'armor', cost: 1, conflicts: ['protection', 'fire_protection', 'projectile_protection'] },
+      { id: 'thorns', name: 'Thorns', max: 3, slot: 'armor', cost: 2, conflicts: [] },
+      { id: 'unbreaking_armor', name: 'Unbreaking', max: 3, slot: 'armor', cost: 1, conflicts: [] },
+      { id: 'mending_armor', name: 'Mending', max: 1, slot: 'armor', cost: 2, conflicts: [] },
+      { id: 'depth_strider', name: 'Depth Strider', max: 3, slot: 'armor', cost: 1, conflicts: ['frost_walker'] },
+      { id: 'frost_walker', name: 'Frost Walker', max: 2, slot: 'armor', cost: 1, conflicts: ['depth_strider'] },
+      { id: 'respiration', name: 'Respiration', max: 3, slot: 'armor', cost: 1, conflicts: [] },
+      { id: 'aqua_affinity', name: 'Aqua Affinity', max: 1, slot: 'armor', cost: 1, conflicts: [] },
+      { id: 'soul_speed', name: 'Soul Speed', max: 3, slot: 'armor', cost: 1, conflicts: [] },
+      { id: 'swift_sneak', name: 'Swift Sneak', max: 3, slot: 'armor', cost: 1, conflicts: [] },
+
+      // CROSSBOW
+      { id: 'quick_charge', name: 'Quick Charge', max: 3, slot: 'crossbow', cost: 1, conflicts: [] },
+      { id: 'piercing', name: 'Piercing', max: 4, slot: 'crossbow', cost: 1, conflicts: ['multishot'] },
+      { id: 'multishot', name: 'Multishot', max: 1, slot: 'crossbow', cost: 1, conflicts: ['piercing'] },
+      { id: 'unbreaking_crossbow', name: 'Unbreaking', max: 3, slot: 'crossbow', cost: 1, conflicts: [] },
+      { id: 'mending_crossbow', name: 'Mending', max: 1, slot: 'crossbow', cost: 2, conflicts: [] },
+    ];
+
+    var selected = []; // { enchant, level }
+    var enchantList = document.getElementById('enchantList');
+    var selectedList = document.getElementById('selectedList');
+    var conflictWarning = document.getElementById('conflictWarning');
+    var totalEnchants = document.getElementById('totalEnchants');
+    var totalLevels = document.getElementById('totalLevels');
+    var minLevel = document.getElementById('minLevel');
+    var filterRow = document.getElementById('filterRow');
+    var clearAllBtn = document.getElementById('clearAllBtn');
+    var currentFilter = 'all';
+
+    filterRow.addEventListener('click', function(e) {
+      var pill = e.target.closest('.filter-pill');
+      if (!pill) return;
+      filterRow.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      currentFilter = pill.dataset.filter;
+      renderList();
+    });
+
+    clearAllBtn.addEventListener('click', function() {
+      selected = [];
+      renderList();
+      renderSelected();
+      renderCosts();
+    });
+
+    function renderList() {
+      enchantList.innerHTML = '';
+      var filtered = ENCHANTMENTS.filter(function(e) {
+        return currentFilter === 'all' || e.slot === currentFilter;
+      });
+      filtered.forEach(function(eff) {
+        var isSelected = selected.some(function(s) { return s.enchant.id === eff.id; });
+        var isConflict = !isSelected && hasConflict(eff);
+        var item = document.createElement('div');
+        item.className = 'enchant-item' + (isSelected ? ' selected' : '') + (isConflict ? ' conflict' : '');
+        item.innerHTML =
+          '<span class="en-name">' + eff.name + '</span>' +
+          '<span class="en-max">Max: ' + eff.max + '</span>';
+        item.addEventListener('click', function() {
+          if (isConflict) return;
+          if (isSelected) {
+            selected = selected.filter(function(s) { return s.enchant.id !== eff.id; });
+          } else {
+            selected.push({ enchant: eff, level: eff.max });
+          }
+          renderList();
+          renderSelected();
+          renderCosts();
+        });
+        enchantList.appendChild(item);
+      });
+    }
+
+    function hasConflict(eff) {
+      return selected.some(function(s) {
+        return eff.conflicts.indexOf(s.enchant.id) !== -1;
+      });
+    }
+
+    function renderSelected() {
+      if (selected.length === 0) {
+        selectedList.innerHTML = '<div style="color:rgba(255,255,255,0.2);font-size:0.8rem;padding:1rem;text-align:center;">Click enchantments to add them</div>';
+        conflictWarning.classList.remove('show');
+        return;
+      }
+
+      // Check conflicts
+      var conflicts = [];
+      for (var i = 0; i < selected.length; i++) {
+        for (var j = i + 1; j < selected.length; j++) {
+          if (selected[i].enchant.conflicts.indexOf(selected[j].enchant.id) !== -1) {
+            conflicts.push(selected[i].enchant.name + ' conflicts with ' + selected[j].enchant.name);
+          }
+        }
+      }
+      if (conflicts.length > 0) {
+        conflictWarning.textContent = '⚠️ Conflicts: ' + conflicts.join('; ');
+        conflictWarning.classList.add('show');
+      } else {
+        conflictWarning.classList.remove('show');
+      }
+
+      selectedList.innerHTML = '';
+      selected.forEach(function(sel, idx) {
+        var item = document.createElement('div');
+        item.className = 'sel-item';
+        item.innerHTML =
+          '<span class="sel-name">' + sel.enchant.name + '</span>' +
+          '<div class="level-adjust">' +
+            '<button data-idx="' + idx + '" data-dir="-1">−</button>' +
+            '<span class="sel-level">Lv ' + sel.level + '</span>' +
+            '<button data-idx="' + idx + '" data-dir="1">+</button>' +
+          '</div>' +
+          '<button class="sel-remove" data-idx="' + idx + '">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+          '</button>';
+        selectedList.appendChild(item);
+      });
+
+      // Bind events
+      selectedList.querySelectorAll('.sel-remove').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          selected.splice(parseInt(btn.dataset.idx), 1);
+          renderList();
+          renderSelected();
+          renderCosts();
+        });
+      });
+      selectedList.querySelectorAll('.level-adjust button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.dataset.idx);
+          var dir = parseInt(btn.dataset.dir);
+          var s = selected[idx];
+          s.level = Math.min(s.enchant.max, Math.max(1, s.level + dir));
+          renderSelected();
+          renderCosts();
+        });
+      });
+    }
+
+    function renderCosts() {
+      totalEnchants.textContent = selected.length;
+      // Estimate anvil cost: each enchantment costs its base cost * level
+      var totalCost = 0;
+      selected.forEach(function(s) {
+        totalCost += s.enchant.cost * s.level;
+      });
+      totalLevels.textContent = totalCost;
+      minLevel.textContent = Math.max(totalCost, 0);
+      // Color code
+      totalLevels.className = 'cost-value' + (totalCost > 39 ? ' high' : '');
+    }
+
+    renderList();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generate Minecraft server MOTD (Message of the Day) with colors and formatting. Works with Java and Bedrock servers.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>MOTD Generator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/motd-generator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/motd-generator">
+  <meta property="og:title" content="MOTD Generator - AntigleForge">
+  <meta property="og:description" content="Generate Minecraft server MOTD with colors.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .motd-preview {
+      background: #000;
+      border: 2px solid #333;
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-family: 'Minecraft', monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+      min-height: 40px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .color-palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .color-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.4rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.12s;
+      border: 1px solid transparent;
+    }
+    .color-chip:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+    .color-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .color-name {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+    }
+    .format-btns {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .fmt-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 5px;
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.12s;
+    }
+    .fmt-btn:hover { border-color: rgba(0,221,255,0.3); color: #00ddff; }
+    .output-section { margin-top: 1rem; }
+    .output-label {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+    .output-box {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      font-family: 'Inter', monospace;
+      font-size: 0.8rem;
+      color: #55ff55;
+      word-break: break-all;
+      position: relative;
+    }
+    .output-box pre {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .copy-small {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+    }
+    .line-add {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+    .line-add input { flex: 1; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">MOTD Generator</h1>
+          <p class="tool-subtitle">Generate Minecraft server MOTD (Message of the Day) with colors and formatting.</p>
+        </div>
+
+        <div class="tool-container">
+          <!-- Editor -->
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              MOTD Editor
+            </div>
+
+            <!-- Preview -->
+            <div class="motd-preview" id="motdPreview">My Minecraft Server</div>
+
+            <!-- Format buttons -->
+            <div class="format-btns" id="formatBtns">
+              <button class="fmt-btn" data-code="l" title="Bold">B</button>
+              <button class="fmt-btn" data-code="o" title="Italic" style="font-style:italic;">I</button>
+              <button class="fmt-btn" data-code="n" title="Underline" style="text-decoration:underline;">U</button>
+              <button class="fmt-btn" data-code="m" title="Strikethrough" style="text-decoration:line-through;">S</button>
+              <button class="fmt-btn" data-code="k" title="Obfuscated" style="font-family:monospace;">?</button>
+              <button class="fmt-btn" data-code="r" title="Reset" style="color:#ff5555;">R</button>
+            </div>
+
+            <!-- Color palette -->
+            <div class="color-palette" id="colorPalette"></div>
+
+            <!-- Text input -->
+            <div class="form-group">
+              <input type="text" id="motdInput" class="form-input" value="My Minecraft Server" placeholder="Type your MOTD text...">
+            </div>
+
+            <div class="line-add">
+              <button class="btn btn-primary" id="addLineBtn">Add Line</button>
+              <button class="btn btn-secondary" id="clearBtn">Clear All</button>
+            </div>
+          </div>
+
+          <!-- Output -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Generated Output
+            </div>
+
+            <div class="output-section">
+              <div class="output-label">server.properties / motd=</div>
+              <div class="output-box" id="outputPlain">
+                <pre id="plainText"></pre>
+                <button class="btn btn-primary copy-small" id="copyPlain">Copy</button>
+              </div>
+            </div>
+
+            <div class="output-section">
+              <div class="output-label">JSON Text Component (for commands)</div>
+              <div class="output-box" id="outputJson">
+                <pre id="jsonText"></pre>
+                <button class="btn btn-primary copy-small" id="copyJson">Copy</button>
+              </div>
+            </div>
+
+            <div class="output-section">
+              <div class="output-label">Bedrock /tellraw format</div>
+              <div class="output-box" id="outputBedrock">
+                <pre id="bedrockText"></pre>
+                <button class="btn btn-primary copy-small" id="copyBedrock">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is a server MOTD?', a: 'MOTD stands for "Message of the Day." It\'s the message shown in the Minecraft server list next to the server name. You set it in server.properties with the "motd" line.' },
+    { q: 'How do colors work in MOTD?', a: 'Use the section symbol (§) followed by a color code character. For example: §c makes text red, §a makes it green. These work in server.properties and in-game signs/books.' },
+    { q: 'What formatting codes are available?', a: '§l = Bold, §o = Italic, §n = Underline, §m = Strikethrough, §k = Obfuscated (random characters), §r = Reset all formatting. Combine with colors: §c§l = Bold Red.' },
+    { q: 'Does this work on Bedrock servers?', a: 'Yes! Bedrock Edition servers use the same § color codes in server.properties. The JSON format shown also works with /tellraw commands on Bedrock.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var CODES = {
+      '0': { name: 'Black', hex: '#000000' }, '1': { name: 'Dark Blue', hex: '#0000AA' },
+      '2': { name: 'Dark Green', hex: '#00AA00' }, '3': { name: 'Dark Aqua', hex: '#00AAAA' },
+      '4': { name: 'Dark Red', hex: '#AA0000' }, '5': { name: 'Dark Purple', hex: '#AA00AA' },
+      '6': { name: 'Gold', hex: '#FFAA00' }, '7': { name: 'Gray', hex: '#AAAAAA' },
+      '8': { name: 'Dark Gray', hex: '#555555' }, '9': { name: 'Blue', hex: '#5555FF' },
+      'a': { name: 'Green', hex: '#55FF55' }, 'b': { name: 'Aqua', hex: '#55FFFF' },
+      'c': { name: 'Red', hex: '#FF5555' }, 'd': { name: 'Light Purple', hex: '#FF55FF' },
+      'e': { name: 'Yellow', hex: '#FFFF55' }, 'f': { name: 'White', hex: '#FFFFFF' }
+    };
+    var CODE_CHARS = Object.keys(CODES);
+
+    var palette = document.getElementById('colorPalette');
+    var formatBtns = document.getElementById('formatBtns');
+    var motdInput = document.getElementById('motdInput');
+    var motdPreview = document.getElementById('motdPreview');
+    var plainText = document.getElementById('plainText');
+    var jsonText = document.getElementById('jsonText');
+    var bedrockText = document.getElementById('bedrockText');
+    var addLineBtn = document.getElementById('addLineBtn');
+    var clearBtn = document.getElementById('clearBtn');
+
+    var lines = ['My Minecraft Server'];
+    var activeColor = 'f';
+    var activeFormat = '';
+
+    // Build palette
+    CODE_CHARS.forEach(function(c) {
+      var chip = document.createElement('div');
+      chip.className = 'color-chip';
+      chip.innerHTML = '<div class="color-swatch" style="background:' + CODES[c].hex + ';"></div><div class="color-name">' + c + '</div>';
+      chip.addEventListener('click', function() {
+        activeColor = c;
+        motdInput.value += '§' + c;
+        render();
+      });
+      palette.appendChild(chip);
+    });
+
+    // Format buttons
+    formatBtns.addEventListener('click', function(e) {
+      var btn = e.target.closest('.fmt-btn');
+      if (!btn) return;
+      motdInput.value += '§' + btn.dataset.code;
+      render();
+    });
+
+    addLineBtn.addEventListener('click', function() {
+      lines.push('');
+      motdInput.value = '';
+      render();
+    });
+
+    clearBtn.addEventListener('click', function() {
+      lines = [''];
+      motdInput.value = '';
+      render();
+    });
+
+    motdInput.addEventListener('input', function() {
+      lines[lines.length - 1] = motdInput.value;
+      render();
+    });
+
+    function render() {
+      // Preview
+      var html = '';
+      lines.forEach(function(line) {
+        var colored = colorize(line);
+        html += '<div>' + colored + '</div>';
+      });
+      motdPreview.innerHTML = html || '<span style="color:rgba(255,255,255,0.2);">Type text above...</span>';
+
+      // Plain output (server.properties format)
+      var plain = lines.join('\\n');
+      plainText.textContent = 'motd=' + plain;
+
+      // JSON output
+      var jsonSegments = [];
+      lines.forEach(function(line) {
+        var segments = parseToSegments(line);
+        segments.forEach(function(seg) { jsonSegments.push(seg); });
+        jsonSegments.push({ text: '\n' });
+      });
+      if (jsonSegments.length > 0 && jsonSegments[jsonSegments.length - 1].text === '\n') jsonSegments.pop();
+      jsonText.textContent = JSON.stringify({ text: '', extra: jsonSegments }, null, 2);
+
+      // Bedrock output
+      var bedrockRaw = [];
+      lines.forEach(function(line) {
+        bedrockRaw.push({ text: line });
+      });
+      bedrockText.textContent = JSON.stringify({ rawtext: bedrockRaw }, null, 2);
+    }
+
+    function colorize(str) {
+      var result = '';
+      var i = 0;
+      var color = '#fff';
+      var bold = false, italic = false, underline = false, strike = false;
+      while (i < str.length) {
+        if (str[i] === '§' && i + 1 < str.length) {
+          var c = str[i + 1].toLowerCase();
+          if (CODES[c]) { color = CODES[c].hex; i += 2; continue; }
+          if (c === 'l') { bold = true; i += 2; continue; }
+          if (c === 'o') { italic = true; i += 2; continue; }
+          if (c === 'n') { underline = true; i += 2; continue; }
+          if (c === 'm') { strike = true; i += 2; continue; }
+          if (c === 'r') { color = '#fff'; bold = false; italic = false; underline = false; strike = false; i += 2; continue; }
+        }
+        var ch = str[i];
+        if (ch === '<') ch = '&lt;';
+        else if (ch === '>') ch = '&gt;';
+        var style = 'color:' + color + ';';
+        if (bold) style += 'font-weight:bold;';
+        if (italic) style += 'font-style:italic;';
+        if (underline) style += 'text-decoration:underline;';
+        if (strike) style += 'text-decoration:line-through;';
+        result += '<span style="' + style + '">' + ch + '</span>';
+        i++;
+      }
+      return result;
+    }
+
+    function parseToSegments(str) {
+      var segs = [];
+      var current = { text: '', color: 'white', bold: false, italic: false, underlined: false, strikethrough: false };
+      var i = 0;
+      while (i < str.length) {
+        if (str[i] === '§' && i + 1 < str.length) {
+          var c = str[i + 1].toLowerCase();
+          if (CODES[c]) { current.color = c === 'f' ? 'white' : CODES[c].name.toLowerCase().replace(' ', '_'); i += 2; continue; }
+          if (c === 'l') { current.bold = true; i += 2; continue; }
+          if (c === 'o') { current.italic = true; i += 2; continue; }
+          if (c === 'n') { current.underlined = true; i += 2; continue; }
+          if (c === 'm') { current.strikethrough = true; i += 2; continue; }
+          if (c === 'r') {
+            if (current.text) segs.push(Object.assign({}, current));
+            current = { text: '', color: 'white', bold: false, italic: false, underlined: false, strikethrough: false };
+            i += 2; continue;
+          }
+        }
+        current.text += str[i];
+        i++;
+      }
+      if (current.text) segs.push(current);
+      return segs;
+    }
+
+    function fallbackCopy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showOK).catch(fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showOK(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+      function showOK() {
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = 'Copied!';
+        document.body.appendChild(t);
+        setTimeout(function() { t.classList.add('show'); }, 10);
+        setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 2000);
+      }
+    }
+
+    document.getElementById('copyPlain').addEventListener('click', function() { fallbackCopy(plainText.textContent); });
+    document.getElementById('copyJson').addEventListener('click', function() { fallbackCopy(jsonText.textContent); });
+    document.getElementById('copyBedrock').addEventListener('click', function() { fallbackCopy(bedrockText.textContent); });
+
+    render();
+  })();
+  </script>
+</body>
+</html>

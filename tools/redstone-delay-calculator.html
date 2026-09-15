@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Convert Minecraft redstone ticks to seconds and calculate repeater/comparator delays. Bedrock and Java Edition.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Redstone Delay Calculator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/redstone-delay-calculator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/redstone-delay-calculator">
+  <meta property="og:title" content="Redstone Delay Calculator - AntigleForge">
+  <meta property="og:description" content="Convert redstone ticks to seconds. Calculate repeater delays.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .converter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .converter-grid { grid-template-columns: 1fr; } }
+    .value-card {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .value-card label {
+      display: block;
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .value-big {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #00ddff;
+      line-height: 1;
+    }
+    .value-unit {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 0.2rem;
+    }
+    .repeater-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .repeater-row:last-child { border-bottom: none; }
+    .repeater-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(255,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .repeater-name {
+      flex: 1;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+    .repeater-value {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #ff5555;
+    }
+    .repeater-detail {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.25);
+    }
+    .quick-presets {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .preset-btn {
+      padding: 0.35rem 0.7rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 5px;
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.4);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .preset-btn:hover { border-color: rgba(0,221,255,0.3); color: #00ddff; }
+    .note-text {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.2);
+      line-height: 1.5;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Redstone Delay Calculator</h1>
+          <p class="tool-subtitle">Convert between redstone ticks, game ticks, and seconds. Calculate repeater delays.</p>
+        </div>
+
+        <div class="tool-container">
+          <!-- Converter -->
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+              Tick Converter
+            </div>
+
+            <div class="quick-presets" id="presets">
+              <button class="preset-btn" data-ticks="1">1 tick</button>
+              <button class="preset-btn" data-ticks="2">2 ticks</button>
+              <button class="preset-btn" data-ticks="4">4 ticks</button>
+              <button class="preset-btn" data-ticks="8">8 ticks</button>
+              <button class="preset-btn" data-ticks="10">10 ticks</button>
+              <button class="preset-btn" data-ticks="20">20 ticks (1s)</button>
+              <button class="preset-btn" data-ticks="40">40 ticks (2s)</button>
+              <button class="preset-btn" data-ticks="100">100 ticks (5s)</button>
+              <button class="preset-btn" data-ticks="200">200 ticks (10s)</button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ticksInput">Redstone Ticks</label>
+              <input type="number" id="ticksInput" class="form-input" value="1" min="0" max="100000" placeholder="1">
+            </div>
+
+            <div class="converter-grid" id="results">
+              <div class="value-card"><label>Game Ticks</label><div class="value-big" id="gameTicks">2</div><div class="value-unit">× 2 game ticks per redstone tick</div></div>
+              <div class="value-card"><label>Seconds</label><div class="value-big" id="seconds">0.1</div><div class="value-unit">seconds</div></div>
+              <div class="value-card"><label>Minutes</label><div class="value-big" id="minutes">0.0017</div><div class="value-unit">minutes</div></div>
+              <div class="value-card"><label>Repeaters Needed</label><div class="value-big" id="repeaters">1</div><div class="value-unit">at 4 ticks each</div></div>
+            </div>
+          </div>
+
+          <!-- Repeater Reference -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+              Redstone Component Delays
+            </div>
+
+            <div id="repeaterList"></div>
+
+            <div class="note-text">
+              <strong style="color:rgba(255,255,255,0.4);">Note:</strong> 1 redstone tick = 2 game ticks = 0.1 seconds. Redstone repeaters have 4 delay settings (1-4 ticks). Comparators have 1 tick delay in comparison mode and 2 ticks in subtraction mode.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is a redstone tick?', a: 'A redstone tick (RT) is the basic unit of redstone timing. 1 redstone tick = 2 game ticks = 0.1 seconds. Most redstone components operate on redstone ticks, not game ticks.' },
+    { q: 'How do repeaters work for delays?', a: 'A redstone repeater has 4 delay settings: 1 tick (0.1s), 2 ticks (0.2s), 3 ticks (0.3s), and 4 ticks (0.4s). To get longer delays, chain multiple repeaters together.' },
+    { q: 'What is the difference between redstone ticks and game ticks?', a: 'Game ticks are the server\'s internal timing (20 per second). Redstone ticks are half that (10 per second). Commands use game ticks, but redstone components use redstone ticks.' },
+    { q: 'How do I get exact second delays?', a: 'For 1 second delay: 10 redstone ticks (e.g., 3 repeaters at 4+4+2 ticks). For 5 seconds: 50 redstone ticks. The calculator shows you exactly how many repeaters you need.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var ticksInput = document.getElementById('ticksInput');
+    var gameTicks = document.getElementById('gameTicks');
+    var seconds = document.getElementById('seconds');
+    var minutes = document.getElementById('minutes');
+    var repeaters = document.getElementById('repeaters');
+    var presets = document.getElementById('presets');
+    var repeaterList = document.getElementById('repeaterList');
+
+    var COMPONENTS = [
+      { name: 'Redstone Wire', delay: 0, color: '#ff0000', icon: '⚡' },
+      { name: 'Redstone Torch', delay: 1, color: '#ff4444', icon: '🔴' },
+      { name: 'Redstone Repeater (1 tick)', delay: 1, color: '#cc0000', icon: '📥' },
+      { name: 'Redstone Repeater (2 ticks)', delay: 2, color: '#cc0000', icon: '📥' },
+      { name: 'Redstone Repeater (3 ticks)', delay: 3, color: '#cc0000', icon: '📥' },
+      { name: 'Redstone Repeater (4 ticks)', delay: 4, color: '#cc0000', icon: '📥' },
+      { name: 'Redstone Comparator (compare)', delay: 1, color: '#993333', icon: '🔀' },
+      { name: 'Redstone Comparator (subtract)', delay: 2, color: '#993333', icon: '🔀' },
+      { name: 'Observer', delay: 1, color: '#444', icon: '👁️' },
+      { name: 'Piston', delay: 1, color: '#8B6914', icon: '🟫' },
+      { name: 'Sticky Piston', delay: 1, color: '#5D8C2E', icon: '🟩' },
+      { name: 'Dropper', delay: 1, color: '#808080', icon: '📦' },
+      { name: 'Dispenser', delay: 1, color: '#808080', icon: '📦' },
+      { name: 'Hopper', delay: 4, color: '#444', icon: '📦' },
+      { name: 'Note Block', delay: 1, color: '#6B4226', icon: '🎵' },
+      { name: 'Bell', delay: 1, color: '#FFD700', icon: '🔔' },
+      { name: 'Campfire', delay: 0, color: '#FF6600', icon: '🔥' },
+      { name: 'Soul Campfire', delay: 0, color: '#0066FF', icon: '🔥' },
+    ];
+
+    function calculate() {
+      var rt = Math.max(0, parseInt(ticksInput.value) || 0);
+      var gt = rt * 2;
+      var sec = rt * 0.1;
+      var min = sec / 60;
+      var rep = Math.ceil(rt / 4);
+
+      gameTicks.textContent = gt.toLocaleString();
+      seconds.textContent = sec.toFixed(sec < 1 ? 2 : 1);
+      minutes.textContent = min < 0.01 ? min.toExponential(1) : min.toFixed(2);
+      repeaters.textContent = rep;
+    }
+
+    presets.addEventListener('click', function(e) {
+      var btn = e.target.closest('.preset-btn');
+      if (!btn) return;
+      ticksInput.value = btn.dataset.ticks;
+      calculate();
+    });
+
+    ticksInput.addEventListener('input', calculate);
+
+    function renderComponents() {
+      repeaterList.innerHTML = '';
+      COMPONENTS.forEach(function(comp) {
+        var row = document.createElement('div');
+        row.className = 'repeater-row';
+        row.innerHTML =
+          '<div class="repeater-icon" style="background:' + comp.color + '22;color:' + comp.color + ';">' + comp.icon + '</div>' +
+          '<div class="repeater-name">' + comp.name + '</div>' +
+          '<div style="text-align:right;">' +
+            '<div class="repeater-value">' + comp.delay + ' tick' + (comp.delay !== 1 ? 's' : '') + '</div>' +
+            '<div class="repeater-detail">' + (comp.delay * 0.1).toFixed(1) + ' seconds</div>' +
+          '</div>';
+        repeaterList.appendChild(row);
+      });
+    }
+
+    calculate();
+    renderComponents();
+  })();
+  </script>
+</body>
+</html>

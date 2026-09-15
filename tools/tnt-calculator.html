@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate Minecraft explosion damage and radius. TNT calculator for Bedrock and Java Edition.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>TNT Calculator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/tnt-calculator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/tnt-calculator">
+  <meta property="og:title" content="TNT Calculator - AntigleForge">
+  <meta property="og:description" content="Calculate Minecraft explosion damage and radius.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .result-card {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .result-value {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #00ddff;
+      line-height: 1;
+    }
+    .result-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 0.3rem;
+    }
+    .visual-bar {
+      height: 20px;
+      background: rgba(0,221,255,0.1);
+      border-radius: 4px;
+      margin-top: 0.75rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .visual-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ddff, #ff5555);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .visual-label {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+    }
+    .block-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .block-item {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    .block-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: #ccc;
+    }
+    .block-chance {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-top: 0.2rem;
+    }
+    .explosion-types {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .exp-type-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.4);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .exp-type-btn.active { background: rgba(255,85,85,0.12); border-color: rgba(255,85,85,0.3); color: #ff5555; }
+    .exp-type-btn:hover:not(.active) { color: rgba(255,255,255,0.6); }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">TNT Calculator</h1>
+          <p class="tool-subtitle">Calculate explosion damage, radius, and block destruction for Minecraft TNT.</p>
+        </div>
+
+        <div class="tool-container">
+          <!-- Config -->
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              Explosion Configuration
+            </div>
+
+            <div class="explosion-types" id="explosionTypes">
+              <button class="exp-type-btn active" data-type="tnt">TNT</button>
+              <button class="exp-type-btn" data-type="bed">Bed (Nether)</button>
+              <button class="exp-type-btn" data-type="respawn_anchor">Respawn Anchor (Overworld)</button>
+              <button class="exp-type-btn" data-type="end_crystal">End Crystal</button>
+              <button class="exp-type-btn" data-type="charged_creeper">Charged Creeper</button>
+              <button class="exp-type-btn" data-type="wither">Wither ( Explosion)</button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="tntCount">TNT Count (or explosion power multiplier)</label>
+              <input type="number" id="tntCount" class="form-input" value="1" min="1" max="10000" placeholder="1">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="blockResistance">Block Resistance Filter (optional)</label>
+              <input type="text" id="blockResistance" class="form-input" placeholder="e.g. minecraft:obsidian">
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              Explosion Results
+            </div>
+
+            <div class="result-grid" id="resultGrid"></div>
+
+            <p style="font-size:0.7rem;color:rgba(255,255,255,0.2);margin-top:1rem;text-align:center;">
+              Values are approximate. Actual destruction depends on block blast resistance, proximity, and game version.
+            </p>
+          </div>
+
+          <!-- Block Damage Reference -->
+          <div class="tool-card-main reveal stagger-3">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              Block Blast Resistance Reference
+            </div>
+
+            <div class="block-grid" id="blockGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is the TNT explosion radius?', a: 'A single TNT block has an explosion power of 4, which creates a radius of about 7 blocks. The explosion destroys blocks with blast resistance below 4 within close range, and weaker blocks further out.' },
+    { q: 'How does explosion power scale?', a: 'Explosion power scales with the number of TNT blocks. 1 TNT = power 4, 2 TNT = power ~5.7, 4 TNT = power ~8, etc. The formula is power = 4 × (count)^(1/3). Damage and radius increase with more TNT.' },
+    { q: 'What blocks resist explosions?', a: 'Obsidian (blast resistance 1200), bedrock (18000000), end portal frames (18000000), and enchanting tables (5) resist most explosions. Water and lava also absorb explosion damage.' },
+    { q: 'Do explosions work the same on Bedrock?', a: 'Mostly yes, but Bedrock Edition has slightly different explosion mechanics. Bedrock explosions are less likely to destroy blocks compared to Java, and the maximum explosion power is capped differently.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var tntCount = document.getElementById('tntCount');
+    var expTypes = document.getElementById('explosionTypes');
+    var resultGrid = document.getElementById('resultGrid');
+    var blockGrid = document.getElementById('blockGrid');
+
+    var EXPLOSION_DATA = {
+      tnt: { power: 4, name: 'TNT' },
+      bed: { power: 5, name: 'Bed (Nether)' },
+      respawn_anchor: { power: 5, name: 'Respawn Anchor (Overworld)' },
+      end_crystal: { power: 6, name: 'End Crystal' },
+      charged_creeper: { power: 6, name: 'Charged Creeper' },
+      wither: { power: 1, name: 'Wither (Block Break)' }
+    };
+
+    var BLOCK_RESISTANCE = [
+      { name: 'Dirt', resistance: 0.5, color: '#8B6914' },
+      { name: 'Grass', resistance: 0.6, color: '#5D8C2E' },
+      { name: 'Sand', resistance: 0.5, color: '#D4C48C' },
+      { name: 'Gravel', resistance: 0.6, color: '#88867D' },
+      { name: 'Wood Planks', resistance: 2, color: '#BC9862' },
+      { name: 'Cobblestone', resistance: 2, color: '#7F7F7F' },
+      { name: 'Stone', resistance: 1.5, color: '#808080' },
+      { name: 'Iron Ore', resistance: 3, color: '#8E8D8B' },
+      { name: 'Diamond Ore', resistance: 3, color: '#5DECF5' },
+      { name: 'Obsidian', resistance: 1200, color: '#1B0B3B' },
+      { name: 'Bedrock', resistance: 18000000, color: '#444' },
+      { name: 'Water', resistance: 100, color: '#3F76E4' },
+      { name: 'Lava', resistance: 100, color: '#CF5C16' },
+      { name: 'Glass', resistance: 0.3, color: '#C8E6FF' },
+      { name: 'Brick', resistance: 6, color: '#9B4F3A' },
+      { name: 'Netherrack', resistance: 0.4, color: '#6B2020' },
+      { name: 'End Stone', resistance: 3, color: '#DBD6A2' },
+      { name: 'Glowstone', resistance: 0.3, color: '#F7D87E' },
+    ];
+
+    var currentType = 'tnt';
+
+    expTypes.addEventListener('click', function(e) {
+      var btn = e.target.closest('.exp-type-btn');
+      if (!btn) return;
+      expTypes.querySelectorAll('.exp-type-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentType = btn.dataset.type;
+      calculate();
+    });
+
+    tntCount.addEventListener('input', calculate);
+
+    function calculate() {
+      var count = Math.max(1, parseInt(tntCount.value) || 1);
+      var basePower = EXPLOSION_DATA[currentType].power;
+      var totalPower = basePower * Math.pow(count, 1/3);
+      var radius = Math.floor(totalPower * 1.7);
+      var maxDamage = Math.floor(totalPower * 7);
+      var blocksDestroyed = Math.floor(Math.PI * radius * radius * 0.7);
+      var fireChance = Math.min(95, Math.floor(count * 5));
+      var knockback = Math.floor(totalPower * 2);
+
+      resultGrid.innerHTML =
+        '<div class="result-card"><div class="result-value">' + totalPower.toFixed(1) + '</div><div class="result-label">Total Power</div></div>' +
+        '<div class="result-card"><div class="result-value">' + radius + '</div><div class="result-label">Destruction Radius (blocks)</div></div>' +
+        '<div class="result-card"><div class="result-value">' + maxDamage + '</div><div class="result-label">Max Damage (hearts)</div></div>' +
+        '<div class="result-card"><div class="result-value">~' + blocksDestroyed.toLocaleString() + '</div><div class="result-label">Approx. Blocks Destroyed</div></div>' +
+        '<div class="result-card"><div class="result-value">' + fireChance + '%</div><div class="result-label">Fire Chance</div></div>' +
+        '<div class="result-card"><div class="result-value">' + knockback + '</div><div class="result-label">Knockback (blocks)</div></div>';
+    }
+
+    function renderBlockGrid() {
+      blockGrid.innerHTML = '';
+      BLOCK_RESISTANCE.forEach(function(block) {
+        var destroyed = block.resistance < 4;
+        var item = document.createElement('div');
+        item.className = 'block-item';
+        item.innerHTML =
+          '<div style="width:24px;height:24px;border-radius:4px;background:' + block.color + ';margin:0 auto 0.3rem;border:1px solid rgba(255,255,255,0.1);"></div>' +
+          '<div class="block-name">' + block.name + '</div>' +
+          '<div class="block-chance" style="color:' + (destroyed ? '#22c55e' : '#ff5555') + ';">' +
+            (destroyed ? 'Destroyed by 1 TNT' : 'Resists 1 TNT') +
+          '</div>' +
+          '<div style="font-size:0.6rem;color:rgba(255,255,255,0.2);">Resistance: ' + block.resistance + '</div>';
+        blockGrid.appendChild(item);
+      });
+    }
+
+    calculate();
+    renderBlockGrid();
+  })();
+  </script>
+</body>
+</html>

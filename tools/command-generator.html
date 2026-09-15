@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Minecraft Bedrock Command Builder - Build commands visually with all latest Bedrock Edition commands.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Command Generator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/command-generator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/command-generator">
+  <meta property="og:title" content="Command Generator - AntigleForge">
+  <meta property="og:description" content="Build Minecraft Bedrock commands visually.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Command Generator</h1>
+          <p class="tool-subtitle">Build Minecraft Bedrock Edition commands visually. Select a command, fill options, and copy.</p>
+        </div>
+
+        <div class="tool-container">
+
+          <!-- Command Selector -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"/>
+                <line x1="12" y1="19" x2="20" y2="19"/>
+              </svg>
+              Select Command
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Edition</label>
+              <select id="cmd-edition" class="form-select">
+                <option value="bedrock">Bedrock Edition</option>
+                <option value="java">Java Edition</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="cmd-category" class="form-select">
+                <option value="all">All Commands</option>
+                <option value="basic">Basic Commands</option>
+                <option value="teleport">Teleportation</option>
+                <option value="world">World & Environment</option>
+                <option value="player">Player & Game Mode</option>
+                <option value="items">Items & Inventory</option>
+                <option value="entities">Entities & Mobs</option>
+                <option value="building">Building & Blocks</option>
+                <option value="combat">Combat & Effects</option>
+                <option value="admin">Server & Admin</option>
+                <option value="communication">Communication</option>
+                <option value="advanced">Advanced & Technical</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Command</label>
+              <select id="cmd-select" class="form-select">
+                <!-- Commands populated by JS -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Command Builder -->
+          <div class="tool-card-main reveal stagger-3" id="cmd-builder" style="display:none;">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              <span id="cmd-builder-title">Build Command</span>
+            </div>
+            
+            <div id="cmd-options">
+              <!-- Dynamic options populated by JS -->
+            </div>
+          </div>
+
+          <!-- Output -->
+          <div class="tool-card-main reveal stagger-4" id="cmd-output-card" style="display:none;">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Generated Command
+            </div>
+            
+            <div class="output-display" id="cmd-output"></div>
+            
+            <div class="action-buttons">
+              <button class="btn btn-primary" id="cmd-copy">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy Command
+              </button>
+              <button class="btn btn-secondary" id="cmd-reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1 4 1 10 7 10"/>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'How do I use commands in Bedrock?', a: 'Open chat (T or D-pad right) and type the command. Most commands require cheats enabled. On servers, you need operator permissions.' },
+    { q: 'What are target selectors?', a: '<strong>@p</strong> - Nearest player | <strong>@a</strong> - All players | <strong>@r</strong> - Random player | <strong>@e</strong> - All entities | <strong>@s</strong> - Yourself | <strong>@initiator</strong> - NPC trigger (Bedrock only)' },
+    { q: 'What is the difference between Bedrock and Java commands?', a: 'Bedrock uses <code>true/false</code> instead of <code>0/1</code>, doesn\'t need <code>minecraft:</code> prefix, has exclusive commands like <code>/tickingarea</code>, <code>/camerashake</code>, <code>/music</code>.' },
+    { q: 'What Bedrock commands don\'t exist in Java?', a: '<code>/ability</code>, <code>/camerashake</code>, <code>/clearspawnpoint</code>, <code>/daylock</code>, <code>/dialogue</code>, <code>/event</code>, <code>/fog</code>, <code>/hud</code>, <code>/mobevent</code>, <code>/music</code>, <code>/playanimation</code>, <code>/ride</code>, <code>/structure</code>, <code>/tickingarea</code>, <code>/transfer</code>' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script src="../assets/js/tools/command-generator.js"></script>
+</body>
+</html>

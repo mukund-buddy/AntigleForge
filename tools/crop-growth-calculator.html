@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate crop growth times and bone meal usage for Minecraft farms.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Crop Growth Calculator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/crop-growth-calculator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/crop-growth-calculator">
+  <meta property="og:title" content="Crop Growth Calculator - AntigleForge">
+  <meta property="og:description" content="Calculate crop growth times and bone meal usage.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .crop-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 640px) { .crop-grid { grid-template-columns: 1fr; } }
+    
+    .crop-card {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .crop-card-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.75rem;
+    }
+    
+    .crop-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .crop-row:last-child { border-bottom: none; }
+    .crop-label {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+    }
+    .crop-value {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.8);
+    }
+    .crop-value.highlight { color: #22c55e; }
+    .crop-value.warn { color: #f59e0b; }
+    
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } }
+    
+    .result-box {
+      background: rgba(0,221,255,0.06);
+      border: 1px solid rgba(0,221,255,0.15);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .result-label {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.3rem;
+    }
+    .result-value {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #00ddff;
+    }
+    .result-sub {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 0.2rem;
+    }
+    
+    .growth-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .growth-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #00ddff);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+    
+    .tip-box {
+      background: rgba(167,139,250,0.06);
+      border: 1px solid rgba(167,139,250,0.15);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.5;
+    }
+    .tip-box strong { color: #a78bfa; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <div class="tool-badges">
+            <span class="badge badge-bedrock">Bedrock</span>
+            <span class="badge badge-java">Java</span>
+          </div>
+          <h1 class="tool-title">Crop Growth Calculator</h1>
+          <p class="tool-subtitle">Calculate growth times and bone meal usage for your farms.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Crop Growth Calculator
+            </div>
+            
+            <!-- Inputs -->
+            <div class="input-group">
+              <div>
+                <label class="input-label" for="cropType">Crop Type</label>
+                <select id="cropType" class="input-field">
+                  <option value="wheat">Wheat (8 stages)</option>
+                  <option value="carrot">Carrot (8 stages)</option>
+                  <option value="potato">Potato (8 stages)</option>
+                  <option value="beetroot">Beetroot (4 stages)</option>
+                  <option value="melon">Melon Stem (8 stages)</option>
+                  <option value="pumpkin">Pumpkin Stem (8 stages)</option>
+                </select>
+              </div>
+              <div>
+                <label class="input-label" for="edition">Edition</label>
+                <select id="edition" class="input-field">
+                  <option value="java">Java Edition</option>
+                  <option value="bedrock">Bedrock Edition</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <div>
+                <label class="input-label" for="hydration">Hydration</label>
+                <select id="hydration" class="input-field">
+                  <option value="hydrated">Hydrated (water nearby)</option>
+                  <option value="dry">Dry (no water)</option>
+                </select>
+              </div>
+              <div>
+                <label class="input-label" for="light">Light Level</label>
+                <select id="light" class="input-field">
+                  <option value="good">Good (9+ light)</option>
+                  <option value="low">Low (below 9)</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <div>
+                <label class="input-label" for="neighboring">Neighboring Farmland</label>
+                <select id="neighboring" class="input-field">
+                  <option value="8">Full surroundings (8 blocks)</option>
+                  <option value="6">Edge of field (6 blocks)</option>
+                  <option value="4">Corner of field (4 blocks)</option>
+                  <option value="2">Isolated (2 blocks)</option>
+                  <option value="0">Alone (0 blocks)</option>
+                </select>
+              </div>
+              <div>
+                <label class="input-label" for="boneMeal">Bone Meal Uses</label>
+                <input type="number" id="boneMeal" class="input-field" value="0" min="0" max="10">
+              </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="crop-grid">
+              <div class="crop-card">
+                <div class="crop-card-title">Growth Time</div>
+                <div class="crop-row">
+                  <span class="crop-label">Average time to mature</span>
+                  <span class="crop-value highlight" id="avgTime">--</span>
+                </div>
+                <div class="crop-row">
+                  <span class="crop-label">Best case (lucky)</span>
+                  <span class="crop-value" id="bestTime">--</span>
+                </div>
+                <div class="crop-row">
+                  <span class="crop-label">Worst case (unlucky)</span>
+                  <span class="crop-value warn" id="worstTime">--</span>
+                </div>
+                <div class="growth-bar">
+                  <div class="growth-fill" id="growthBar" style="width:0%"></div>
+                </div>
+              </div>
+              
+              <div class="crop-card">
+                <div class="crop-card-title">Bone Meal</div>
+                <div class="crop-row">
+                  <span class="crop-label">Stages remaining</span>
+                  <span class="crop-value" id="stagesLeft">--</span>
+                </div>
+                <div class="crop-row">
+                  <span class="crop-label">BM needed (avg)</span>
+                  <span class="crop-value highlight" id="bmNeeded">--</span>
+                </div>
+                <div class="crop-row">
+                  <span class="crop-label">BM per stack of crops</span>
+                  <span class="crop-value" id="bmPerStack">--</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Production Rate -->
+            <div class="result-box">
+              <div class="result-label">Estimated Production Rate</div>
+              <div class="result-value" id="prodRate">--</div>
+              <div class="result-sub" id="prodSub">crops per hour (harvest at maturity)</div>
+            </div>
+            
+            <div class="tip-box">
+              <strong>Tip:</strong> Plant crops in rows with empty farmland between them for fastest growth. Hydration and good lighting are essential. Bone meal advances 2-5 stages per use.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
+          <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+        </div>
+        <nav class="footer-nav">
+          <a href="../index.html" class="footer-link">Home</a>
+          <a href="../tools.html" class="footer-link">Tools</a>
+        </nav>
+        <div class="footer-social">
+          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-link">YouTube</a>
+          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-link">Instagram</a>
+          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        </div>
+      </div>
+      <p class="footer-text">Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  (function() {
+    // Growth probability per random tick based on surrounding farmland
+    // [hydrated, dry]
+    var GROWTH_PROB = {
+      8: [0.3333, 0.1429],
+      6: [0.3333, 0.1250],
+      4: [0.2500, 0.1111],
+      2: [0.2000, 0.0909],
+      0: [0.1429, 0.0769]
+    };
+    
+    // Random tick intervals (seconds per tick)
+    var TICK_INTERVAL = { java: 68.27, bedrock: 204.8 };
+    
+    // Crop stages
+    var CROP_STAGES = {
+      wheat: 8, carrot: 8, potato: 8,
+      beetroot: 4, melon: 8, pumpkin: 8
+    };
+    
+    // Base production rate (crops per hour at 100% growth probability)
+    var BASE_RATE = 6.591;
+    
+    function calculate() {
+      var crop = document.getElementById('cropType').value;
+      var edition = document.getElementById('edition').value;
+      var hydration = document.getElementById('hydration').value;
+      var light = document.getElementById('light').value;
+      var neighboring = parseInt(document.getElementById('neighboring').value);
+      var boneMeal = parseInt(document.getElementById('boneMeal').value) || 0;
+      
+      var stages = CROP_STAGES[crop];
+      var prob = GROWTH_PROB[neighboring][hydration === 'hydrated' ? 0 : 1];
+      
+      // Light penalty
+      if (light === 'low') prob *= 0.5;
+      
+      var tickInterval = TICK_INTERVAL[edition];
+      
+      // Average ticks to grow one stage
+      var avgTicksPerStage = 1 / prob;
+      
+      // Average time per stage in seconds
+      var avgSecondsPerStage = avgTicksPerStage * tickInterval;
+      
+      // Total growth time
+      var totalStages = stages;
+      var avgTotalSeconds = avgTotalSeconds = avgSecondsPerStage * totalStages;
+      
+      // Best case (lucky) - roughly 40% of average
+      var bestSeconds = avgTotalSeconds * 0.4;
+      
+      // Worst case (unlucky) - roughly 2.5x average
+      var worstSeconds = avgTotalSeconds * 2.5;
+      
+      // Apply bone meal (advances 2-5 stages, avg 3.5)
+      if (boneMeal > 0) {
+        var avgStagesPerBM = 3.5;
+        var stagesFromBM = Math.min(boneMeal * avgStagesPerBM, totalStages);
+        totalStages = Math.max(0, totalStages - stagesFromBM);
+        avgTotalSeconds = avgSecondsPerStage * totalStages;
+        bestSeconds = avgTotalSeconds * 0.4;
+        worstSeconds = avgTotalSeconds * 2.5;
+      }
+      
+      // Format time
+      function formatTime(seconds) {
+        if (seconds < 60) return Math.round(seconds) + 's';
+        var mins = Math.floor(seconds / 60);
+        var secs = Math.round(seconds % 60);
+        if (mins < 60) return mins + 'm ' + secs + 's';
+        var hours = Math.floor(mins / 60);
+        var remainMins = mins % 60;
+        return hours + 'h ' + remainMins + 'm';
+      }
+      
+      document.getElementById('avgTime').textContent = formatTime(avgTotalSeconds);
+      document.getElementById('bestTime').textContent = formatTime(bestSeconds);
+      document.getElementById('worstTime').textContent = formatTime(worstSeconds);
+      
+      // Growth bar (percentage of ideal time)
+      var idealTime = 31 * 60; // 31 minutes ideal
+      var percent = Math.min(100, Math.round((idealTime / Math.max(1, avgTotalSeconds)) * 100));
+      document.getElementById('growthBar').style.width = percent + '%';
+      
+      // Bone meal info
+      var stagesLeft = boneMeal > 0 ? Math.max(0, CROP_STAGES[crop] - Math.round(boneMeal * 3.5)) : CROP_STAGES[crop];
+      var bmNeeded = stagesLeft > 0 ? Math.ceil(stagesLeft / 3.5) : 0;
+      var bmPerStack = Math.ceil(64 / Math.max(1, bmNeeded)) || '--';
+      
+      document.getElementById('stagesLeft').textContent = stagesLeft + ' / ' + CROP_STAGES[crop];
+      document.getElementById('bmNeeded').textContent = bmNeeded > 0 ? bmNeeded + ' uses' : 'Ready to harvest!';
+      document.getElementById('bmPerStack').textContent = bmPerStack !== '--' ? bmPerStack + ' crops per stack' : 'N/A';
+      
+      // Production rate
+      var rate = (BASE_RATE * prob * (60 / tickInterval) * 60).toFixed(1);
+      document.getElementById('prodRate').textContent = rate + ' crops/hour';
+      document.getElementById('prodSub').textContent = 
+        'At ' + Math.round(prob * 100) + '% growth chance per tick (' + edition + ')';
+    }
+    
+    // Event listeners
+    ['cropType', 'edition', 'hydration', 'light', 'neighboring', 'boneMeal'].forEach(function(id) {
+      document.getElementById(id).addEventListener('input', calculate);
+      document.getElementById(id).addEventListener('change', calculate);
+    });
+    
+    calculate();
+  })();
+  </script>
+</body>
+</html>

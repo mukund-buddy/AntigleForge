@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Build Minecraft Bedrock text commands visually. Generate tellraw, title, and actionbar JSON with colors and formatting.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Tellraw Generator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/tellraw-generator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/tellraw-generator">
+  <meta property="og:title" content="Tellraw Generator - AntigleForge">
+  <meta property="og:description" content="Build Minecraft Bedrock text commands visually.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .text-segments { display: flex; flex-direction: column; gap: 0.5rem; }
+    .segment-row {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+    .segment-row input[type="text"] {
+      flex: 1;
+      min-width: 0;
+    }
+    .segment-color {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+    }
+    .segment-color::-webkit-color-swatch-wrapper { padding: 2px; }
+    .segment-color::-webkit-color-swatch { border: none; border-radius: 4px; }
+    .segment-remove {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+    }
+    .segment-remove:hover { color: #ff5555; background: rgba(255,85,85,0.15); }
+    .cmd-type-selector {
+      display: flex;
+      gap: 0.25rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .cmd-type-btn {
+      padding: 0.45rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: rgba(255,255,255,0.4);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .cmd-type-btn.active {
+      background: rgba(0,221,255,0.15);
+      color: #00ddff;
+    }
+    .cmd-type-btn:hover:not(.active) { color: rgba(255,255,255,0.6); }
+    .preview-text {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 50px;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .command-output {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-family: 'Inter', monospace;
+      font-size: 0.8rem;
+      color: #55ff55;
+      word-break: break-all;
+      line-height: 1.5;
+      position: relative;
+    }
+    .command-output pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .copy-cmd-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+    .formatting-bar {
+      display: flex;
+      gap: 0.3rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .fmt-btn {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .fmt-btn:hover { background: rgba(0,221,255,0.1); border-color: rgba(0,221,255,0.3); color: #00ddff; }
+    .fmt-btn.active { background: rgba(0,221,255,0.15); border-color: rgba(0,221,255,0.4); color: #00ddff; }
+    .fmt-separator { width: 1px; background: rgba(255,255,255,0.1); margin: 0 0.2rem; }
+    .quick-colors {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+    }
+    .qc {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .qc:hover { transform: scale(1.2); border-color: #fff; z-index: 1; }
+    .event-section {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .event-row {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .event-row label {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.35);
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .event-type-select {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 0.35rem 0.6rem;
+      color: #ccc;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+    }
+    .add-segment-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      padding: 0.6rem;
+      border: 2px dashed rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255,255,255,0.3);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .add-segment-btn:hover {
+      border-color: rgba(0,221,255,0.3);
+      color: #00ddff;
+      background: rgba(0,221,255,0.05);
+    }
+    .target-input {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .target-input label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Tellraw Generator</h1>
+          <p class="tool-subtitle">Build Minecraft Bedrock text commands visually. Add colors, formatting, click events, and more.</p>
+        </div>
+
+        <div class="tool-container">
+          <!-- Command Type -->
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+              </svg>
+              Command Type
+            </div>
+            <div class="cmd-type-selector" id="cmdTypeSelector">
+              <button class="cmd-type-btn active" data-type="tellraw">/tellraw</button>
+              <button class="cmd-type-btn" data-type="title">/title title</button>
+              <button class="cmd-type-btn" data-type="subtitle">/title subtitle</button>
+              <button class="cmd-type-btn" data-type="actionbar">/title actionbar</button>
+              <button class="cmd-type-btn" data-type="msg">/msg (private)</button>
+            </div>
+            <div class="target-input">
+              <label for="targetSelector">Target:</label>
+              <input type="text" id="targetSelector" class="form-input" value="@a" placeholder="@a, @p, @s, player_name" style="max-width:160px;">
+            </div>
+          </div>
+
+          <!-- Text Builder -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Text Builder
+            </div>
+
+            <!-- Formatting bar -->
+            <div class="formatting-bar" id="formattingBar">
+              <button class="fmt-btn" data-fmt="bold" title="Bold">B</button>
+              <button class="fmt-btn" data-fmt="italic" title="Italic" style="font-style:italic;">I</button>
+              <button class="fmt-btn" data-fmt="underline" title="Underline" style="text-decoration:underline;">U</button>
+              <button class="fmt-btn" data-fmt="strikethrough" title="Strikethrough" style="text-decoration:line-through;">S</button>
+              <button class="fmt-btn" data-fmt="obfuscated" title="Obfuscated" style="font-family:monospace;">?</button>
+              <div class="fmt-separator"></div>
+              <div class="quick-colors" id="quickColors"></div>
+            </div>
+
+            <!-- Segments -->
+            <div class="text-segments" id="textSegments"></div>
+            <button class="add-segment-btn" id="addSegmentBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Text Segment
+            </button>
+
+            <!-- Preview -->
+            <p class="section-label" style="margin-top:1rem;">Preview</p>
+            <div class="preview-text" id="previewText"></div>
+          </div>
+
+          <!-- Generated Command -->
+          <div class="tool-card-main reveal stagger-3">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Generated Command
+            </div>
+            <div class="command-output" id="commandOutput">
+              <pre id="commandText"></pre>
+              <button class="btn btn-primary copy-cmd-btn" id="copyCmdBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is /tellraw in Bedrock?', a: 'The /tellraw command sends a formatted text message to players. It uses JSON text format with rawtext arrays. Example: /tellraw @a {"rawtext":[{"text":"Hello!"}]}' },
+    { q: 'How do I color text in Bedrock?', a: 'Use the section symbol (§) followed by a color code in your text. For example: §c makes text red, §a makes it green, §b makes it aqua. These work in /tellraw, /title, and signs.' },
+    { q: 'What text commands work in Bedrock?', a: 'Bedrock supports /tellraw (chat message), /title title, /title subtitle, /title actionbar (on-screen text), and /msg (private message). All use the JSON rawtext format.' },
+    { q: 'Can I add click events?', a: 'Yes! You can add click_event to text segments. Options include: run_command (runs a command), suggest_command (puts text in chat), open_url (opens a link), and copy_to_clipboard (copies text).' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var CODES = {
+      '0': { name: 'Black',       hex: '#000000' },
+      '1': { name: 'Dark Blue',   hex: '#0000AA' },
+      '2': { name: 'Dark Green',  hex: '#00AA00' },
+      '3': { name: 'Dark Aqua',   hex: '#00AAAA' },
+      '4': { name: 'Dark Red',    hex: '#AA0000' },
+      '5': { name: 'Dark Purple', hex: '#AA00AA' },
+      '6': { name: 'Gold',        hex: '#FFAA00' },
+      '7': { name: 'Gray',        hex: '#AAAAAA' },
+      '8': { name: 'Dark Gray',   hex: '#555555' },
+      '9': { name: 'Blue',        hex: '#5555FF' },
+      'a': { name: 'Green',       hex: '#55FF55' },
+      'b': { name: 'Aqua',        hex: '#55FFFF' },
+      'c': { name: 'Red',         hex: '#FF5555' },
+      'd': { name: 'Light Purple',hex: '#FF55FF' },
+      'e': { name: 'Yellow',      hex: '#FFFF55' },
+      'f': { name: 'White',       hex: '#FFFFFF' }
+    };
+    var CODE_CHARS = Object.keys(CODES);
+    var CODE_HEX = {};
+    CODE_CHARS.forEach(function(c) { CODE_HEX[CODES[c].hex.toLowerCase()] = c; });
+
+    var segments = [];
+    var cmdType = 'tellraw';
+    var segmentsEl = document.getElementById('textSegments');
+    var previewEl = document.getElementById('previewText');
+    var cmdTextEl = document.getElementById('commandText');
+    var targetInput = document.getElementById('targetSelector');
+    var addBtn = document.getElementById('addSegmentBtn');
+    var copyBtn = document.getElementById('copyCmdBtn');
+    var cmdSelector = document.getElementById('cmdTypeSelector');
+    var fmtBar = document.getElementById('formattingBar');
+    var quickColors = document.getElementById('quickColors');
+
+    // Build quick color buttons
+    CODE_CHARS.forEach(function(c) {
+      var btn = document.createElement('button');
+      btn.className = 'qc';
+      btn.style.backgroundColor = CODES[c].hex;
+      btn.title = CODES[c].name + ' (§' + c + ')';
+      btn.dataset.code = c;
+      btn.addEventListener('click', function() { insertColorCode(c); });
+      quickColors.appendChild(btn);
+    });
+
+    function insertColorCode(code) {
+      if (segments.length === 0) addSegment();
+      var last = segments[segments.length - 1];
+      last.color = code;
+      renderSegments();
+      renderAll();
+    }
+
+    function addSegment() {
+      segments.push({ text: '', color: 'f', bold: false, italic: false, underline: false, strikethrough: false, obfuscated: false, clickEvent: null });
+      renderSegments();
+    }
+
+    function renderSegments() {
+      segmentsEl.innerHTML = '';
+      segments.forEach(function(seg, idx) {
+        var row = document.createElement('div');
+        row.className = 'segment-row';
+        row.innerHTML =
+          '<select class="event-type-select segment-color-select" data-idx="' + idx + '" title="Color">' +
+            CODE_CHARS.map(function(c) {
+              return '<option value="' + c + '"' + (seg.color === c ? ' selected' : '') + ' style="background:' + CODES[c].hex + ';">§' + c + ' ' + CODES[c].name + '</option>';
+            }).join('') +
+          '</select>' +
+          '<input type="text" class="form-input segment-text" data-idx="' + idx + '" placeholder="Text..." value="' + escHtml(seg.text) + '">' +
+          '<button class="segment-remove" data-idx="' + idx + '" title="Remove">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+          '</button>';
+        segmentsEl.appendChild(row);
+
+        // Event section
+        var evDiv = document.createElement('div');
+        evDiv.className = 'event-section';
+        evDiv.style.paddingLeft = '0.5rem';
+        var evHtml = '<label>Click Event: </label> ';
+        evHtml += '<select class="event-type-select seg-ev-type" data-idx="' + idx + '">';
+        evHtml += '<option value="none"' + (!seg.clickEvent ? ' selected' : '') + '>None</option>';
+        evHtml += '<option value="run_command"' + (seg.clickEvent && seg.clickEvent.action === 'run_command' ? ' selected' : '') + '>Run Command</option>';
+        evHtml += '<option value="suggest_command"' + (seg.clickEvent && seg.clickEvent.action === 'suggest_command' ? ' selected' : '') + '>Suggest Command</option>';
+        evHtml += '<option value="open_url"' + (seg.clickEvent && seg.clickEvent.action === 'open_url' ? ' selected' : '') + '>Open URL</option>';
+        evHtml += '<option value="copy_to_clipboard"' + (seg.clickEvent && seg.clickEvent.action === 'copy_to_clipboard' ? ' selected' : '') + '>Copy to Clipboard</option>';
+        evHtml += '</select>';
+        if (seg.clickEvent) {
+          evHtml += ' <input type="text" class="form-input seg-ev-value" data-idx="' + idx + '" placeholder="' + getEventPlaceholder(seg.clickEvent.action) + '" value="' + escHtml(seg.clickEvent.value || '') + '" style="margin-left:0.4rem;flex:1;min-width:120px;">';
+        }
+        evDiv.innerHTML = evHtml;
+        segmentsEl.appendChild(evDiv);
+      });
+
+      // Bind events
+      segmentsEl.querySelectorAll('.segment-text').forEach(function(el) {
+        el.addEventListener('input', function() {
+          segments[parseInt(el.dataset.idx)].text = el.value;
+          renderAll();
+        });
+      });
+      segmentsEl.querySelectorAll('.segment-color-select').forEach(function(el) {
+        el.addEventListener('change', function() {
+          segments[parseInt(el.dataset.idx)].color = el.value;
+          renderAll();
+        });
+      });
+      segmentsEl.querySelectorAll('.segment-remove').forEach(function(el) {
+        el.addEventListener('click', function() {
+          segments.splice(parseInt(el.dataset.idx), 1);
+          renderSegments();
+          renderAll();
+        });
+      });
+      segmentsEl.querySelectorAll('.seg-ev-type').forEach(function(el) {
+        el.addEventListener('change', function() {
+          var idx = parseInt(el.dataset.idx);
+          if (el.value === 'none') { segments[idx].clickEvent = null; }
+          else { segments[idx].clickEvent = { action: el.value, value: '' }; }
+          renderSegments();
+          renderAll();
+        });
+      });
+      segmentsEl.querySelectorAll('.seg-ev-value').forEach(function(el) {
+        el.addEventListener('input', function() {
+          var idx = parseInt(el.dataset.idx);
+          if (segments[idx].clickEvent) segments[idx].clickEvent.value = el.value;
+          renderAll();
+        });
+      });
+    }
+
+    function getEventPlaceholder(action) {
+      if (action === 'run_command') return '/say Hello';
+      if (action === 'suggest_command') return '/help';
+      if (action === 'open_url') return 'https://example.com';
+      if (action === 'copy_to_clipboard') return 'Text to copy';
+      return '';
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Formatting bar
+    fmtBar.querySelectorAll('.fmt-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var fmt = btn.dataset.fmt;
+        if (segments.length === 0) addSegment();
+        var last = segments[segments.length - 1];
+        last[fmt] = !last[fmt];
+        btn.classList.toggle('active', last[fmt]);
+        renderAll();
+      });
+    });
+
+    // Command type
+    cmdSelector.addEventListener('click', function(e) {
+      var btn = e.target.closest('.cmd-type-btn');
+      if (!btn) return;
+      cmdSelector.querySelectorAll('.cmd-type-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      cmdType = btn.dataset.type;
+      renderAll();
+    });
+
+    addBtn.addEventListener('click', function() { addSegment(); });
+
+    function renderPreview() {
+      var html = '';
+      segments.forEach(function(seg) {
+        var color = CODES[seg.color] ? CODES[seg.color].hex : '#FFFFFF';
+        var styles = 'color:' + color + ';';
+        if (seg.bold) styles += 'font-weight:bold;';
+        if (seg.italic) styles += 'font-style:italic;';
+        if (seg.underline) styles += 'text-decoration:underline;';
+        if (seg.strikethrough) styles += 'text-decoration:line-through;';
+        html += '<span style="' + styles + '">' + escHtml(seg.text || ' ') + '</span>';
+      });
+      previewEl.innerHTML = html || '<span style="color:rgba(255,255,255,0.2);">Add text segments above...</span>';
+    }
+
+    function buildJsonText() {
+      var rawtext = [];
+      segments.forEach(function(seg) {
+        var obj = { text: '' };
+        // Build colored text string with section codes
+        var prefix = '';
+        if (seg.color && seg.color !== 'f') prefix += '§' + seg.color;
+        if (seg.bold) prefix += '§l';
+        if (seg.italic) prefix += '§o';
+        if (seg.underline) prefix += '§n';
+        if (seg.strikethrough) prefix += '§m';
+        if (seg.obfuscated) prefix += '§k';
+        obj.text = prefix + (seg.text || '');
+        if (seg.clickEvent && seg.clickEvent.action && seg.clickEvent.value) {
+          obj.click_event = { action: seg.clickEvent.action, value: seg.clickEvent.value };
+        }
+        rawtext.push(obj);
+      });
+      return rawtext;
+    }
+
+    function renderCommand() {
+      var target = targetInput.value.trim() || '@a';
+      var rawtext = buildJsonText();
+      var json = JSON.stringify({ rawtext: rawtext });
+      var cmd = '';
+      if (cmdType === 'tellraw') {
+        cmd = '/tellraw ' + target + ' ' + json;
+      } else if (cmdType === 'title') {
+        cmd = '/title ' + target + ' title ' + json;
+      } else if (cmdType === 'subtitle') {
+        cmd = '/title ' + target + ' subtitle ' + json;
+      } else if (cmdType === 'actionbar') {
+        cmd = '/title ' + target + ' actionbar ' + json;
+      } else if (cmdType === 'msg') {
+        cmd = '/msg ' + target + ' ' + (segments.length > 0 ? segments.map(function(s) { return (CODES[s.color] ? '§' + s.color : '') + s.text; }).join('') : '');
+      }
+      cmdTextEl.textContent = cmd;
+    }
+
+    function renderAll() {
+      renderPreview();
+      renderCommand();
+    }
+
+    targetInput.addEventListener('input', renderAll);
+
+    copyBtn.addEventListener('click', function() {
+      var text = cmdTextEl.textContent;
+      if (!text) return;
+      fallbackCopy(text);
+    });
+
+    function fallbackCopy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showOK).catch(fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showOK(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+      function showOK() {
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = 'Copied!';
+        document.body.appendChild(t);
+        setTimeout(function() { t.classList.add('show'); }, 10);
+        setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 2000);
+      }
+    }
+
+    // Init with two default segments
+    addSegment();
+    segments[0].text = 'Hello ';
+    segments[0].color = 'f';
+    addSegment();
+    segments[1].text = 'World!';
+    segments[1].color = 'a';
+    renderSegments();
+    renderAll();
+  })();
+  </script>
+</body>
+</html>

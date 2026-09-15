@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Convert between Minecraft color codes, hex, and RGB values. Free online color converter for Bedrock and Java Edition.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Color Converter - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/color-converter">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/color-converter">
+  <meta property="og:title" content="Color Converter - AntigleForge">
+  <meta property="og:description" content="Convert between Minecraft color codes, hex, and RGB.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .converter-layout { display: grid; gap: 1.5rem; }
+    .input-section { }
+    .output-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .output-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 1rem;
+      transition: border-color 0.2s;
+    }
+    .output-card:hover { border-color: rgba(255,255,255,0.12); }
+    .output-label {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .output-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: #fff;
+      background: rgba(0,0,0,0.3);
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      word-break: break-all;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      min-height: 44px;
+    }
+    .output-value code {
+      flex: 1;
+      font-family: 'Inter', monospace;
+      font-size: 0.85rem;
+      color: #e0e0e0;
+      word-break: break-all;
+    }
+    .color-preview-bar {
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+      transition: background-color 0.15s;
+    }
+    .color-code-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .color-code-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      font-family: 'Inter', monospace;
+      font-size: 0.8rem;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .color-code-chip:hover {
+      background: rgba(0,221,255,0.1);
+      border-color: rgba(0,221,255,0.3);
+    }
+    .color-code-chip .chip-label {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+    }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+      gap: 6px;
+      margin-top: 1rem;
+    }
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .color-swatch:hover {
+      transform: scale(1.15);
+      border-color: #fff;
+      z-index: 1;
+    }
+    .color-swatch.active {
+      border-color: #fff;
+      box-shadow: 0 0 8px rgba(255,255,255,0.3);
+    }
+    .format-tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 3px;
+    }
+    .format-tab {
+      flex: 1;
+      padding: 0.5rem;
+      text-align: center;
+      border-radius: 6px;
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      cursor: pointer;
+      transition: all 0.15s;
+      background: transparent;
+      border: none;
+    }
+    .format-tab.active {
+      background: rgba(0,221,255,0.15);
+      color: #00ddff;
+    }
+    .format-tab:hover:not(.active) {
+      color: rgba(255,255,255,0.6);
+    }
+    .section-label {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .text-preview-box {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 60px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-top: 0.75rem;
+    }
+    .inline-color-block {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      vertical-align: middle;
+      margin-right: 2px;
+    }
+    .edition-note {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Color Converter</h1>
+          <p class="tool-subtitle">Convert between Minecraft color codes, hex, and RGB values. Works with both Java and Bedrock Edition.</p>
+        </div>
+
+        <div class="tool-container">
+          <!-- Input Card -->
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="13.5" cy="6.5" r="2.5"/>
+                <circle cx="17.5" cy="10.5" r="2.5"/>
+                <circle cx="8.5" cy="7.5" r="2.5"/>
+                <circle cx="6.5" cy="12.5" r="2.5"/>
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+              </svg>
+              Color Input
+            </div>
+
+            <div class="converter-layout">
+              <!-- Input mode tabs -->
+              <div class="format-tabs" id="inputTabs">
+                <button class="format-tab active" data-format="hex">Hex</button>
+                <button class="format-tab" data-format="rgb">RGB</button>
+                <button class="format-tab" data-format="section">Section Code</button>
+              </div>
+
+              <!-- Hex input -->
+              <div class="input-group" id="hexInput">
+                <label class="form-label" for="hexValue">Hex Color</label>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                  <input type="text" id="hexValue" class="form-input" placeholder="#FF5555" maxlength="7" style="flex:1;">
+                  <input type="color" id="colorPicker" style="width:44px;height:44px;border:none;background:none;cursor:pointer;" title="Pick a color">
+                </div>
+              </div>
+
+              <!-- RGB input -->
+              <div class="input-group" id="rgbInput" style="display:none;">
+                <label class="form-label">RGB Values</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+                  <div>
+                    <label class="form-label" style="font-size:0.7rem;color:rgba(255,255,255,0.3);">R</label>
+                    <input type="number" id="rValue" class="form-input" min="0" max="255" value="255" placeholder="0-255">
+                  </div>
+                  <div>
+                    <label class="form-label" style="font-size:0.7rem;color:rgba(255,255,255,0.3);">G</label>
+                    <input type="number" id="gValue" class="form-input" min="0" max="255" value="85" placeholder="0-255">
+                  </div>
+                  <div>
+                    <label class="form-label" style="font-size:0.7rem;color:rgba(255,255,255,0.3);">B</label>
+                    <input type="number" id="bValue" class="form-input" min="0" max="255" value="85" placeholder="0-255">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section code input -->
+              <div class="input-group" id="sectionInput" style="display:none;">
+                <label class="form-label" for="sectionCode">Section Code Character</label>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                  <input type="text" id="sectionCode" class="form-input" placeholder="§c" maxlength="2" style="flex:1;">
+                  <span style="color:rgba(255,255,255,0.3);font-size:0.8rem;">or just the code: <code style="color:#ff5555;">c</code></span>
+                </div>
+              </div>
+
+              <!-- Color preview -->
+              <div class="color-preview-bar" id="colorPreview" style="background:#FF5555;"></div>
+
+              <!-- Output chips -->
+              <div class="color-code-row" id="outputChips">
+                <div class="color-code-chip" data-copy="section" title="Click to copy">
+                  <span class="chip-label">Section</span>
+                  <code id="outSection">§c</code>
+                </div>
+                <div class="color-code-chip" data-copy="hex" title="Click to copy">
+                  <span class="chip-label">Hex</span>
+                  <code id="outHex">#FF5555</code>
+                </div>
+                <div class="color-code-chip" data-copy="rgb" title="Click to copy">
+                  <span class="chip-label">RGB</span>
+                  <code id="outRgb">255, 85, 85</code>
+                </div>
+                <div class="color-code-chip" data-copy="name" title="Click to copy">
+                  <span class="chip-label">Name</span>
+                  <code id="outName">Red</code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Minecraft Color Palette -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              Minecraft Color Palette
+            </div>
+            <p class="section-label">Click a swatch to select it</p>
+            <div class="color-grid" id="colorPalette"></div>
+          </div>
+
+          <!-- Text Preview -->
+          <div class="tool-card-main reveal stagger-3">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+              Colored Text Preview
+            </div>
+            <div class="form-group">
+              <input type="text" id="previewText" class="form-input" placeholder="Type text with color codes (e.g. §cRed §aGreen §bCyan)" value="§cHello §aWorld §bAntigleForge">
+            </div>
+            <div class="text-preview-box" id="textPreview"></div>
+            <p class="edition-note">Use § followed by a color code character. Codes: 0-9, a-f (e.g. §c = Red, §a = Green)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What are Minecraft color codes?', a: 'Color codes use the section symbol (§) followed by a character to color text in Minecraft. §c makes text red, §a makes it green, etc. They work in signs, books, chat, and commands on both Java and Bedrock editions.' },
+    { q: 'What is a hex color code?', a: 'Hex codes are 6-digit values like #FF5555 that represent colors using Red, Green, and Blue channels. Minecraft Bedrock Edition supports hex colors in some text components using the "color" field.' },
+    { q: 'How do I use these codes in Bedrock?', a: 'In Bedrock Edition, use the section code (§c) in signs, book & quills, and name tags. For /tellraw commands, use the JSON text format with "color": "red" or "color": "#FF5555".' },
+    { q: 'What does the Name field show?', a: 'The Name field shows the human-readable Minecraft color name (like "Red", "Green", "Gold") that corresponds to the nearest color code. This is useful for /tellraw JSON text components.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    // Minecraft color code map
+    var CODES = {
+      '0': { name: 'Black',       hex: '#000000' },
+      '1': { name: 'Dark Blue',   hex: '#0000AA' },
+      '2': { name: 'Dark Green',  hex: '#00AA00' },
+      '3': { name: 'Dark Aqua',   hex: '#00AAAA' },
+      '4': { name: 'Dark Red',    hex: '#AA0000' },
+      '5': { name: 'Dark Purple', hex: '#AA00AA' },
+      '6': { name: 'Gold',        hex: '#FFAA00' },
+      '7': { name: 'Gray',        hex: '#AAAAAA' },
+      '8': { name: 'Dark Gray',   hex: '#555555' },
+      '9': { name: 'Blue',        hex: '#5555FF' },
+      'a': { name: 'Green',       hex: '#55FF55' },
+      'b': { name: 'Aqua',        hex: '#55FFFF' },
+      'c': { name: 'Red',         hex: '#FF5555' },
+      'd': { name: 'Light Purple',hex: '#FF55FF' },
+      'e': { name: 'Yellow',      hex: '#FFFF55' },
+      'f': { name: 'White',       hex: '#FFFFFF' }
+    };
+    var CODE_CHARS = Object.keys(CODES);
+
+    // Reverse lookup: hex to nearest code
+    var CODE_BY_HEX = {};
+    CODE_CHARS.forEach(function(c) { CODE_BY_HEX[CODES[c].hex.toLowerCase()] = c; });
+
+    // DOM refs
+    var hexInput = document.getElementById('hexValue');
+    var colorPicker = document.getElementById('colorPicker');
+    var rInput = document.getElementById('rValue');
+    var gInput = document.getElementById('gValue');
+    var bInput = document.getElementById('bValue');
+    var sectionInput = document.getElementById('sectionCode');
+    var previewBar = document.getElementById('colorPreview');
+    var outSection = document.getElementById('outSection');
+    var outHex = document.getElementById('outHex');
+    var outRgb = document.getElementById('outRgb');
+    var outName = document.getElementById('outName');
+    var paletteGrid = document.getElementById('colorPalette');
+    var previewText = document.getElementById('previewText');
+    var textPreview = document.getElementById('textPreview');
+    var tabs = document.getElementById('inputTabs');
+    var hexGroup = document.getElementById('hexInput');
+    var rgbGroup = document.getElementById('rgbInput');
+    var sectionGroup = document.getElementById('sectionInput');
+
+    var currentHex = '#FF5555';
+    var currentFormat = 'hex';
+
+    // Hex to RGB
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      if (hex.length !== 6) return null;
+      var n = parseInt(hex, 16);
+      if (isNaN(n)) return null;
+      return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+    }
+
+    // RGB to hex
+    function rgbToHex(r, g, b) {
+      return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    }
+
+    // Find nearest section code for a hex
+    function nearestCode(hex) {
+      var direct = CODE_BY_HEX[hex.toLowerCase()];
+      if (direct) return direct;
+      var rgb = hexToRgb(hex);
+      if (!rgb) return 'f';
+      var best = 'f', bestDist = Infinity;
+      CODE_CHARS.forEach(function(c) {
+        var ref = hexToRgb(CODES[c].hex);
+        var d = Math.pow(rgb.r - ref.r, 2) + Math.pow(rgb.g - ref.g, 2) + Math.pow(rgb.b - ref.b, 2);
+        if (d < bestDist) { bestDist = d; best = c; }
+      });
+      return best;
+    }
+
+    // Find nearest color name
+    function nearestName(hex) {
+      var code = nearestCode(hex);
+      return CODES[code].name;
+    }
+
+    // Parse section code string
+    function parseSectionInput(str) {
+      str = str.replace(/^§/, '').trim().toLowerCase();
+      if (CODES[str]) return CODES[str].hex;
+      return null;
+    }
+
+    // Update all outputs from currentHex
+    function updateOutputs() {
+      var rgb = hexToRgb(currentHex);
+      if (!rgb) return;
+      var code = nearestCode(currentHex);
+      previewBar.style.backgroundColor = currentHex;
+      colorPicker.value = currentHex;
+      outSection.textContent = '§' + code;
+      outHex.textContent = currentHex.toUpperCase();
+      outRgb.textContent = rgb.r + ', ' + rgb.g + ', ' + rgb.b;
+      outName.textContent = nearestName(currentHex);
+      if (currentFormat === 'hex') hexInput.value = currentHex;
+      if (currentFormat === 'rgb') {
+        rInput.value = rgb.r;
+        gInput.value = rgb.g;
+        bInput.value = rgb.b;
+      }
+      if (currentFormat === 'section') sectionInput.value = '§' + code;
+    }
+
+    // Set color from hex
+    function setColor(hex) {
+      hex = hex.replace(/^#/, '#');
+      if (!/^#[0-9a-fA-F]{6}$/.test(hex) && !/^#[0-9a-fA-F]{3}$/.test(hex)) return;
+      if (hex.length === 4) hex = '#' + hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3];
+      currentHex = hex.toUpperCase();
+      updateOutputs();
+    }
+
+    // Set color from RGB
+    function setColorFromRgb() {
+      var r = Math.min(255, Math.max(0, parseInt(rInput.value) || 0));
+      var g = Math.min(255, Math.max(0, parseInt(gInput.value) || 0));
+      var b = Math.min(255, Math.max(0, parseInt(bInput.value) || 0));
+      currentHex = rgbToHex(r, g, b);
+      updateOutputs();
+    }
+
+    // Tab switching
+    tabs.addEventListener('click', function(e) {
+      var tab = e.target.closest('.format-tab');
+      if (!tab) return;
+      tabs.querySelectorAll('.format-tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      currentFormat = tab.dataset.format;
+      hexGroup.style.display = currentFormat === 'hex' ? '' : 'none';
+      rgbGroup.style.display = currentFormat === 'rgb' ? '' : 'none';
+      sectionGroup.style.display = currentFormat === 'section' ? '' : 'none';
+      updateOutputs();
+    });
+
+    // Hex input
+    hexInput.addEventListener('input', function() {
+      var v = hexInput.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) setColor(v);
+    });
+    hexInput.addEventListener('blur', function() {
+      var v = hexInput.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) setColor(v);
+    });
+
+    // Color picker
+    colorPicker.addEventListener('input', function() { setColor(colorPicker.value); });
+
+    // RGB inputs
+    [rInput, gInput, bInput].forEach(function(el) {
+      el.addEventListener('input', setColorFromRgb);
+    });
+
+    // Section code input
+    sectionInput.addEventListener('input', function() {
+      var v = sectionInput.value.trim();
+      var hex = parseSectionInput(v);
+      if (hex) { currentHex = hex; updateOutputs(); }
+    });
+
+    // Build palette
+    function buildPalette() {
+      paletteGrid.innerHTML = '';
+      CODE_CHARS.forEach(function(c) {
+        var info = CODES[c];
+        var swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.backgroundColor = info.hex;
+        swatch.title = info.name + ' (§' + c + ')';
+        swatch.dataset.hex = info.hex;
+        swatch.dataset.code = c;
+        swatch.addEventListener('click', function() {
+          currentHex = info.hex;
+          updateOutputs();
+          paletteGrid.querySelectorAll('.color-swatch').forEach(function(s) { s.classList.remove('active'); });
+          swatch.classList.add('active');
+        });
+        paletteGrid.appendChild(swatch);
+      });
+    }
+
+    // Copy on chip click
+    document.querySelectorAll('.color-code-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        var type = chip.dataset.copy;
+        var text = '';
+        if (type === 'section') text = outSection.textContent;
+        else if (type === 'hex') text = outHex.textContent;
+        else if (type === 'rgb') text = outRgb.textContent;
+        else if (type === 'name') text = outName.textContent;
+        if (text) fallbackCopy(text);
+      });
+    });
+
+    // Render preview text with colors
+    function renderPreview() {
+      var raw = previewText.value;
+      var html = '';
+      var i = 0;
+      var activeColor = '#FFFFFF';
+      while (i < raw.length) {
+        if (raw[i] === '§' && i + 1 < raw.length) {
+          var codeChar = raw[i + 1].toLowerCase();
+          if (CODES[codeChar]) {
+            activeColor = CODES[codeChar].hex;
+            i += 2;
+            continue;
+          }
+        }
+        var ch = raw[i];
+        if (ch === '<') ch = '&lt;';
+        else if (ch === '>') ch = '&gt;';
+        else if (ch === '&') ch = '&amp;';
+        html += '<span style="color:' + activeColor + ';">' + ch + '</span>';
+        i++;
+      }
+      textPreview.innerHTML = html || '<span style="color:rgba(255,255,255,0.2);">Type text above...</span>';
+    }
+
+    previewText.addEventListener('input', renderPreview);
+
+    function fallbackCopy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showOK).catch(fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showOK(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+      function showOK() {
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = 'Copied!';
+        document.body.appendChild(t);
+        setTimeout(function() { t.classList.add('show'); }, 10);
+        setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 2000);
+      }
+    }
+
+    // Init
+    buildPalette();
+    updateOutputs();
+    renderPreview();
+  })();
+  </script>
+</body>
+</html>

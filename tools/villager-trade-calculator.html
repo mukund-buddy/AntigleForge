@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate villager trade prices with cure discounts and Hero of the Village effects for Minecraft.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Villager Trade Calculator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/villager-trade-calculator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/villager-trade-calculator">
+  <meta property="og:title" content="Villager Trade Calculator - AntigleForge">
+  <meta property="og:description" content="Calculate villager trade prices with cure discounts and Hero of the Village.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .trade-section { margin-bottom: 1.5rem; }
+    .trade-section-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.75rem;
+    }
+    
+    .trade-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 600px) { .trade-grid { grid-template-columns: 1fr; } }
+    
+    .trade-card {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .trade-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .trade-card-name {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.8);
+    }
+    .trade-card-type {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 400;
+    }
+    .trade-card-type.buying {
+      background: rgba(34,197,94,0.15);
+      color: #22c55e;
+    }
+    .trade-card-type.selling {
+      background: rgba(0,221,255,0.15);
+      color: #00ddff;
+    }
+    
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .price-row:last-child { border-bottom: none; }
+    .price-label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .price-value {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.8);
+    }
+    .price-value.final {
+      color: #a78bfa;
+      font-size: 1.1rem;
+    }
+    .price-value.discount {
+      color: #22c55e;
+    }
+    
+    .emerald-icon {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: #22c55e;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      margin-right: 0.3rem;
+      vertical-align: middle;
+    }
+    
+    .discount-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .discount-btn {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.45);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .discount-btn:hover { border-color: rgba(167,139,250,0.25); color: rgba(255,255,255,0.7); }
+    .discount-btn.active { background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.3); color: #a78bfa; }
+    
+    .savings-box {
+      background: rgba(34,197,94,0.06);
+      border: 1px solid rgba(34,197,94,0.15);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .savings-label {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.3rem;
+    }
+    .savings-value {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: #22c55e;
+    }
+    
+    .tip-box {
+      background: rgba(0,221,255,0.06);
+      border: 1px solid rgba(0,221,255,0.15);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.5;
+    }
+    .tip-box strong { color: #00ddff; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <div class="tool-badges">
+            <span class="badge badge-bedrock">Bedrock</span>
+            <span class="badge badge-java">Java</span>
+          </div>
+          <h1 class="tool-title">Villager Trade Calculator</h1>
+          <p class="tool-subtitle">Calculate trade prices with cure discounts and Hero of the Village effects.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              Villager Trade Calculator
+            </div>
+            
+            <!-- Discount Toggles -->
+            <div class="trade-section">
+              <div class="trade-section-title">Discounts Applied</div>
+              <div class="discount-toggle">
+                <button class="discount-btn active" data-discount="none">No Discount</button>
+                <button class="discount-btn" data-discount="cure">1x Cure</button>
+                <button class="discount-btn" data-discount="hotv1">HOTV I</button>
+                <button class="discount-btn" data-discount="hotv5">HOTV V</button>
+                <button class="discount-btn" data-discount="cure+hotv5">Cure + HOTV V</button>
+              </div>
+            </div>
+            
+            <!-- Trades Display -->
+            <div id="tradesContainer">
+              <!-- Librarian Trades -->
+              <div class="trade-section">
+                <div class="trade-section-title">Librarian (Enchanted Books)</div>
+                <div class="trade-grid" id="librarianTrades"></div>
+              </div>
+              
+              <!-- Farmer Trades -->
+              <div class="trade-section">
+                <div class="trade-section-title">Farmer (Crops)</div>
+                <div class="trade-grid" id="farmerTrades"></div>
+              </div>
+              
+              <!-- Armorer Trades -->
+              <div class="trade-section">
+                <div class="trade-section-title">Armorer (Armor)</div>
+                <div class="trade-grid" id="armorerTrades"></div>
+              </div>
+              
+              <!-- Toolsmith Trades -->
+              <div class="trade-section">
+                <div class="trade-section-title">Toolsmith (Tools)</div>
+                <div class="trade-grid" id="toolsmithTrades"></div>
+              </div>
+              
+              <!-- Weaponsmith Trades -->
+              <div class="trade-section">
+                <div class="trade-section-title">Weaponsmith (Weapons)</div>
+                <div class="trade-grid" id="weaponsmithTrades"></div>
+              </div>
+            </div>
+            
+            <!-- Savings Summary -->
+            <div class="savings-box">
+              <div class="savings-label">Total Savings (per set of trades)</div>
+              <div class="savings-value" id="totalSavings">0 emeralds</div>
+            </div>
+            
+            <!-- Tips -->
+            <div class="tip-box">
+              <strong>Tip:</strong> Curing a zombie villager gives both Direct (-5/-20) and AOE (-1/-5) discounts permanently. Hero of the Village lasts 40 minutes and gives -30% to -55% off. Stack both for maximum savings!
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
+          <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+        </div>
+        <nav class="footer-nav">
+          <a href="../index.html" class="footer-link">Home</a>
+          <a href="../tools.html" class="footer-link">Tools</a>
+        </nav>
+        <div class="footer-social">
+          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-link">YouTube</a>
+          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-link">Instagram</a>
+          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        </div>
+      </div>
+      <p class="footer-text">Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  (function() {
+    // Trade data: [name, basePrice, type, weight]
+    // weight: 'normal' = non-weighted, 'weighted' = weighted trade
+    // type: 'sell' = villager sells to you, 'buy' = villager buys from you
+    var TRADES = {
+      librarian: [
+        { name: 'Mending Book', price: 30, type: 'sell', weight: 'weighted' },
+        { name: 'Sharpness V Book', price: 19, type: 'sell', weight: 'weighted' },
+        { name: 'Protection IV Book', price: 15, type: 'sell', weight: 'weighted' },
+        { name: 'Efficiency V Book', price: 19, type: 'sell', weight: 'weighted' },
+        { name: 'Unbreaking III Book', price: 12, type: 'sell', weight: 'weighted' },
+        { name: 'Paper (24)', price: 1, type: 'buy', weight: 'normal' }
+      ],
+      farmer: [
+        { name: 'Carrot (20)', price: 1, type: 'buy', weight: 'normal' },
+        { name: 'Potato (30)', price: 1, type: 'buy', weight: 'normal' },
+        { name: 'Wheat (20)', price: 1, type: 'buy', weight: 'normal' },
+        { name: 'Beetroot (15)', price: 1, type: 'buy', weight: 'normal' },
+        { name: 'Pumpkin (6)', price: 1, type: 'buy', weight: 'normal' },
+        { name: 'Melon Slice (4)', price: 1, type: 'buy', weight: 'normal' }
+      ],
+      armorer: [
+        { name: 'Diamond Helmet', price: 13, type: 'sell', weight: 'weighted' },
+        { name: 'Diamond Chestplate', price: 16, type: 'sell', weight: 'weighted' },
+        { name: 'Diamond Leggings', price: 15, type: 'sell', weight: 'weighted' },
+        { name: 'Diamond Boots', price: 13, type: 'sell', weight: 'weighted' },
+        { name: 'Iron Helmet', price: 5, type: 'sell', weight: 'normal' },
+        { name: 'Iron Chestplate', price: 9, type: 'sell', weight: 'normal' }
+      ],
+      toolsmith: [
+        { name: 'Diamond Pickaxe', price: 13, type: 'sell', weight: 'weighted' },
+        { name: 'Diamond Axe', price: 12, type: 'sell', weight: 'weighted' },
+        { name: 'Diamond Shovel', price: 5, type: 'sell', weight: 'weighted' },
+        { name: 'Iron Pickaxe', price: 5, type: 'sell', weight: 'normal' },
+        { name: 'Iron Axe', price: 4, type: 'sell', weight: 'normal' },
+        { name: 'Iron Shovel', price: 2, type: 'sell', weight: 'normal' }
+      ],
+      weaponsmith: [
+        { name: 'Diamond Sword', price: 12, type: 'sell', weight: 'weighted' },
+        { name: 'Diamond Axe', price: 12, type: 'sell', weight: 'weighted' },
+        { name: 'Iron Sword', price: 4, type: 'sell', weight: 'normal' },
+        { name: 'Iron Axe', price: 4, type: 'sell', weight: 'normal' },
+        { name: 'Enchanted Iron Sword', price: 8, type: 'sell', weight: 'weighted' },
+        { name: 'Flint (30)', price: 1, type: 'buy', weight: 'normal' }
+      ]
+    };
+    
+    // Discount multipliers
+    var DISCOUNTS = {
+      none: { hotv: 0, cureNormal: 0, cureWeighted: 0 },
+      cure: { hotv: 0, cureNormal: 6, cureWeighted: 25 },
+      hotv1: { hotv: 0.30, cureNormal: 0, cureWeighted: 0 },
+      hotv5: { hotv: 0.55, cureNormal: 0, cureWeighted: 0 },
+      'cure+hotv5': { hotv: 0.55, cureNormal: 6, cureWeighted: 25 }
+    };
+    
+    var activeDiscount = 'none';
+    
+    function calculatePrice(basePrice, weight, discount) {
+      var d = DISCOUNTS[discount];
+      var cureReduction = weight === 'weighted' ? d.cureWeighted : d.cureNormal;
+      var hotvReduction = Math.floor(basePrice * d.hotv);
+      var finalPrice = basePrice - cureReduction - hotvReduction;
+      return Math.max(1, Math.min(finalPrice, basePrice));
+    }
+    
+    function renderTrades() {
+      var container = document.getElementById('tradesContainer');
+      var totalOriginal = 0;
+      var totalDiscounted = 0;
+      
+      Object.keys(TRADES).forEach(function(profession) {
+        var trades = TRADES[profession];
+        var grid = document.getElementById(profession + 'Trades');
+        if (!grid) return;
+        
+        grid.innerHTML = '';
+        
+        trades.forEach(function(trade) {
+          var finalPrice = calculatePrice(trade.price, trade.weight, activeDiscount);
+          var savings = trade.price - finalPrice;
+          totalOriginal += trade.price;
+          totalDiscounted += finalPrice;
+          
+          var card = document.createElement('div');
+          card.className = 'trade-card';
+          card.innerHTML = 
+            '<div class="trade-card-header">' +
+              '<span class="trade-card-name">' + trade.name + '</span>' +
+              '<span class="trade-card-type ' + (trade.type === 'sell' ? 'selling' : 'buying') + '">' + 
+                (trade.type === 'sell' ? 'Sells' : 'Buys') + 
+              '</span>' +
+            '</div>' +
+            '<div class="price-row">' +
+              '<span class="price-label">Base Price</span>' +
+              '<span class="price-value">' + trade.price + ' <span class="emerald-icon"></span></span>' +
+            '</div>' +
+            (savings > 0 ? 
+              '<div class="price-row">' +
+                '<span class="price-label">Discount</span>' +
+                '<span class="price-value discount">-' + savings + ' <span class="emerald-icon"></span></span>' +
+              '</div>' : '') +
+            '<div class="price-row">' +
+              '<span class="price-label">Final Price</span>' +
+              '<span class="price-value final">' + finalPrice + ' <span class="emerald-icon"></span></span>' +
+            '</div>';
+          
+          grid.appendChild(card);
+        });
+      });
+      
+      var totalSaved = totalOriginal - totalDiscounted;
+      document.getElementById('totalSavings').textContent = 
+        totalSaved > 0 ? totalSaved + ' emeralds saved' : 'No savings (no discount applied)';
+    }
+    
+    // Discount button handlers
+    document.querySelectorAll('.discount-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.discount-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeDiscount = btn.dataset.discount;
+        renderTrades();
+      });
+    });
+    
+    // Initial render
+    renderTrades();
+  })();
+  </script>
+</body>
+</html>

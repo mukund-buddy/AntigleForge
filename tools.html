@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AntigleForge - Free Minecraft tools for players and developers.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Tools - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools">
+  <meta property="og:title" content="Tools - AntigleForge">
+  <meta property="og:description" content="Free Minecraft tools for players and developers.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    /* Navbar search */
+    .navbar-search {
+      position: relative;
+      flex: 0 1 260px;
+      margin-left: 1rem;
+    }
+    .navbar-search .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.25);
+      pointer-events: none;
+    }
+    .navbar-search .search-input {
+      width: 100%;
+      padding: 0.45rem 2rem 0.45rem 2.2rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .navbar-search .search-input::placeholder { color: rgba(255,255,255,0.2); }
+    .navbar-search .search-input:focus {
+      border-color: rgba(0,221,255,0.35);
+      background: rgba(255,255,255,0.06);
+      box-shadow: 0 0 0 2px rgba(0,221,255,0.06);
+    }
+    .navbar-search .search-clear {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.08);
+      border: none;
+      color: rgba(255,255,255,0.3);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.12s;
+    }
+    .navbar-search .search-clear:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .navbar-search .search-clear.show { display: flex; }
+    /* Content area */
+    .tool-count {
+      text-align: center;
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 1rem;
+    }
+    .tool-count span { color: #00ddff; }
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: rgba(255,255,255,0.25);
+      display: none;
+    }
+    .no-results.show { display: block; }
+    .no-results svg { margin-bottom: 0.75rem; opacity: 0.3; }
+    .no-results p { font-size: 0.9rem; }
+    .tool-card.hide { display: none !important; }
+    /* Mobile: search drops below nav */
+    @media (max-width: 640px) {
+      .navbar-search {
+        position: static;
+        flex: none;
+        width: 100%;
+        margin: 0;
+        padding: 0.5rem 1rem 0.75rem;
+        background: rgba(0,0,0,0.3);
+      }
+    }
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .filter-btn {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 400;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+    }
+    .filter-btn.active {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: rgba(6, 182, 212, 0.3);
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Performance Mode Indicator -->
+  <div class="perf-indicator" id="perfIndicator">
+    <span class="perf-icon">⚡</span>
+    <span class="perf-text">Performance Mode</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="./tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <div class="navbar-search" id="navbarSearch">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="search-input" id="toolSearch" placeholder="Search tools..." autocomplete="off">
+          <button class="search-clear" id="searchClear">&times;</button>
+        </div>
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Minecraft Tools</h1>
+          <p class="tool-subtitle">Free, fast, and lightweight tools for players and developers.</p>
+        </div>
+
+        <div class="tool-count" id="toolCount">Showing <span>21</span> of 21 tools</div>
+        <div class="no-results" id="noResults">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+          <p>No tools found matching your search.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="generator">Generator</button>
+          <button class="filter-btn" data-filter="calculator">Calculator</button>
+          <button class="filter-btn" data-filter="converter">Converter</button>
+          <button class="filter-btn" data-filter="guide">Guide</button>
+          <button class="filter-btn" data-filter="bedrock">Bedrock</button>
+          <button class="filter-btn" data-filter="java">Java</button>
+        </div>
+
+        <div class="tools-grid" id="toolsGrid">
+          <!-- Tool Card 1: UUID Generator -->
+          <a href="./uuid-generator.html" class="tool-card reveal stagger-1" data-tool="uuid-generator" data-tags="uuid,id,identifier,unique,manifest,resourcepack" data-category="generator" data-edition="both">
+            <div class="tool-icon tool-icon-cyan">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M7 7h.01M7 12h.01M7 17h.01M12 7h.01M12 12h.01M12 17h.01M17 7h.01M17 12h.01M17 17h.01"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">UUID Generator</h3>
+              <p class="tool-desc">Generate random UUID v4 identifiers for resource packs and manifests.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 2: Command Generator -->
+          <a href="./tools/command-generator.html" class="tool-card reveal stagger-2" data-tool="command-generator" data-tags="command,mc,chat,execute,tp,give,kill,fill,summon" data-category="generator" data-edition="both">
+            <div class="tool-icon tool-icon-purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"/>
+                <line x1="12" y1="19" x2="20" y2="19"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Command Generator</h3>
+              <p class="tool-desc">Build Minecraft commands visually. No syntax memorization needed.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 3: Color Converter -->
+          <a href="./tools/color-converter.html" class="tool-card reveal stagger-3" data-tool="color-converter" data-tags="color,hex,rgb,section,code,text,formatting" data-category="converter" data-edition="both">
+            <div class="tool-icon tool-icon-orange">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="13.5" cy="6.5" r="2.5"/>
+                <circle cx="17.5" cy="10.5" r="2.5"/>
+                <circle cx="8.5" cy="7.5" r="2.5"/>
+                <circle cx="6.5" cy="12.5" r="2.5"/>
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Color Converter</h3>
+              <p class="tool-desc">Convert between Minecraft section codes, hex, and RGB values.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 4: Tellraw Generator -->
+          <a href="./tools/tellraw-generator.html" class="tool-card reveal stagger-4" data-tool="tellraw-generator" data-tags="tellraw,text,message,chat,color,rawtext" data-category="generator" data-edition="bedrock">
+            <div class="tool-icon tool-icon-green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Tellraw Generator</h3>
+              <p class="tool-desc">Build Bedrock text commands with colors and formatting. No syntax needed.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 6: Nether Portal Calculator -->
+          <a href="./tools/nether-portal-calculator.html" class="tool-card reveal stagger-5" data-tool="nether-portal-calculator" data-tags="nether,portal,coordinate,teleport,overworld" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-red">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Nether Portal Calculator</h3>
+              <p class="tool-desc">Calculate linked portal coordinates between Overworld and Nether.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 8: Potion Brewing Guide -->
+          <a href="./tools/potion-brewing-guide.html" class="tool-card reveal stagger-6" data-tool="potion-brewing-guide" data-tags="potion,brewing,drink,effect,ingredient,water" data-category="guide" data-edition="both">
+            <div class="tool-icon tool-icon-pink">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 3h6v4H9zM7 7l-4 13h18L17 7"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Potion Brewing Guide</h3>
+              <p class="tool-desc">Complete brewing reference with all recipes, effects, and durations.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 10: Effect Command Builder -->
+          <a href="./tools/effect-command-builder.html" class="tool-card reveal stagger-7" data-tool="effect-command-builder" data-tags="effect,command,give,clear,strength,speed,regeneration" data-category="generator" data-edition="bedrock">
+            <div class="tool-icon tool-icon-yellow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Effect Command Builder</h3>
+              <p class="tool-desc">Build /effect commands with all parameters. Give or clear effects.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 12: Enchantment Calculator -->
+          <a href="./tools/enchantment-calculator.html" class="tool-card reveal stagger-8" data-tool="enchantment-calculator" data-tags="enchantment,anvil,combine,repair,level,cost" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-lime">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Enchantment Calculator</h3>
+              <p class="tool-desc">Check enchantment compatibility and calculate anvil costs.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 14: Loot Table Generator -->
+          <a href="./tools/loot-table-generator.html" class="tool-card reveal stagger-9" data-tool="loot-table-generator" data-tags="loot,table,drop,chest,behaviour,addon,json" data-category="generator" data-edition="bedrock">
+            <div class="tool-icon tool-icon-teal">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Loot Table Generator</h3>
+              <p class="tool-desc">Generate Bedrock loot table JSON for behavior packs and addons.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 16: Recipe Generator -->
+          <a href="./tools/recipe-generator.html" class="tool-card reveal stagger-10" data-tool="recipe-generator" data-tags="recipe,crafting,craft,shaped,shapeless,grid,workbench" data-category="generator" data-edition="bedrock">
+            <div class="tool-icon tool-icon-indigo">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Recipe Generator</h3>
+              <p class="tool-desc">Generate Bedrock crafting recipe JSON. Shaped and shapeless recipes.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 18: Spawn Rule Generator -->
+          <a href="./tools/spawn-rule-generator.html" class="tool-card reveal stagger-11" data-tool="spawn-rule-generator" data-tags="spawn,mob,rule,condition,biome,light" data-category="generator" data-edition="bedrock">
+            <div class="tool-icon tool-icon-crimson">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Spawn Rule Generator</h3>
+              <p class="tool-desc">Generate Bedrock spawn rules JSON. Control mob spawning conditions.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 20: TNT Calculator -->
+          <a href="./tools/tnt-calculator.html" class="tool-card reveal stagger-12" data-tool="tnt-calculator" data-tags="tnt,explosion,blast,damage,block,resistance" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-amber">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">TNT Calculator</h3>
+              <p class="tool-desc">Calculate explosion damage, radius, and block destruction.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 21: Redstone Delay Calculator -->
+          <a href="./tools/redstone-delay-calculator.html" class="tool-card reveal stagger-13" data-tool="redstone-delay-calculator" data-tags="redstone,delay,tick,repeater,comparator,signal" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-red">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Redstone Delay Calculator</h3>
+              <p class="tool-desc">Convert redstone ticks to seconds. Calculate repeater delays.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 22: MOTD Generator -->
+          <a href="./tools/motd-generator.html" class="tool-card reveal stagger-14" data-tool="motd-generator" data-tags="motd,server,message,color,java,bedrock" data-category="generator" data-edition="both">
+            <div class="tool-icon tool-icon-purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">MOTD Generator</h3>
+              <p class="tool-desc">Generate server MOTD with colors. Works with Java and Bedrock.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 23: Item Lore Formatter -->
+          <a href="./tools/item-lore-formatter.html" class="tool-card reveal stagger-15" data-tool="item-lore-formatter" data-tags="item,lore,description,color,tooltip,give" data-category="generator" data-edition="bedrock">
+            <div class="tool-icon tool-icon-pink">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Item Lore Formatter</h3>
+              <p class="tool-desc">Format item lore with colors. Generate /give commands with custom lore.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 24: Shape Generator -->
+          <a href="./tools/shape-generator.html" class="tool-card reveal stagger-16" data-tool="shape-generator" data-tags="shape,3d,model,structure,mcstructure,export,cube" data-category="generator" data-edition="bedrock">
+            <div class="tool-icon tool-icon-blue">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
+                <line x1="12" y1="22" x2="12" y2="15.5"/>
+                <polyline points="22 8.5 12 15.5 2 8.5"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Shape Generator</h3>
+              <p class="tool-desc">Create 3D Minecraft shapes with live preview. Export as .mcstructure.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 25: Farm Efficiency Calculator -->
+          <a href="./tools/farm-efficiency-calculator.html" class="tool-card reveal stagger-17" data-tool="farm-efficiency-calculator" data-tags="farm,efficiency,items,hour,storage,afk,iron,creeperslime" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Farm Efficiency Calculator</h3>
+              <p class="tool-desc">Calculate items per hour, storage needs, and AFK time for your farms.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 26: XP Calculator -->
+          <a href="./tools/xp-calculator.html" class="tool-card reveal stagger-18" data-tool="xp-calculator" data-tags="xp,experience,enchant,death,mending,levels,repair" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">XP Calculator</h3>
+              <p class="tool-desc">Calculate XP needed for enchanting, levels lost on death, and Mending repair costs.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 27: Villager Trade Calculator -->
+          <a href="./tools/villager-trade-calculator.html" class="tool-card reveal stagger-19" data-tool="villager-trade-calculator" data-tags="villager,trade,emerald,discount,cure,hero,librarian,farmer,armorer" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-cyan">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Villager Trade Calculator</h3>
+              <p class="tool-desc">Calculate trade prices with cure discounts and Hero of the Village effects.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 28: Beacon Color Calculator -->
+          <a href="./tools/beacon-color-calculator.html" class="tool-card reveal stagger-20" data-tool="beacon-color-calculator" data-tags="beacon,color,glass,beam,light,mix,stained" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-yellow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Beacon Color Calculator</h3>
+              <p class="tool-desc">Mix stained glass colors to preview your beacon beam. Stack up to 6 layers.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- Tool Card 29: Crop Growth Calculator -->
+          <a href="./tools/crop-growth-calculator.html" class="tool-card reveal stagger-21" data-tool="crop-growth-calculator" data-tags="crop,growth,farm,wheat,carrot,potato,beetroot,bone,meal,time" data-category="calculator" data-edition="both">
+            <div class="tool-icon tool-icon-lime">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="tool-info">
+              <h3 class="tool-name">Crop Growth Calculator</h3>
+              <p class="tool-desc">Calculate growth times and bone meal usage for your farms.</p>
+            </div>
+            <div class="tool-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
+          <span class="brand-text brand-text-sm">Antigle<span class="brand-accent">Forge</span></span>
+        </div>
+        <nav class="footer-nav">
+          <a href="../index.html" class="footer-link">Home</a>
+          <a href="./tools.html" class="footer-link">Tools</a>
+        </nav>
+        <div class="footer-social">
+          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="YouTube">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </a>
+          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+            </svg>
+          </a>
+          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  (function() {
+    var searchInput = document.getElementById('toolSearch');
+    var searchClear = document.getElementById('searchClear');
+    var toolsGrid = document.getElementById('toolsGrid');
+    var toolCount = document.getElementById('toolCount');
+    var noResults = document.getElementById('noResults');
+    var filterBar = document.getElementById('filterBar');
+    var cards = toolsGrid.querySelectorAll('.tool-card');
+    var total = cards.length;
+    var activeFilter = 'all';
+
+    var synonyms = {
+      uuid: ['id', 'identifier', 'unique'],
+      command: ['mc', 'chat', 'execute'],
+      color: ['colour', 'hex', 'rgb', 'section'],
+      nether: ['portal', 'teleport'],
+      potion: ['brew', 'drink', 'effect'],
+      enchant: ['enchant', 'anvil', 'repair'],
+      loot: ['drop', 'chest'],
+      recipe: ['craft', 'crafting', 'workbench'],
+      spawn: ['mob', 'monster'],
+      tnt: ['explosion', 'blast', 'boom'],
+      redstone: ['repeater', 'delay', 'tick'],
+      xp: ['experience', 'enchanting', 'death', 'mending', 'repair', 'levels'],
+      villager: ['trade', 'emerald', 'discount', 'cure', 'hero', 'librarian', 'farmer', 'armorer'],
+      beacon: ['color', 'glass', 'beam', 'light', 'stained', 'mix'],
+      crop: ['growth', 'farm', 'wheat', 'carrot', 'potato', 'beetroot', 'bone', 'meal'],
+      motd: ['server', 'message'],
+      item: ['give', 'lore'],
+      shape: ['3d', 'model', 'structure']
+    };
+
+    function levenshtein(a, b) {
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+      var m = [];
+      for (var i = 0; i <= b.length; i++) m[i] = [i];
+      for (var j = 0; j <= a.length; j++) m[0][j] = j;
+      for (var i = 1; i <= b.length; i++) {
+        for (var j = 1; j <= a.length; j++) {
+          m[i][j] = b[i-1] === a[j-1] ? m[i-1][j-1] :
+            Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
+        }
+      }
+      return m[b.length][a.length];
+    }
+
+    function expandQuery(q) {
+      var words = q.split(/\s+/);
+      var expanded = [];
+      words.forEach(function(w) {
+        expanded.push(w);
+        for (var key in synonyms) {
+          if (key.indexOf(w) !== -1 || synonyms[key].some(function(s) { return s.indexOf(w) !== -1; })) {
+            expanded.push(key);
+            synonyms[key].forEach(function(s) { expanded.push(s); });
+          }
+        }
+      });
+      return expanded;
+    }
+
+    function fuzzyMatch(q, text) {
+      if (text.indexOf(q) !== -1) return true;
+      if (q.length < 5) return false;
+      var words = text.split(/\s+/);
+      for (var i = 0; i < words.length; i++) {
+        if (levenshtein(q, words[i].substring(0, q.length)) <= 1) return true;
+      }
+      return false;
+    }
+
+    function matchCard(card, query) {
+      var name = (card.querySelector('.tool-name') || {}).textContent.toLowerCase();
+      var desc = (card.querySelector('.tool-desc') || {}).textContent.toLowerCase();
+      var tags = (card.dataset.tags || '').toLowerCase();
+      var toolId = (card.dataset.tool || '').toLowerCase();
+      var category = (card.dataset.category || '').toLowerCase();
+      var edition = (card.dataset.edition || '').toLowerCase();
+
+      // Filter check
+      if (activeFilter !== 'all') {
+        if (activeFilter === 'bedrock' && edition !== 'bedrock' && edition !== 'both') return false;
+        if (activeFilter === 'java' && edition !== 'java' && edition !== 'both') return false;
+        if (['generator','calculator','converter','guide'].indexOf(activeFilter) !== -1 && category !== activeFilter) return false;
+      }
+
+      // Search check
+      if (!query) return true;
+      var expanded = expandQuery(query);
+      var searchable = name + ' ' + desc + ' ' + tags + ' ' + toolId + ' ' + category;
+      return expanded.some(function(term) {
+        return fuzzyMatch(term, searchable);
+      });
+    }
+
+    function filterTools() {
+      var q = searchInput.value.toLowerCase().trim();
+      var shown = 0;
+      cards.forEach(function(card) {
+        var match = matchCard(card, q);
+        card.classList.toggle('hide', !match);
+        if (match) shown++;
+      });
+      toolCount.innerHTML = 'Showing <span>' + shown + '</span> of ' + total + ' tools';
+      noResults.classList.toggle('show', shown === 0);
+      searchClear.classList.toggle('show', q.length > 0);
+    }
+
+    searchInput.addEventListener('input', filterTools);
+    searchClear.addEventListener('click', function() {
+      searchInput.value = '';
+      filterTools();
+      searchInput.focus();
+    });
+
+    // Filter buttons
+    filterBar.addEventListener('click', function(e) {
+      var btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      filterBar.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      filterTools();
+    });
+
+    // Keyboard shortcut: Ctrl+K or / to focus search
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && document.activeElement.tagName !== 'INPUT')) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+      if (e.key === 'Escape' && document.activeElement === searchInput) {
+        searchInput.blur();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

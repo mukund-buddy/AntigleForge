@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generate Minecraft Bedrock spawn rules JSON for behavior packs. Control mob spawning conditions.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Spawn Rule Generator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/spawn-rule-generator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/spawn-rule-generator">
+  <meta property="og:title" content="Spawn Rule Generator - AntigleForge">
+  <meta property="og:description" content="Generate Bedrock spawn rule JSON for addons.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .condition-card {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .condition-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .condition-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #00ddff;
+    }
+    .condition-remove {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.2);
+      cursor: pointer;
+      padding: 4px;
+    }
+    .condition-remove:hover { color: #ff5555; }
+    .json-output {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 0.8rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .json-output pre {
+      margin: 0;
+      font-family: 'Inter', monospace;
+      font-size: 0.75rem;
+      color: #55ff55;
+      white-space: pre;
+      line-height: 1.5;
+    }
+    .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .form-row > * { flex: 1; min-width: 120px; }
+    .add-condition-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      padding: 0.6rem;
+      border: 2px dashed rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255,255,255,0.3);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 1rem;
+    }
+    .add-condition-btn:hover { border-color: rgba(0,221,255,0.3); color: #00ddff; }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid rgba(34,197,94,0.3);
+      background: rgba(34,197,94,0.1);
+      color: #22c55e;
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .download-btn:hover { background: rgba(34,197,94,0.2); }
+    .info-text {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.2);
+      line-height: 1.5;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Spawn Rule Generator</h1>
+          <p class="tool-subtitle">Generate Bedrock Edition spawn rules JSON for behavior packs. Control when and where mobs spawn.</p>
+        </div>
+
+        <div class="tool-container">
+          <!-- Config -->
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+              </svg>
+              Spawn Rule Configuration
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="mobName">Mob ID</label>
+                <input type="text" id="mobName" class="form-input" value="minecraft:zombie" placeholder="minecraft:zombie">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="maxCount">Max Mobs in Group</label>
+                <input type="number" id="maxCount" class="form-input" value="4" min="1" max="100">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="spawnDelay">Spawn Delay (ticks)</label>
+                <input type="number" id="spawnDelay" class="form-input" value="600" min="1" max="72000">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="maxSpawnRange">Spawn Range (blocks)</label>
+                <input type="number" id="maxSpawnRange" class="form-input" value="40" min="1" max="128">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="surfaceBlock">Surface Block Filter (optional)</label>
+              <input type="text" id="surfaceBlock" class="form-input" placeholder="e.g. minecraft:stone, minecraft:grass_block">
+            </div>
+          </div>
+
+          <!-- Conditions -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Spawn Conditions
+            </div>
+
+            <div id="conditionsContainer"></div>
+
+            <button class="add-condition-btn" id="addConditionBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Condition
+            </button>
+
+            <div class="info-text">
+              <strong style="color:rgba(255,255,255,0.4);">Common conditions:</strong><br>
+              • <strong style="color:#00ddff;">Environment</strong> — day/night, dimension (overworld/nether/end)<br>
+              • <strong style="color:#00ddff;">Block</strong> — require specific blocks nearby<br>
+              • <strong style="color:#00ddff;">Difficulty</strong> — spawn only on certain difficulties<br>
+              • <strong style="color:#00ddff;">Brightness</strong> — light level range (0-15)<br>
+              • <strong style="color:#00ddff;">Biome</strong> — specific biome filter<br>
+              • <strong style="color:#00ddff;">Density limit</strong> — max entities in area
+            </div>
+          </div>
+
+          <!-- Output -->
+          <div class="tool-card-main reveal stagger-3">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Generated JSON
+              <div style="margin-left:auto;display:flex;gap:0.4rem;">
+                <button class="btn btn-primary" id="copyJsonBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                  Copy
+                </button>
+                <button class="download-btn" id="downloadBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download
+                </button>
+              </div>
+            </div>
+            <div class="json-output">
+              <pre id="jsonOutput"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What are spawn rules?', a: 'Spawn rules are JSON files in a behavior pack that define when, where, and how often mobs spawn in the world. They control conditions like time of day, light level, biome, and surface blocks.' },
+    { q: 'Where do I put spawn rules?', a: 'Place the spawn rule JSON in your behavior pack under the "spawn_rules" folder. The file name should match the mob ID (e.g., my_mob.json for a custom mob).' },
+    { q: 'What is spawn density?', a: 'Spawn density controls how many entities of a type can exist in a given area. Higher density limits allow more mobs to spawn, but too many can cause lag. The "density_limit" condition controls this.' },
+    { q: 'How does spawn delay work?', a: 'Spawn delay is measured in game ticks (20 ticks = 1 second). A delay of 600 ticks means the game tries to spawn mobs every 30 seconds. Lower values = more frequent spawning attempts.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var conditionsContainer = document.getElementById('conditionsContainer');
+    var addConditionBtn = document.getElementById('addConditionBtn');
+    var jsonOutput = document.getElementById('jsonOutput');
+    var copyJsonBtn = document.getElementById('copyJsonBtn');
+    var downloadBtn = document.getElementById('downloadBtn');
+    var mobName = document.getElementById('mobName');
+    var maxCount = document.getElementById('maxCount');
+    var spawnDelay = document.getElementById('spawnDelay');
+    var maxSpawnRange = document.getElementById('maxSpawnRange');
+    var surfaceBlock = document.getElementById('surfaceBlock');
+
+    var CONDITION_TYPES = [
+      { value: 'environment', label: 'Environment (day/night)', fields: [
+        { key: 'dimension', label: 'Dimension', type: 'select', options: ['overworld', 'nether', 'the_end'] },
+        { key: 'time', label: 'Time', type: 'select', options: ['day', 'night', 'any'] }
+      ]},
+      { value: 'brightness', label: 'Brightness (light level)', fields: [
+        { key: 'min', label: 'Min Light Level', type: 'number', default: 0 },
+        { key: 'max', label: 'Max Light Level', type: 'number', default: 7 }
+      ]},
+      { value: 'block', label: 'Block Filter', fields: [
+        { key: 'block', label: 'Block ID', type: 'text', placeholder: 'minecraft:stone' },
+        { key: 'range', label: 'Range (blocks)', type: 'number', default: 1 }
+      ]},
+      { value: 'difficulty', label: 'Difficulty', fields: [
+        { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'] }
+      ]},
+      { value: 'biome', label: 'Biome Filter', fields: [
+        { key: 'biome', label: 'Biome ID', type: 'text', placeholder: 'minecraft:plains' }
+      ]},
+      { value: 'density_limit', label: 'Density Limit', fields: [
+        { key: 'count', label: 'Max Count', type: 'number', default: 10 },
+        { key: 'range', label: 'Range (blocks)', type: 'number', default: 32 }
+      ]},
+      { value: 'height', label: 'Height Range', fields: [
+        { key: 'min', label: 'Min Y', type: 'number', default: -64 },
+        { key: 'max', label: 'Max Y', type: 'number', default: 320 }
+      ]}
+    ];
+
+    var conditions = [];
+    var condId = 0;
+
+    function addCondition() {
+      var id = condId++;
+      conditions.push({
+        id: id,
+        type: 'environment',
+        values: { dimension: 'overworld', time: 'night' }
+      });
+      renderConditions();
+      renderJson();
+    }
+
+    function removeCondition(id) {
+      conditions = conditions.filter(function(c) { return c.id !== id; });
+      renderConditions();
+      renderJson();
+    }
+
+    function renderConditions() {
+      conditionsContainer.innerHTML = '';
+      conditions.forEach(function(cond) {
+        var condType = CONDITION_TYPES.find(function(t) { return t.value === cond.type; });
+        if (!condType) return;
+
+        var card = document.createElement('div');
+        card.className = 'condition-card';
+
+        var html = '<div class="condition-header"><span class="condition-title">' + condType.label + '</span>';
+        html += '<div style="display:flex;gap:0.3rem;align-items:center;">';
+        html += '<select class="form-input cond-type" data-cid="' + cond.id + '" style="width:auto;font-size:0.75rem;padding:0.3rem 0.5rem;">';
+        CONDITION_TYPES.forEach(function(t) {
+          html += '<option value="' + t.value + '"' + (t.value === cond.type ? ' selected' : '') + '>' + t.label + '</option>';
+        });
+        html += '</select>';
+        html += '<button class="condition-remove" data-cid="' + cond.id + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+        html += '</div></div>';
+
+        condType.fields.forEach(function(field) {
+          var val = cond.values[field.key] !== undefined ? cond.values[field.key] : (field.default || '');
+          html += '<div class="form-group" style="margin-bottom:0.4rem;">';
+          html += '<label class="form-label" style="font-size:0.7rem;">' + field.label + '</label>';
+          if (field.type === 'select') {
+            html += '<select class="form-input cond-field" data-cid="' + cond.id + '" data-key="' + field.key + '" style="font-size:0.8rem;">';
+            field.options.forEach(function(opt) {
+              html += '<option value="' + opt + '"' + (val === opt ? ' selected' : '') + '>' + opt + '</option>';
+            });
+            html += '</select>';
+          } else if (field.type === 'number') {
+            html += '<input type="number" class="form-input cond-field" data-cid="' + cond.id + '" data-key="' + field.key + '" value="' + val + '" style="font-size:0.8rem;">';
+          } else {
+            html += '<input type="text" class="form-input cond-field" data-cid="' + cond.id + '" data-key="' + field.key + '" value="' + val + '" placeholder="' + (field.placeholder || '') + '" style="font-size:0.8rem;">';
+          }
+          html += '</div>';
+        });
+
+        card.innerHTML = html;
+        conditionsContainer.appendChild(card);
+      });
+
+      // Bind events
+      conditionsContainer.querySelectorAll('.cond-type').forEach(function(el) {
+        el.addEventListener('change', function() {
+          var cond = conditions.find(function(c) { return c.id === parseInt(el.dataset.cid); });
+          if (cond) {
+            cond.type = el.value;
+            cond.values = {};
+            var ct = CONDITION_TYPES.find(function(t) { return t.value === cond.type; });
+            if (ct) ct.fields.forEach(function(f) { cond.values[f.key] = f.default || ''; });
+          }
+          renderConditions();
+          renderJson();
+        });
+      });
+      conditionsContainer.querySelectorAll('.cond-field').forEach(function(el) {
+        el.addEventListener('input', function() {
+          var cond = conditions.find(function(c) { return c.id === parseInt(el.dataset.cid); });
+          if (cond) cond.values[el.dataset.key] = el.value;
+          renderJson();
+        });
+      });
+      conditionsContainer.querySelectorAll('.condition-remove').forEach(function(el) {
+        el.addEventListener('click', function() {
+          removeCondition(parseInt(el.dataset.cid));
+        });
+      });
+    }
+
+    function renderJson() {
+      var format_version = '1.19.0';
+      var spawnRules = {};
+      var mob = mobName.value.trim() || 'minecraft:zombie';
+
+      var rule = {
+        format_version: format_version,
+        "minecraft:spawn_rules": {
+          description: {
+            identifier: mob,
+            is_experimental: false,
+            register_to_feature_toggle: false
+          },
+          systems: []
+        }
+      };
+
+      // Build system conditions
+      var systemConditions = [];
+      var surfaceFilter = surfaceBlock.value.trim();
+      if (surfaceFilter) {
+        systemConditions.push({
+          condition: 'minecraft:block_with_property',
+          block: { all_of: [{ block: surfaceFilter, range: { value: 0 } }] }
+        });
+      }
+
+      conditions.forEach(function(cond) {
+        var ct = CONDITION_TYPES.find(function(t) { return t.value === cond.type; });
+        if (!ct) return;
+        if (cond.type === 'environment') {
+          if (cond.values.dimension && cond.values.dimension !== 'overworld') {
+            systemConditions.push({ condition: 'minecraft:in_dimension', dimension: cond.values.dimension });
+          }
+          if (cond.values.time && cond.values.time !== 'any') {
+            systemConditions.push({ condition: 'minecraft:time_check', value: { "minecraft:time": cond.values.time === 'day' ? { range: [0, 12000] } : { range: [12000, 24000] } } });
+          }
+        } else if (cond.type === 'brightness') {
+          systemConditions.push({ condition: 'minecraft:brightness_limit', range: { min: parseInt(cond.values.min) || 0, max: parseInt(cond.values.max) || 15 } });
+        } else if (cond.type === 'difficulty') {
+          systemConditions.push({ condition: 'minecraft:difficulty_check', difficulty: cond.values.difficulty });
+        } else if (cond.type === 'biome') {
+          systemConditions.push({ condition: 'minecraft:biome_check', biome: cond.values.biome });
+        } else if (cond.type === 'density_limit') {
+          systemConditions.push({ condition: 'minecraft:density_limit', density_limit: { count: parseInt(cond.values.count) || 10, range: parseInt(cond.values.range) || 32 } });
+        } else if (cond.type === 'height') {
+          systemConditions.push({ condition: 'minecraft:height_limit', range: { min: parseInt(cond.values.min) || -64, max: parseInt(cond.values.max) || 320 } });
+        }
+      });
+
+      systemConditions.push({ condition: 'minecraft:spawns_on_block', blocks: ['minecraft:air'] });
+
+      rule["minecraft:spawn_rules"].systems.push({
+        conditions: systemConditions.length > 0 ? systemConditions : [{ condition: 'minecraft:always_spawn' }],
+        add_spawns: true
+      });
+
+      rule["minecraft:spawn_rules"].spawn_groups = {
+        max_count: parseInt(maxCount.value) || 4,
+        max_spawn_range: parseInt(maxSpawnRange.value) || 40,
+        spawn_delay: { range: { min: parseInt(spawnDelay.value) || 600, max: parseInt(spawnDelay.value) || 600 } }
+      };
+
+      spawnRules[mob] = rule["minecraft:spawn_rules"];
+      jsonOutput.textContent = JSON.stringify({ format_version: format_version, "minecraft:spawn_rules": spawnRules[mob] }, null, 2);
+    }
+
+    addConditionBtn.addEventListener('click', addCondition);
+
+    copyJsonBtn.addEventListener('click', function() {
+      var text = jsonOutput.textContent;
+      if (!text) return;
+      fallbackCopy(text);
+    });
+
+    downloadBtn.addEventListener('click', function() {
+      var text = jsonOutput.textContent;
+      if (!text) return;
+      var blob = new Blob([text], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (mobName.value.trim().replace('minecraft:', '') || 'mob') + '_spawn_rule.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    [mobName, maxCount, spawnDelay, maxSpawnRange, surfaceBlock].forEach(function(el) {
+      el.addEventListener('input', renderJson);
+    });
+
+    function fallbackCopy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showOK).catch(fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showOK(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+      function showOK() {
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = 'Copied!';
+        document.body.appendChild(t);
+        setTimeout(function() { t.classList.add('show'); }, 10);
+        setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 2000);
+      }
+    }
+
+    addCondition();
+  })();
+  </script>
+</body>
+</html>

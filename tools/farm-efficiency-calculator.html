@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AntigleForge - Calculate farm efficiency, items per hour, and storage needs for Minecraft.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Farm Efficiency Calculator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/farm-efficiency-calculator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/farm-efficiency-calculator.html">
+  <meta property="og:title" content="Farm Efficiency Calculator - AntigleForge">
+  <meta property="og:description" content="Calculate farm efficiency, items per hour, and storage needs for Minecraft.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .farm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .farm-grid.full { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .farm-grid { grid-template-columns: 1fr; }
+    }
+    .farm-select {
+      grid-column: 1 / -1;
+    }
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .result-value {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--primary);
+    }
+    .result-value.highlight {
+      font-size: 1.3rem;
+      color: var(--text-primary);
+    }
+    .result-value.accent { color: var(--accent); }
+    .tip-box {
+      background: rgba(6, 182, 212, 0.06);
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .tip-box strong { color: var(--primary); }
+    .storage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .storage-item {
+      text-align: center;
+      padding: 0.5rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+    }
+    .storage-item .num {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+    .storage-item .lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <!-- Performance Mode Indicator -->
+  <div class="perf-indicator" id="perfIndicator">
+    <span class="perf-icon">⚡</span>
+    <span class="perf-text">Performance Mode</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <div class="tool-badge">
+            <span class="edition-tag bedrock">Bedrock</span>
+            <span class="edition-tag java">Java</span>
+          </div>
+          <h1 class="tool-title">Farm Efficiency Calculator</h1>
+          <p class="tool-subtitle">Calculate items per hour, storage needs, and AFK time for your farms.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal">
+            <div class="tool-card-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+              </svg>
+              Farm Settings
+            </div>
+
+            <div class="farm-grid">
+              <div class="form-group farm-select">
+                <label class="form-label">Farm Type</label>
+                <select class="form-select" id="farmType">
+                  <option value="creeper">Creeper (Gunpowder)</option>
+                  <option value="zombie">Zombie (Rotten Flesh)</option>
+                  <option value="skeleton">Skeleton (Bone + Arrow)</option>
+                  <option value="spider">Spider (String + Eye)</option>
+                  <option value="enderman">Enderman (Ender Pearl)</option>
+                  <option value="blaze">Blaze (Blaze Rod)</option>
+                  <option value="witch">Witch (Redstone + Glowstone)</option>
+                  <option value="slime">Slime (Slimeball)</option>
+                  <option value="iron">Iron Golem (Iron Ingot)</option>
+                  <option value="gold">Gold Farm (Gold Ingot)</option>
+                  <option value="crop_wheat">Crop (Wheat)</option>
+                  <option value="crop_carrot">Crop (Carrot)</option>
+                  <option value="crop_potato">Crop (Potato)</option>
+                  <option value="crop_netherwart">Crop (Nether Wart)</option>
+                  <option value="sugarcane">Sugar Cane</option>
+                  <option value="bamboo">Bamboo</option>
+                  <option value="cactus">Cactus</option>
+                  <option value="kelp">Kelp</option>
+                  <option value="dye_bone">Bone Meal Farm</option>
+                  <option value="dye_cocoa">Cocoa Bean Farm</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Edition</label>
+                <select class="form-select" id="edition">
+                  <option value="bedrock">Bedrock</option>
+                  <option value="java">Java</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Kill Method</label>
+                <select class="form-select" id="killMethod">
+                  <option value="auto">Auto (Fall/Lava/Magma)</option>
+                  <option value="player">Player Kill</option>
+                  <option value="looting3">Player + Looting III</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Modules / Platforms</label>
+                <input type="number" class="form-input" id="modules" value="1" min="1" max="64">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Efficiency (%)</label>
+                <input type="number" class="form-input" id="efficiency" value="80" min="1" max="100">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">AFK Time (hours)</label>
+                <input type="number" class="form-input" id="afkHours" value="1" min="0.1" max="24" step="0.1">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Target Goal (items)</label>
+                <input type="number" class="form-input" id="targetGoal" value="" placeholder="Optional">
+              </div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="result-card reveal" id="results">
+            <div class="result-row">
+              <span class="result-label">Items per Hour</span>
+              <span class="result-value highlight" id="resPerHour">0</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Total Yield (<span id="resAfkLabel">1</span>h AFK)</span>
+              <span class="result-value highlight" id="resTotal">0</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Stacks per Hour</span>
+              <span class="result-value" id="resStacks">0</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Items per Minute</span>
+              <span class="result-value" id="resPerMin">0</span>
+            </div>
+            <div class="result-row" id="resGoalRow" style="display:none">
+              <span class="result-label">Time to Reach Goal</span>
+              <span class="result-value accent" id="resGoalTime">-</span>
+            </div>
+          </div>
+
+          <!-- Storage -->
+          <div class="result-card reveal">
+            <div class="result-row">
+              <span class="result-label">Storage Needed</span>
+              <span class="result-value" id="resStorage">0 double chests</span>
+            </div>
+            <div class="storage-grid" id="storageGrid">
+              <div class="storage-item">
+                <div class="num" id="resShulkers">0</div>
+                <div class="lbl">Shulker Boxes</div>
+              </div>
+              <div class="storage-item">
+                <div class="num" id="resDoubleChests">0</div>
+                <div class="lbl">Double Chests</div>
+              </div>
+              <div class="storage-item">
+                <div class="num" id="resSingleChests">0</div>
+                <div class="lbl">Single Chests</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tip -->
+          <div class="tip-box reveal" id="tipBox">
+            <strong>Tip:</strong> Stand 128 blocks above your farm to suppress nearby cave spawns and maximize rates.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
+          <span class="brand-text brand-text-sm">Antigle<span class="brand-accent">Forge</span></span>
+        </div>
+        <nav class="footer-nav">
+          <a href="../index.html" class="footer-link">Home</a>
+          <a href="../tools.html" class="footer-link">Tools</a>
+        </nav>
+        <div class="footer-social">
+          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="YouTube">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </a>
+          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+            </svg>
+          </a>
+          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  (function() {
+    // Farm data: base rates per hour per module (Bedrock, auto kill, 100% efficiency)
+    var FARM_DATA = {
+      creeper:       { name: 'Creeper', item: 'Gunpowder', baseRate: 280, stacksPerHour: 4.38 },
+      zombie:        { name: 'Zombie', item: 'Rotten Flesh', baseRate: 350, stacksPerHour: 5.47 },
+      skeleton:      { name: 'Skeleton', item: 'Bone', baseRate: 300, stacksPerHour: 4.69 },
+      spider:        { name: 'Spider', item: 'String', baseRate: 200, stacksPerHour: 3.13 },
+      enderman:      { name: 'Enderman', item: 'Ender Pearl', baseRate: 400, stacksPerHour: 6.25 },
+      blaze:         { name: 'Blaze', item: 'Blaze Rod', baseRate: 360, stacksPerHour: 5.63 },
+      witch:         { name: 'Witch', item: 'Redstone', baseRate: 180, stacksPerHour: 2.81 },
+      slime:         { name: 'Slime', item: 'Slimeball', baseRate: 450, stacksPerHour: 7.03 },
+      iron:          { name: 'Iron Golem', item: 'Iron Ingot', baseRate: 380, stacksPerHour: 5.94 },
+      gold:          { name: 'Gold Farm', item: 'Gold Ingot', baseRate: 500, stacksPerHour: 7.81 },
+      crop_wheat:    { name: 'Wheat Farm', item: 'Wheat', baseRate: 800, stacksPerHour: 12.5 },
+      crop_carrot:   { name: 'Carrot Farm', item: 'Carrot', baseRate: 700, stacksPerHour: 10.94 },
+      crop_potato:   { name: 'Potato Farm', item: 'Potato', baseRate: 700, stacksPerHour: 10.94 },
+      crop_netherwart:{ name: 'Nether Wart', item: 'Nether Wart', baseRate: 600, stacksPerHour: 9.38 },
+      sugarcane:     { name: 'Sugar Cane', item: 'Sugar Cane', baseRate: 900, stacksPerHour: 14.06 },
+      bamboo:        { name: 'Bamboo', item: 'Bamboo', baseRate: 1200, stacksPerHour: 18.75 },
+      cactus:        { name: 'Cactus', item: 'Cactus', baseRate: 500, stacksPerHour: 7.81 },
+      kelp:          { name: 'Kelp', item: 'Kelp', baseRate: 800, stacksPerHour: 12.5 },
+      dye_bone:      { name: 'Bone Meal', item: 'Bone Meal', baseRate: 600, stacksPerHour: 9.38 },
+      dye_cocoa:     { name: 'Cocoa Bean', item: 'Cocoa Bean', baseRate: 400, stacksPerHour: 6.25 }
+    };
+
+    var TIPS = {
+      creeper: 'Build at Y=100+ or over ocean to suppress cave spawns. Use entity cramming for instant kills.',
+      zombie: 'Use a drowned farm in ocean for better rates. Name tags prevent despawn issues.',
+      skeleton: 'Combine with spider farm for string. Skeletons burn in sunlight for auto-kill.',
+      spider: 'Spiders spawn in light level 7+. Build roof to prevent daylight spawning.',
+      enderman: 'Build at Y=200+ in End. Endmite in minecart attracts endermen efficiently.',
+      blaze: 'Nether roof farms are most efficient. Use funnel design to concentrate spawns.',
+      witch: 'Witches drop multiple items. Use wolves for auto-kill. Low base rates.',
+      slime: 'Build in slime chunks below Y=40. Light up all caves within 128 blocks.',
+      iron: 'Bedrock: 10-20 villagers per village. Java: 3 villagers per pod. Must sleep at night.',
+      gold: 'Nether portal-based farms are fastest. Build on nether roof for best rates.',
+      crop_wheat: 'Use water stream harvesting. Bone meal speeds growth. Auto-farm with observers.',
+      crop_carrot: 'Piglin bartering alternative. Villager trading is fastest source.',
+      crop_potato: 'Zombie drops are free source. Auto-farm with observers and pistons.',
+      crop_netherwart: 'Nether wart only grows on soul sand. Use bone meal (Bedrock only).',
+      sugarcane: 'Observer + piston auto-harvest. Bone meal works on Bedrock.',
+      bamboo: 'Fastest growing crop. Use for fuel or scaffolding. Very high rates.',
+      cactus: 'Green dye source. Cactus breaks when adjacent block placed. Auto-farms easily.',
+      kelp: 'Dried kelp blocks are good fuel. Auto-farm with pistons and observers.',
+      dye_bone: 'Skeleton farm + composter = bone meal. Essential for crop farms.',
+      dye_cocoa: 'Jungle only. Bone meal works. Good dye source forBedrock.'
+    };
+
+    var farmType = document.getElementById('farmType');
+    var edition = document.getElementById('edition');
+    var killMethod = document.getElementById('killMethod');
+    var modules = document.getElementById('modules');
+    var efficiency = document.getElementById('efficiency');
+    var afkHours = document.getElementById('afkHours');
+    var targetGoal = document.getElementById('targetGoal');
+
+    function calculate() {
+      var farm = FARM_DATA[farmType.value];
+      var ed = edition.value;
+      var kill = killMethod.value;
+      var mod = Math.max(1, parseInt(modules.value) || 1);
+      var eff = Math.max(1, Math.min(100, parseInt(efficiency.value) || 80)) / 100;
+      var afk = Math.max(0.1, parseFloat(afkHours.value) || 1);
+      var goal = parseInt(targetGoal.value) || 0;
+
+      // Base rate modifiers
+      var rate = farm.baseRate;
+
+      // Edition modifier (Bedrock rates are slightly different)
+      if (ed === 'java') {
+        rate = Math.round(rate * 1.1); // Java slightly faster for most farms
+      }
+
+      // Kill method modifier
+      var killMod = 1;
+      if (kill === 'player') killMod = 1.2;
+      if (kill === 'looting3') killMod = 1.75;
+
+      // Calculate
+      var perHour = Math.round(rate * mod * eff * killMod);
+      var perMin = Math.round(perHour / 60);
+      var total = Math.round(perHour * afk);
+      var stacks = (perHour / 64).toFixed(1);
+      var stacksTotal = (total / 64).toFixed(1);
+
+      // Update results
+      document.getElementById('resPerHour').textContent = perHour.toLocaleString();
+      document.getElementById('resTotal').textContent = total.toLocaleString();
+      document.getElementById('resStacks').textContent = stacks + ' stacks/h';
+      document.getElementById('resPerMin').textContent = perMin.toLocaleString();
+      document.getElementById('resAfkLabel').textContent = afk;
+
+      // Goal time
+      var goalRow = document.getElementById('resGoalRow');
+      if (goal > 0) {
+        goalRow.style.display = 'flex';
+        var hoursNeeded = goal / perHour;
+        var h = Math.floor(hoursNeeded);
+        var m = Math.round((hoursNeeded - h) * 60);
+        document.getElementById('resGoalTime').textContent = h > 0 ? h + 'h ' + m + 'm' : m + ' minutes';
+      } else {
+        goalRow.style.display = 'none';
+      }
+
+      // Storage
+      var doubleChests = Math.ceil(total / (54 * 64));
+      var singleChests = Math.ceil(total / (27 * 64));
+      var shulkers = Math.ceil(total / (27 * 64));
+      document.getElementById('resStorage').textContent = doubleChests + ' double chest' + (doubleChests !== 1 ? 's' : '');
+      document.getElementById('resShulkers').textContent = shulkers;
+      document.getElementById('resDoubleChests').textContent = doubleChests;
+      document.getElementById('resSingleChests').textContent = singleChests;
+
+      // Tip
+      document.getElementById('tipBox').innerHTML = '<strong>Tip:</strong> ' + (TIPS[farmType.value] || 'Build efficiently and AFK at the right distance for maximum rates.');
+    }
+
+    // Listen for changes
+    [farmType, edition, killMethod, modules, efficiency, afkHours, targetGoal].forEach(function(el) {
+      el.addEventListener('input', calculate);
+      el.addEventListener('change', calculate);
+    });
+
+    calculate();
+  })();
+  </script>
+</body>
+</html>

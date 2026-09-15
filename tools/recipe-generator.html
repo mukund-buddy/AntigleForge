@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generate Minecraft Bedrock recipe JSON for behavior packs. Shaped and shapeless crafting recipes.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Recipe Generator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/recipe-generator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/recipe-generator">
+  <meta property="og:title" content="Recipe Generator - AntigleForge">
+  <meta property="og:description" content="Generate Bedrock recipe JSON for addons.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .crafting-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      max-width: 280px;
+      margin: 0 auto 1rem;
+    }
+    .crafting-slot {
+      aspect-ratio: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', monospace;
+      font-size: 0.7rem;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.12s;
+      padding: 0.2rem;
+      text-align: center;
+      word-break: break-all;
+    }
+    .crafting-slot:hover { border-color: rgba(0,221,255,0.3); }
+    .crafting-slot.filled { background: rgba(0,221,255,0.08); border-color: rgba(0,221,255,0.2); }
+    .crafting-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.15);
+      font-size: 1.5rem;
+      grid-column: span 3;
+      margin: 0.5rem 0;
+    }
+    .result-slot {
+      max-width: 90px;
+      margin: 0 auto 1rem;
+      aspect-ratio: 1;
+      background: rgba(34,197,94,0.08);
+      border: 2px solid rgba(34,197,94,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', monospace;
+      font-size: 0.75rem;
+      color: #22c55e;
+      cursor: pointer;
+      padding: 0.3rem;
+      text-align: center;
+      word-break: break-all;
+    }
+    .json-output {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 0.8rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .json-output pre {
+      margin: 0;
+      font-family: 'Inter', monospace;
+      font-size: 0.75rem;
+      color: #55ff55;
+      white-space: pre;
+      line-height: 1.5;
+    }
+    .type-toggle {
+      display: flex;
+      gap: 0.25rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 1rem;
+    }
+    .type-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: rgba(255,255,255,0.4);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .type-btn.active { background: rgba(0,221,255,0.15); color: #00ddff; }
+    .type-btn:hover:not(.active) { color: rgba(255,255,255,0.6); }
+    .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .form-row > * { flex: 1; min-width: 120px; }
+    .shapeless-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      max-width: 280px;
+      margin: 0 auto 1rem;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid rgba(34,197,94,0.3);
+      background: rgba(34,197,94,0.1);
+      color: #22c55e;
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .download-btn:hover { background: rgba(34,197,94,0.2); }
+    .clear-grid-btn {
+      padding: 0.3rem 0.6rem;
+      border: 1px solid rgba(255,85,85,0.2);
+      border-radius: 5px;
+      background: transparent;
+      color: rgba(255,85,85,0.4);
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .clear-grid-btn:hover { border-color: rgba(255,85,85,0.4); color: #ff5555; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <h1 class="tool-title">Recipe Generator</h1>
+          <p class="tool-subtitle">Generate Bedrock Edition crafting recipe JSON for behavior packs. Shaped and shapeless recipes.</p>
+        </div>
+
+        <div class="tool-container">
+          <!-- Config -->
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+              Recipe Configuration
+            </div>
+
+            <div class="type-toggle" id="typeToggle">
+              <button class="type-btn active" data-type="shaped">Shaped Recipe</button>
+              <button class="type-btn" data-type="shapeless">Shapeless Recipe</button>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="recipeTag">Recipe Tag (optional)</label>
+                <input type="text" id="recipeTag" class="form-input" placeholder="e.g. construction_table">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="resultCount">Result Count</label>
+                <input type="number" id="resultCount" class="form-input" value="1" min="1" max="64">
+              </div>
+            </div>
+          </div>
+
+          <!-- Crafting Grid -->
+          <div class="tool-card-main reveal stagger-2">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              Crafting Grid
+              <button class="clear-grid-btn" id="clearGridBtn" style="margin-left:auto;">Clear Grid</button>
+            </div>
+
+            <p style="font-size:0.75rem;color:rgba(255,255,255,0.3);margin-bottom:0.75rem;">Click a slot to set the item ID (e.g. minecraft:diamond). Leave empty for no item.</p>
+
+            <div class="crafting-grid" id="craftingGrid"></div>
+
+            <div class="crafting-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+
+            <div style="text-align:center;">
+              <label style="font-size:0.7rem;color:rgba(255,255,255,0.3);display:block;margin-bottom:0.3rem;">Result Item</label>
+              <div class="result-slot" id="resultSlot" title="Click to set result item">minecraft:diamond</div>
+            </div>
+          </div>
+
+          <!-- Output -->
+          <div class="tool-card-main reveal stagger-3">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Generated JSON
+              <div style="margin-left:auto;display:flex;gap:0.4rem;">
+                <button class="btn btn-primary" id="copyJsonBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                  Copy
+                </button>
+                <button class="download-btn" id="downloadBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download
+                </button>
+              </div>
+            </div>
+            <div class="json-output">
+              <pre id="jsonOutput"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is a shaped recipe?', a: 'A shaped recipe requires items to be placed in a specific pattern on the crafting grid. The pattern is defined by the arrangement of items. For example, a pickaxe requires 3 items across the top, 1 stick in the center, and 1 stick at the bottom.' },
+    { q: 'What is a shapeless recipe?', a: 'A shapeless recipe can be crafted in any arrangement on the crafting grid. The items just need to be present somewhere in the grid. For example, crafting a bowl from 3 wood planks in any arrangement.' },
+    { q: 'Where do I put the recipe file?', a: 'Place the recipe JSON in your behavior pack under the "recipes" folder. The file name should match the result item (e.g., my_item.json for a custom item recipe).' },
+    { q: 'How do I use tags?', a: 'Tags let multiple items work as ingredients. For example, using "#minecraft:planks" allows any type of wood plank to be used. Tags are useful for making recipes more flexible.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
+  <script>
+  (function() {
+    var grid = document.getElementById('craftingGrid');
+    var resultSlot = document.getElementById('resultSlot');
+    var typeToggle = document.getElementById('typeToggle');
+    var recipeTag = document.getElementById('recipeTag');
+    var resultCount = document.getElementById('resultCount');
+    var jsonOutput = document.getElementById('jsonOutput');
+    var copyJsonBtn = document.getElementById('copyJsonBtn');
+    var downloadBtn = document.getElementById('downloadBtn');
+    var clearGridBtn = document.getElementById('clearGridBtn');
+
+    var recipeType = 'shaped';
+    var slots = ['','','','','','','','',''];
+    var resultItem = 'minecraft:diamond';
+
+    // Build grid
+    function buildGrid() {
+      grid.innerHTML = '';
+      slots.forEach(function(item, idx) {
+        var slot = document.createElement('div');
+        slot.className = 'crafting-slot' + (item ? ' filled' : '');
+        slot.textContent = item ? item.replace('minecraft:', '') : '';
+        slot.title = item || 'Click to set item';
+        slot.addEventListener('click', function() {
+          var val = prompt('Enter item ID (e.g. minecraft:diamond):', item || 'minecraft:');
+          if (val !== null) {
+            slots[idx] = val.trim();
+            buildGrid();
+            renderJson();
+          }
+        });
+        grid.appendChild(slot);
+      });
+    }
+
+    resultSlot.addEventListener('click', function() {
+      var val = prompt('Enter result item ID:', resultItem);
+      if (val !== null) {
+        resultItem = val.trim();
+        resultSlot.textContent = resultItem;
+        renderJson();
+      }
+    });
+
+    typeToggle.addEventListener('click', function(e) {
+      var btn = e.target.closest('.type-btn');
+      if (!btn) return;
+      typeToggle.querySelectorAll('.type-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      recipeType = btn.dataset.type;
+      renderJson();
+    });
+
+    clearGridBtn.addEventListener('click', function() {
+      slots = ['','','','','','','','',''];
+      buildGrid();
+      renderJson();
+    });
+
+    [recipeTag, resultCount].forEach(function(el) {
+      el.addEventListener('input', renderJson);
+    });
+
+    function renderJson() {
+      var format_version = '1.12.0';
+      var recipe = {
+        format_version: format_version,
+        recipes: []
+      };
+
+      var result = {
+        item: resultItem,
+        count: parseInt(resultCount.value) || 1
+      };
+
+      if (recipeType === 'shaped') {
+        // Build pattern
+        var pattern = [];
+        var key = {};
+        var keyChars = 'ABCDEFGHI';
+        var usedSlots = {};
+        for (var row = 0; row < 3; row++) {
+          var rowStr = '';
+          for (var col = 0; col < 3; col++) {
+            var idx = row * 3 + col;
+            var item = slots[idx];
+            if (item) {
+              if (!usedSlots[item]) {
+                usedSlots[item] = keyChars[Object.keys(key).length];
+                key[usedSlots[item]] = { item: item };
+              }
+              rowStr += usedSlots[item];
+            } else {
+              rowStr += ' ';
+            }
+          }
+          pattern.push(rowStr);
+        }
+        // Remove empty trailing rows
+        while (pattern.length > 0 && pattern[pattern.length - 1].trim() === '') pattern.pop();
+        // Remove empty leading rows
+        while (pattern.length > 0 && pattern[0].trim() === '') pattern.shift();
+
+        var shapedObj = {
+          type: 'crafting_shaped',
+          pattern: pattern,
+          key: key,
+          result: result
+        };
+        if (recipeTag.value.trim()) shapedObj.tag = recipeTag.value.trim();
+        recipe.recipes.push(shapedObj);
+      } else {
+        // Shapeless
+        var ingredients = [];
+        slots.forEach(function(item) {
+          if (item) ingredients.push({ item: item });
+        });
+        var shapelessObj = {
+          type: 'crafting_shapeless',
+          ingredients: ingredients,
+          result: result
+        };
+        if (recipeTag.value.trim()) shapelessObj.tag = recipeTag.value.trim();
+        recipe.recipes.push(shapelessObj);
+      }
+
+      jsonOutput.textContent = JSON.stringify(recipe, null, 2);
+    }
+
+    copyJsonBtn.addEventListener('click', function() {
+      var text = jsonOutput.textContent;
+      if (!text) return;
+      fallbackCopy(text);
+    });
+
+    downloadBtn.addEventListener('click', function() {
+      var text = jsonOutput.textContent;
+      if (!text) return;
+      var blob = new Blob([text], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = resultItem.replace('minecraft:', '').replace(':', '_') + '_recipe.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    function fallbackCopy(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showOK).catch(fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showOK(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+      function showOK() {
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = 'Copied!';
+        document.body.appendChild(t);
+        setTimeout(function() { t.classList.add('show'); }, 10);
+        setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 2000);
+      }
+    }
+
+    buildGrid();
+    renderJson();
+  })();
+  </script>
+</body>
+</html>
