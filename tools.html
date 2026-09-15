@@ -673,7 +673,7 @@
     var toolCount = document.getElementById('toolCount');
     var noResults = document.getElementById('noResults');
     var filterBar = document.getElementById('filterBar');
-    var cards = toolsGrid.querySelectorAll('.tool-card');
+    var cards = Array.from(toolsGrid.querySelectorAll('.tool-card'));
     var total = cards.length;
     var activeFilter = 'all';
 
@@ -693,7 +693,7 @@
       villager: ['trade', 'emerald', 'discount', 'cure', 'hero', 'librarian', 'farmer', 'armorer'],
       beacon: ['color', 'glass', 'beam', 'light', 'stained', 'mix'],
       crop: ['growth', 'farm', 'wheat', 'carrot', 'potato', 'beetroot', 'bone', 'meal'],
-      manifest: ['json', 'behavior', 'resource', 'pack', 'addon', 'mcaddon'],
+      manifest: ['mcaddon'],
       motd: ['server', 'message'],
       item: ['give', 'lore'],
       shape: ['3d', 'model', 'structure']
@@ -739,41 +739,96 @@
       return false;
     }
 
-    function matchCard(card, query) {
+    // Rank a card: higher = better match
+    function rankCard(card, query) {
+      if (!query) return 0;
       var name = (card.querySelector('.tool-name') || {}).textContent.toLowerCase();
       var desc = (card.querySelector('.tool-desc') || {}).textContent.toLowerCase();
       var tags = (card.dataset.tags || '').toLowerCase();
       var toolId = (card.dataset.tool || '').toLowerCase();
-      var category = (card.dataset.category || '').toLowerCase();
-      var edition = (card.dataset.edition || '').toLowerCase();
 
-      // Filter check
-      if (activeFilter !== 'all') {
-        if (activeFilter === 'bedrock' && edition !== 'bedrock' && edition !== 'both') return false;
-        if (activeFilter === 'java' && edition !== 'java' && edition !== 'both') return false;
-        if (['generator','calculator','converter','guide'].indexOf(activeFilter) !== -1 && category !== activeFilter) return false;
+      var q = query.toLowerCase();
+      var score = 0;
+
+      // 1. Exact name match = highest score
+      if (name === q) return 1000;
+      // Name starts with query
+      if (name.indexOf(q) === 0) score += 500;
+      // Name contains query
+      else if (name.indexOf(q) !== -1) score += 300;
+
+      // 2. Tool ID match
+      if (toolId === q) score += 400;
+      else if (toolId.indexOf(q) !== -1) score += 200;
+
+      // 3. Tag exact word match
+      var tagWords = tags.split(',');
+      tagWords.forEach(function(t) {
+        if (t === q) score += 250;
+        else if (t.indexOf(q) !== -1 || q.indexOf(t) !== -1) score += 100;
+      });
+
+      // 4. Description match (lower priority)
+      if (desc.indexOf(q) !== -1) score += 50;
+
+      // 5. Synonym expansion (lowest priority)
+      var expanded = expandQuery(q);
+      var searchable = name + ' ' + desc + ' ' + tags + ' ' + toolId;
+      expanded.forEach(function(term) {
+        if (term !== q && fuzzyMatch(term, searchable)) {
+          score += 10;
+        }
+      });
+
+      // 6. Fuzzy match bonus (very low)
+      if (score === 0 && q.length >= 5) {
+        if (fuzzyMatch(q, searchable)) score += 5;
       }
 
-      // Search check
-      if (!query) return true;
-      var expanded = expandQuery(query);
-      var searchable = name + ' ' + desc + ' ' + tags + ' ' + toolId + ' ' + category;
-      return expanded.some(function(term) {
-        return fuzzyMatch(term, searchable);
-      });
+      return score;
     }
 
     function filterTools() {
       var q = searchInput.value.toLowerCase().trim();
-      var shown = 0;
-      cards.forEach(function(card) {
-        var match = matchCard(card, q);
-        card.classList.toggle('hide', !match);
-        if (match) shown++;
+
+      // Filter + rank
+      var ranked = cards.map(function(card) {
+        return { card: card, pass: matchFilter(card), rank: rankCard(card, q) };
+      }).filter(function(item) {
+        return item.pass;
+      }).sort(function(a, b) {
+        return b.rank - a.rank;
       });
+
+      // Reorder DOM
+      ranked.forEach(function(item) {
+        toolsGrid.appendChild(item.card);
+        item.card.classList.toggle('hide', q ? item.rank === 0 : false);
+      });
+
+      var shown = q ? ranked.filter(function(r) { return r.rank > 0; }).length : ranked.length;
+      if (q) {
+        ranked.forEach(function(item) {
+          item.card.classList.toggle('hide', item.rank === 0);
+        });
+      }
+
       toolCount.innerHTML = 'Showing <span>' + shown + '</span> of ' + total + ' tools';
       noResults.classList.toggle('show', shown === 0);
       searchClear.classList.toggle('show', q.length > 0);
+    }
+
+    function matchFilter(card) {
+      var category = (card.dataset.category || '').toLowerCase();
+      var edition = (card.dataset.edition || '').toLowerCase();
+      if (activeFilter === 'all') return true;
+      if (activeFilter === 'bedrock') return edition === 'bedrock' || edition === 'both';
+      if (activeFilter === 'java') return edition === 'java' || edition === 'both';
+      return category === activeFilter;
+    }
+
+    function matchCard(card, query) {
+      return rankCard(card, query) > 0 || !query;
     }
 
     searchInput.addEventListener('input', filterTools);
