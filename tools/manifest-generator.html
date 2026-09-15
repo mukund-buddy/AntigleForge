@@ -162,35 +162,40 @@
       line-height: 1.5;
     }
 
-    .faq { margin-top: 1rem; }
-    .faq details {
-      background: rgba(0,0,0,0.2);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
+    .faq-section { margin-top: 2rem; }
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
       overflow: hidden;
     }
-    .faq summary {
-      padding: 0.75rem 1rem;
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.7);
+    .faq-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      font-weight: 400;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background var(--transition-fast);
     }
-    .faq summary:hover { background: rgba(255,255,255,0.03); }
-    .faq summary::-webkit-details-marker { display: none; }
-    .faq summary::before {
-      content: '▸'; margin-right: 0.5rem;
-      color: rgba(255,255,255,0.2);
-      transition: transform 0.15s;
+    .faq-question:hover { background: var(--bg-hover); }
+    .faq-arrow {
+      transition: transform var(--transition-fast);
+      color: var(--text-muted);
     }
-    .faq details[open] summary::before { transform: rotate(90deg); }
-    .faq details > div {
-      padding: 0 1rem 0.75rem;
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.4);
-      line-height: 1.6;
+    .faq-item.open .faq-arrow {
+      transform: rotate(180deg);
+      color: var(--primary);
     }
+    .faq-answer {
+      padding: 0 20px 16px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      display: none;
+    }
+    .faq-item.open .faq-answer { display: block; }
 
     .callout {
       background: rgba(0,221,255,0.04);
@@ -397,31 +402,31 @@
 
         <!-- FAQ -->
         <div class="section-label" style="margin-top:2rem; font-size:0.8rem; border-bottom:none; margin-bottom:0">FAQ</div>
-        <div class="faq reveal">
-          <details>
-            <summary>What is a manifest.json in Minecraft Bedrock?</summary>
-            <div><p>manifest.json is the identity file every resource pack, behavior pack, and world template needs. It defines the pack name, description, unique UUID, version, and the modules the pack provides so Minecraft can load it correctly.</p></div>
-          </details>
-          <details>
-            <summary>What does the Manifest Generator create?</summary>
-            <div><p>It generates a format_version 2 manifest for resource packs, behavior packs, and world templates, including pack UUIDs, module UUIDs, min_engine_version, an optional scripting module with @minecraft/server dependency, capabilities, and metadata — ready to copy or download as manifest.json.</p></div>
-          </details>
-          <details>
-            <summary>Is the manifest.json generator free?</summary>
-            <div><p>Yes. Every tool on AntigleForge is free and runs entirely in your browser. Nothing is uploaded, stored, or processed on a server.</p></div>
-          </details>
-          <details>
-            <summary>Do I need to generate my own UUIDs?</summary>
-            <div><p>No. The generator creates secure random UUIDs for your pack and every module automatically. Use the New UUIDs button if you ever need a new set.</p></div>
-          </details>
-          <details>
-            <summary>Where do I put the generated manifest.json?</summary>
-            <div><p>Download it and place it in the root folder of your resource or behavior pack, next to your pack's contents. The pack folder can then be zipped and imported into Minecraft Bedrock.</p></div>
-          </details>
-          <details>
-            <summary>Why does my script module need a @minecraft/server version?</summary>
-            <div><p>Script modules use the Minecraft Script API, and the manifest declares which version of the built-in @minecraft/server module your code was written against. Minecraft loads that module version automatically.</p></div>
-          </details>
+        <div class="faq-section reveal">
+          <div class="faq-item">
+            <div class="faq-question">What is a manifest.json in Minecraft Bedrock?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-answer">manifest.json is the identity file every resource pack, behavior pack, and world template needs. It defines the pack name, description, unique UUID, version, and the modules the pack provides so Minecraft can load it correctly.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">What does the Manifest Generator create?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-answer">It generates a format_version 2 manifest for resource packs, behavior packs, and world templates, including pack UUIDs, module UUIDs, min_engine_version, an optional scripting module with @minecraft/server dependency, capabilities, and metadata — ready to copy or download as manifest.json.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">Is the manifest.json generator free?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-answer">Yes. Every tool on AntigleForge is free and runs entirely in your browser. Nothing is uploaded, stored, or processed on a server.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">Do I need to generate my own UUIDs?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-answer">No. The generator creates secure random UUIDs for your pack and every module automatically. Use the New UUIDs button if you ever need a new set.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">Where do I put the generated manifest.json?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-answer">Download it and place it in the root folder of your resource or behavior pack, next to your pack's contents. The pack folder can then be zipped and imported into Minecraft Bedrock.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">Why does my script module need a @minecraft/server version?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+            <div class="faq-answer">Script modules use the Minecraft Script API, and the manifest declares which version of the built-in @minecraft/server module your code was written against. Minecraft loads that module version automatically.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -605,6 +610,16 @@
     document.querySelectorAll('input, select').forEach(function(el) {
       el.addEventListener('input', generate);
       el.addEventListener('change', generate);
+    });
+
+    // FAQ click handler
+    document.addEventListener('click', function(e) {
+      var q = e.target.closest('.faq-question');
+      if (!q) return;
+      var item = q.parentElement;
+      var wasOpen = item.classList.contains('open');
+      item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+      if (!wasOpen) item.classList.add('open');
     });
 
     // Init
