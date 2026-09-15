@@ -34,15 +34,21 @@
     }
     @media (max-width: 800px) { .gen-grid { grid-template-columns: 1fr; } }
 
-    .input-row { display: flex; gap: 0.75rem; }
-    .input-row > * { flex: 1; }
-    @media (max-width: 500px) { .input-row { flex-direction: column; } }
+    .version-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .version-row .form-input {
+      text-align: center;
+      padding: 10px 4px;
+    }
+    .version-dot {
+      color: rgba(255,255,255,0.2);
+      font-size: 1.1rem;
+    }
 
-    .version-row { display: flex; align-items: center; gap: 4px; }
-    .version-input { width: 100%; text-align: center; padding: 0.45rem 0.3rem; }
-    .version-dot { color: rgba(255,255,255,0.2); font-size: 1.1rem; font-weight: 300; }
-
-    .section-label {
+    .section-divider {
       font-family: 'Oxanium', sans-serif;
       font-size: 0.7rem;
       font-weight: 400;
@@ -53,89 +59,66 @@
       padding-bottom: 0.3rem;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .section-label-hint {
-      color: rgba(255,255,255,0.2);
-      font-weight: 300;
-      text-transform: none;
-      letter-spacing: 0;
-    }
 
-    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.4rem; }
-    .tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 5px 12px;
-      background: rgba(255,255,255,0.04);
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.25);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 8px;
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.5);
       cursor: pointer;
       transition: all 0.15s;
     }
-    .tag:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
-    .tag.active { background: rgba(0,221,255,0.1); border-color: rgba(0,221,255,0.25); color: #00ddff; }
-    .tag button {
-      background: none; border: none; color: rgba(255,255,255,0.3);
-      cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1;
-    }
-    .tag button:hover { color: #ff6b6b; }
+    .toggle-row:hover { border-color: rgba(0,221,255,0.2); }
+    .toggle-row input[type="checkbox"] { accent-color: #00ddff; width: 16px; height: 16px; }
+    .toggle-row code { color: #00ddff; font-size: 0.8rem; }
+    .toggle-row span { color: rgba(255,255,255,0.3); font-size: 0.75rem; }
 
-    .pill {
-      display: flex; align-items: center; gap: 6px;
-      padding: 6px 12px;
-      background: rgba(255,255,255,0.04);
+    .json-output {
+      background: rgba(0,0,0,0.5);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 8px;
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.5);
-      cursor: pointer;
-      transition: all 0.15s;
+      padding: 1rem;
+      font-family: 'Inter', monospace;
+      font-size: 0.75rem;
+      color: #55ff55;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.5;
+      max-height: 500px;
+      overflow-y: auto;
     }
-    .pill:hover { background: rgba(255,255,255,0.08); }
-    .pill input { accent-color: #00ddff; }
-    .pill code { color: #00ddff; font-size: 0.75rem; }
+    .json-output::-webkit-scrollbar { width: 4px; }
+    .json-output::-webkit-scrollbar-track { background: transparent; }
+    .json-output::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
-    .hint {
+    .action-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    .hint-text {
       display: block;
       font-size: 0.7rem;
       color: rgba(255,255,255,0.25);
-      margin-top: 0.25rem;
+      margin-top: 4px;
     }
 
-    .output-box {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .output-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.6rem 1rem;
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .output-title {
-      font-family: 'Oxanium', sans-serif;
-      font-size: 0.75rem; font-weight: 400;
-      text-transform: uppercase; letter-spacing: 0.05em;
+    .callout {
+      background: rgba(0,221,255,0.04);
+      border: 1px solid rgba(0,221,255,0.1);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
       color: rgba(255,255,255,0.4);
+      line-height: 1.5;
     }
-    .output-code {
-      padding: 1rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.78rem; line-height: 1.5;
-      color: rgba(255,255,255,0.8);
-      white-space: pre-wrap; word-break: break-all;
-      max-height: 500px; overflow-y: auto;
-    }
-    .output-code::-webkit-scrollbar { width: 4px; }
-    .output-code::-webkit-scrollbar-track { background: transparent; }
-    .output-code::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-
-    .json-key { color: #00ddff; }
-    .json-str { color: #22c55e; }
-    .json-num { color: #f59e0b; }
-    .json-bool { color: #a78bfa; }
+    .callout code { color: #00ddff; }
 
     .guide-steps {
       display: grid;
@@ -161,56 +144,15 @@
       color: rgba(255,255,255,0.4);
       line-height: 1.5;
     }
-
-    .faq-section { margin-top: 2rem; }
-    .faq-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      margin-bottom: 12px;
-      overflow: hidden;
-    }
-    .faq-question {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      font-weight: 400;
-      cursor: pointer;
-      transition: background var(--transition-fast);
-    }
-    .faq-question:hover { background: var(--bg-hover); }
-    .faq-arrow {
-      transition: transform var(--transition-fast);
-      color: var(--text-muted);
-    }
-    .faq-item.open .faq-arrow {
-      transform: rotate(180deg);
-      color: var(--primary);
-    }
-    .faq-answer {
-      padding: 0 20px 16px;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      line-height: 1.7;
-      display: none;
-    }
-    .faq-item.open .faq-answer { display: block; }
-
-    .callout {
-      background: rgba(0,221,255,0.04);
-      border: 1px solid rgba(0,221,255,0.1);
-      border-radius: 8px;
-      padding: 0.6rem 0.8rem;
-      margin-top: 1rem;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.4);
-      line-height: 1.5;
-    }
-    .callout code { color: #00ddff; }
   </style>
 </head>
 <body>
+  <!-- Performance Mode Indicator -->
+  <div class="perf-indicator" id="perfIndicator">
+    <span class="perf-icon">⚡</span>
+    <span class="perf-text">Performance Mode</span>
+  </div>
+
   <!-- Navigation -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-container">
@@ -244,7 +186,7 @@
             <span class="badge badge-bedrock">Bedrock</span>
           </div>
           <h1 class="tool-title">Manifest Generator</h1>
-          <p class="tool-subtitle">Create a valid <code style="color:#00ddff">manifest.json</code> for resource packs, behavior packs, and world templates — with UUIDs, versions, and optional Script API support handled for you.</p>
+          <p class="tool-subtitle">Create a valid <code style="color:#00ddff">manifest.json</code> for resource packs, behavior packs, and world templates — with UUIDs, versions, and optional Script API support.</p>
         </div>
 
         <div class="gen-grid">
@@ -255,105 +197,118 @@
               Pack Details
             </div>
 
-            <label class="input-label" for="fName">Pack name</label>
-            <input type="text" id="fName" class="input-field" maxlength="80" placeholder="e.g. My Resource Pack" value="">
-
-            <label class="input-label" for="fDesc">Description</label>
-            <input type="text" id="fDesc" class="input-field" maxlength="120" placeholder="Shown in-game below the pack name" value="">
-
-            <label class="input-label" for="fType">Pack type</label>
-            <select id="fType" class="input-field">
-              <option value="behavior">Behavior Pack</option>
-              <option value="resource">Resource Pack</option>
-              <option value="world">World Template</option>
-            </select>
-
-            <div class="section-label">Version</div>
-            <label class="input-label">Pack version</label>
-            <div class="version-row" id="fVersion">
-              <input type="number" class="input-field version-input" data-part="major" min="0" max="255" value="1" placeholder="1">
-              <span class="version-dot">.</span>
-              <input type="number" class="input-field version-input" data-part="minor" min="0" max="255" value="0" placeholder="0">
-              <span class="version-dot">.</span>
-              <input type="number" class="input-field version-input" data-part="patch" min="0" max="255" value="0" placeholder="0">
+            <div class="form-group">
+              <label class="form-label" for="fName">Pack name</label>
+              <input type="text" id="fName" class="form-input" maxlength="80" placeholder="e.g. My Resource Pack" value="">
             </div>
-            <span class="hint">Formatted as [major, minor, patch]. Raising it lets updated packs replace older imports.</span>
 
-            <div id="fMinEngineField">
-              <label class="input-label">Minimum engine version</label>
-              <div class="version-row" id="fMinEngine">
-                <input type="number" class="input-field version-input" data-part="major" min="0" max="255" value="1" placeholder="1">
-                <span class="version-dot">.</span>
-                <input type="number" class="input-field version-input" data-part="minor" min="0" max="255" value="21" placeholder="21">
-                <span class="version-dot">.</span>
-                <input type="number" class="input-field version-input" data-part="patch" min="0" max="255" value="0" placeholder="0">
+            <div class="form-group">
+              <label class="form-label" for="fDesc">Description</label>
+              <input type="text" id="fDesc" class="form-input" maxlength="120" placeholder="Shown in-game below the pack name" value="">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="fType">Pack type</label>
+                <select id="fType" class="form-input">
+                  <option value="behavior">Behavior Pack</option>
+                  <option value="resource">Resource Pack</option>
+                  <option value="world">World Template</option>
+                </select>
               </div>
-              <span class="hint">Required for resource and behavior packs.</span>
+              <div class="form-group" id="fScopeField" style="display:none">
+                <label class="form-label" for="fScope">Pack scope</label>
+                <select id="fScope" class="form-input">
+                  <option value="any">Any (default)</option>
+                  <option value="global">Global only</option>
+                  <option value="world">World only</option>
+                </select>
+              </div>
             </div>
 
-            <div id="fScopeField" style="display:none">
-              <label class="input-label" for="fScope">Pack scope <span class="hint">(resource packs only)</span></label>
-              <select id="fScope" class="input-field">
-                <option value="any">Any (default)</option>
-                <option value="global">Global only</option>
-                <option value="world">World only</option>
-              </select>
+            <div class="section-divider">Version</div>
+
+            <div class="form-group">
+              <label class="form-label">Pack version</label>
+              <div class="version-row" id="fVersion">
+                <input type="number" class="form-input" data-part="major" min="0" max="255" value="1">
+                <span class="version-dot">.</span>
+                <input type="number" class="form-input" data-part="minor" min="0" max="255" value="0">
+                <span class="version-dot">.</span>
+                <input type="number" class="form-input" data-part="patch" min="0" max="255" value="0">
+              </div>
+              <span class="hint-text">Formatted as [major, minor, patch]. Raising it lets updated packs replace older imports.</span>
             </div>
 
-            <!-- Script Module -->
-            <div class="section-label">Script API <span class="section-label-hint">(optional)</span></div>
-            <label class="pill" id="fScriptToggle">
+            <div class="form-group" id="fMinEngineField">
+              <label class="form-label">Minimum engine version</label>
+              <div class="version-row" id="fMinEngine">
+                <input type="number" class="form-input" data-part="major" min="0" max="255" value="1">
+                <span class="version-dot">.</span>
+                <input type="number" class="form-input" data-part="minor" min="0" max="255" value="21">
+                <span class="version-dot">.</span>
+                <input type="number" class="form-input" data-part="patch" min="0" max="255" value="0">
+              </div>
+              <span class="hint-text">Required for resource and behavior packs.</span>
+            </div>
+
+            <div class="section-divider">Script API <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></div>
+
+            <label class="toggle-row" id="fScriptToggle">
               <input type="checkbox" id="fScript">
               Add a <code>script</code> module
             </label>
-            <span class="hint">Adds a JavaScript script module with an @minecraft/server dependency.</span>
+            <span class="hint-text">Adds a JavaScript script module with an @minecraft/server dependency.</span>
 
             <div id="fScriptPanel" style="display:none; margin-top:0.75rem">
-              <label class="input-label" for="fScriptEntry">Script entry file</label>
-              <input type="text" id="fScriptEntry" class="input-field" placeholder="scripts/main.js" value="scripts/main.js">
-
-              <label class="input-label" for="fServerVersion">@minecraft/server version</label>
-              <select id="fServerVersion" class="input-field">
-                <option value="1.0.0">1.0.0</option>
-                <option value="1.1.0">1.1.0</option>
-                <option value="1.2.0">1.2.0</option>
-                <option value="1.3.0">1.3.0</option>
-                <option value="1.4.0">1.4.0</option>
-                <option value="1.5.0">1.5.0</option>
-                <option value="1.6.0">1.6.0</option>
-                <option value="1.7.0">1.7.0</option>
-                <option value="1.8.0">1.8.0</option>
-                <option value="1.9.0" selected>1.9.0</option>
-                <option value="1.10.0">1.10.0</option>
-                <option value="1.11.0">1.11.0</option>
-                <option value="1.12.0">1.12.0</option>
-                <option value="1.13.0">1.13.0</option>
-                <option value="1.14.0">1.14.0</option>
-                <option value="1.15.0">1.15.0</option>
-                <option value="1.16.0">1.16.0</option>
-                <option value="1.17.0">1.17.0</option>
-              </select>
-              <span class="hint">Minecraft loads the built-in module at this version.</span>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="fScriptEntry">Script entry file</label>
+                  <input type="text" id="fScriptEntry" class="form-input" placeholder="scripts/main.js" value="scripts/main.js">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="fServerVersion">@minecraft/server version</label>
+                  <select id="fServerVersion" class="form-input">
+                    <option value="1.0.0">1.0.0</option>
+                    <option value="1.1.0">1.1.0</option>
+                    <option value="1.2.0">1.2.0</option>
+                    <option value="1.3.0">1.3.0</option>
+                    <option value="1.4.0">1.4.0</option>
+                    <option value="1.5.0">1.5.0</option>
+                    <option value="1.6.0">1.6.0</option>
+                    <option value="1.7.0">1.7.0</option>
+                    <option value="1.8.0">1.8.0</option>
+                    <option value="1.9.0" selected>1.9.0</option>
+                    <option value="1.10.0">1.10.0</option>
+                    <option value="1.11.0">1.11.0</option>
+                    <option value="1.12.0">1.12.0</option>
+                    <option value="1.13.0">1.13.0</option>
+                    <option value="1.14.0">1.14.0</option>
+                    <option value="1.15.0">1.15.0</option>
+                    <option value="1.16.0">1.16.0</option>
+                    <option value="1.17.0">1.17.0</option>
+                  </select>
+                </div>
+              </div>
+              <span class="hint-text">Minecraft loads the built-in module at this version.</span>
             </div>
 
-            <div class="section-label">Capabilities</div>
-            <label class="pill" id="fCapToggle">
-              <input type="checkbox" id="fCapScriptEval" checked disabled>
-              <code>script_eval</code> <span style="color:rgba(255,255,255,0.3)">(required for scripts)</span>
+            <div class="section-divider">Capabilities</div>
+            <label class="toggle-row">
+              <input type="checkbox" checked disabled>
+              <code>script_eval</code> <span>(required for scripts)</span>
             </label>
 
-            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.06); margin:1.25rem 0">
+            <div class="section-divider">Metadata <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></div>
 
-            <!-- Metadata -->
-            <div class="section-label">Metadata <span class="section-label-hint">(optional)</span></div>
-            <div class="input-row">
-              <div>
-                <label class="input-label" for="fAuthor">Author</label>
-                <input type="text" id="fAuthor" class="input-field" placeholder="Your name">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="fAuthor">Author</label>
+                <input type="text" id="fAuthor" class="form-input" placeholder="Your name">
               </div>
-              <div>
-                <label class="input-label" for="fLicense">License</label>
-                <input type="text" id="fLicense" class="input-field" placeholder="e.g. MIT">
+              <div class="form-group">
+                <label class="form-label" for="fLicense">License</label>
+                <input type="text" id="fLicense" class="form-input" placeholder="e.g. MIT">
               </div>
             </div>
 
@@ -364,68 +319,50 @@
 
           <!-- Output -->
           <div class="reveal stagger-2">
-            <div class="output-box">
-              <div class="output-header">
-                <span class="output-title">manifest.json</span>
-                <button class="btn btn-sm" onclick="copyJson()">Copy</button>
+            <div class="tool-card-main">
+              <div class="tool-card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                manifest.json
               </div>
-              <div class="output-code" id="jsonOutput"></div>
-            </div>
-            <div class="btn-group" style="margin-top:0.75rem">
-              <button class="btn btn-primary" onclick="copyJson()">Copy JSON</button>
-              <button class="btn" onclick="downloadJson()">Download</button>
-              <button class="btn" onclick="generateUuids()">New UUIDs</button>
+              <div class="json-output" id="jsonOutput"></div>
+              <div class="action-row">
+                <button class="btn btn-primary" onclick="copyJson()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                  Copy JSON
+                </button>
+                <button class="btn btn-secondary" onclick="downloadJson()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download
+                </button>
+                <button class="btn btn-secondary" onclick="generateUuids()">New UUIDs</button>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Guide -->
-        <div class="section-label" style="margin-top:2rem; font-size:0.8rem; border-bottom:none; margin-bottom:0">How it works</div>
-        <div class="guide-steps reveal">
-          <div class="guide-step">
-            <h3>1. Pick your pack type</h3>
-            <p>Choose resource pack (textures, sounds), behavior pack (entities, loot, functions), or world template. The form adapts: world templates skip min_engine_version, and resource packs get a pack_scope option.</p>
+        <div class="tool-card-main reveal" style="margin-top:1.5rem">
+          <div class="tool-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            How it works
           </div>
-          <div class="guide-step">
-            <h3>2. Fill in the basics</h3>
-            <p>Name and description appear in-game. Set your pack version — bump it whenever you publish an update so Minecraft replaces older imports.</p>
-          </div>
-          <div class="guide-step">
-            <h3>3. Add a scripting module (optional)</h3>
-            <p>Enable <strong>Add a script module</strong> for Script API features. Set the entry file and the @minecraft/server version. The manifest gets dependencies and script_eval capability automatically.</p>
-          </div>
-          <div class="guide-step">
-            <h3>4. Copy or download</h3>
-            <p>UUIDs are generated securely in your browser. Hit Copy JSON to paste into your project, or Download and drop manifest.json into your pack's root folder.</p>
-          </div>
-        </div>
-
-        <!-- FAQ -->
-        <div class="section-label" style="margin-top:2rem; font-size:0.8rem; border-bottom:none; margin-bottom:0">FAQ</div>
-        <div class="faq-section reveal">
-          <div class="faq-item">
-            <div class="faq-question">What is a manifest.json in Minecraft Bedrock?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-answer">manifest.json is the identity file every resource pack, behavior pack, and world template needs. It defines the pack name, description, unique UUID, version, and the modules the pack provides so Minecraft can load it correctly.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-question">What does the Manifest Generator create?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-answer">It generates a format_version 2 manifest for resource packs, behavior packs, and world templates, including pack UUIDs, module UUIDs, min_engine_version, an optional scripting module with @minecraft/server dependency, capabilities, and metadata — ready to copy or download as manifest.json.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-question">Is the manifest.json generator free?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-answer">Yes. Every tool on AntigleForge is free and runs entirely in your browser. Nothing is uploaded, stored, or processed on a server.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-question">Do I need to generate my own UUIDs?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-answer">No. The generator creates secure random UUIDs for your pack and every module automatically. Use the New UUIDs button if you ever need a new set.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-question">Where do I put the generated manifest.json?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-answer">Download it and place it in the root folder of your resource or behavior pack, next to your pack's contents. The pack folder can then be zipped and imported into Minecraft Bedrock.</div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-question">Why does my script module need a @minecraft/server version?<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
-            <div class="faq-answer">Script modules use the Minecraft Script API, and the manifest declares which version of the built-in @minecraft/server module your code was written against. Minecraft loads that module version automatically.</div>
+          <div class="guide-steps">
+            <div class="guide-step">
+              <h3>1. Pick your pack type</h3>
+              <p>Choose resource pack (textures, sounds), behavior pack (entities, loot, functions), or world template. The form adapts: world templates skip min_engine_version, and resource packs get a pack scope option.</p>
+            </div>
+            <div class="guide-step">
+              <h3>2. Fill in the basics</h3>
+              <p>Name and description appear in-game. Set your pack version — bump it whenever you publish an update so Minecraft replaces older imports.</p>
+            </div>
+            <div class="guide-step">
+              <h3>3. Add a scripting module (optional)</h3>
+              <p>Enable <strong>Add a script module</strong> for Script API features. Set the entry file and the @minecraft/server version. The manifest gets dependencies and script_eval capability automatically.</p>
+            </div>
+            <div class="guide-step">
+              <h3>4. Copy or download</h3>
+              <p>UUIDs are generated securely in your browser. Hit Copy JSON to paste into your project, or Download and drop manifest.json into your pack's root folder.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -466,6 +403,26 @@
   <script src="../assets/js/performance.js"></script>
   <script src="../assets/js/main.js"></script>
   <script src="../assets/js/components.js"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is a manifest.json in Minecraft Bedrock?', a: 'manifest.json is the identity file every resource pack, behavior pack, and world template needs. It defines the pack name, description, unique UUID, version, and the modules the pack provides so Minecraft can load it correctly.' },
+    { q: 'What does the Manifest Generator create?', a: 'It generates a format_version 2 manifest for resource packs, behavior packs, and world templates, including pack UUIDs, module UUIDs, min_engine_version, an optional scripting module with @minecraft/server dependency, capabilities, and metadata — ready to copy or download as manifest.json.' },
+    { q: 'Is the manifest.json generator free?', a: 'Yes. Every tool on AntigleForge is free and runs entirely in your browser. Nothing is uploaded, stored, or processed on a server.' },
+    { q: 'Do I need to generate my own UUIDs?', a: 'No. The generator creates secure random UUIDs for your pack and every module automatically. Use the New UUIDs button if you ever need a new set.' },
+    { q: 'Where do I put the generated manifest.json?', a: 'Download it and place it in the root folder of your resource or behavior pack, next to your pack\'s contents. The pack folder can then be zipped and imported into Minecraft Bedrock.' },
+    { q: 'Why does my script module need a @minecraft/server version?', a: 'Script modules use the Minecraft Script API, and the manifest declares which version of the built-in @minecraft/server module your code was written against. Minecraft loads that module version automatically.' }
+  ]);
+
+  // Backup FAQ handler
+  document.addEventListener('click', function(e) {
+    var q = e.target.closest('.faq-question');
+    if (!q) return;
+    var item = q.parentElement;
+    var wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  });
+  </script>
   <script>
   (function() {
     var packUuid = '', moduleUuid = '';
@@ -525,13 +482,11 @@
         }]
       };
 
-      // Pack scope (resource only)
       if (type === 'resource') {
         var scope = getVal('fScope');
         if (scope !== 'any') manifest.header.pack_scope = scope;
       }
 
-      // Script module
       if (scriptEnabled && type !== 'world') {
         var scriptUuid = genUuid();
         manifest.modules.push({
@@ -546,7 +501,6 @@
         manifest.capabilities = ['script_eval'];
       }
 
-      // Metadata
       if (author || license) {
         manifest.metadata = {};
         if (author) manifest.metadata.authors = [author];
@@ -554,26 +508,35 @@
       }
 
       var json = JSON.stringify(manifest, null, 2);
-      document.getElementById('jsonOutput').innerHTML = syntaxHighlight(json);
+      document.getElementById('jsonOutput').textContent = json;
       window._lastJson = json;
-    }
-
-    function syntaxHighlight(json) {
-      return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"([^"]+)"(?=\s*:)/g, '<span class="json-key">"$1"</span>')
-        .replace(/:\s*"([^"]*)"/g, ': <span class="json-str">"$1"</span>')
-        .replace(/:\s*(\d+)/g, ': <span class="json-num">$1</span>')
-        .replace(/:\s*(true|false)/g, ': <span class="json-bool">$1</span>');
     }
 
     window.copyJson = function() {
       if (!window._lastJson) generate();
-      navigator.clipboard.writeText(window._lastJson).then(function() {
-        var btn = event.target;
-        var orig = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(function() { btn.textContent = orig; }, 1500);
-      });
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(window._lastJson).then(showCopyOK).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+      function fallbackCopy() {
+        var ta = document.createElement('textarea');
+        ta.value = window._lastJson;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showCopyOK(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+      function showCopyOK() {
+        var t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = 'Copied!';
+        document.body.appendChild(t);
+        setTimeout(function() { t.classList.add('show'); }, 10);
+        setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 2000);
+      }
     };
 
     window.downloadJson = function() {
@@ -586,14 +549,11 @@
       URL.revokeObjectURL(a.href);
     };
 
-    // Toggle script panel
     document.getElementById('fScript').addEventListener('change', function() {
-      var panel = document.getElementById('fScriptPanel');
-      panel.style.display = this.checked ? 'block' : 'none';
+      document.getElementById('fScriptPanel').style.display = this.checked ? 'block' : 'none';
       generate();
     });
 
-    // Show/hide fields based on pack type
     document.getElementById('fType').addEventListener('change', function() {
       var t = this.value;
       document.getElementById('fMinEngineField').style.display = t === 'world' ? 'none' : 'block';
@@ -606,23 +566,11 @@
       generate();
     });
 
-    // Auto-generate
     document.querySelectorAll('input, select').forEach(function(el) {
       el.addEventListener('input', generate);
       el.addEventListener('change', generate);
     });
 
-    // FAQ click handler
-    document.addEventListener('click', function(e) {
-      var q = e.target.closest('.faq-question');
-      if (!q) return;
-      var item = q.parentElement;
-      var wasOpen = item.classList.contains('open');
-      item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
-      if (!wasOpen) item.classList.add('open');
-    });
-
-    // Init
     generateUuids();
   })();
   </script>
