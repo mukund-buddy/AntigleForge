@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generate manifest.json for Minecraft Bedrock Edition behavior packs, resource packs, and script modules.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>Manifest Generator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/manifest-generator">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/manifest-generator">
+  <meta property="og:title" content="Manifest Generator - AntigleForge">
+  <meta property="og:description" content="Generate manifest.json for Minecraft Bedrock packs.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  
+  <style>
+    .gen-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .gen-grid { grid-template-columns: 1fr; } }
+    
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 500px) { .input-row { grid-template-columns: 1fr; } }
+    
+    .uuid-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .uuid-row .input-field { flex: 1; }
+    
+    .btn-sm {
+      padding: 0.45rem 0.75rem;
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+    
+    .section-label {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.3);
+      margin: 1rem 0 0.5rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 0.5rem;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: rgba(0,221,255,0.08);
+      border: 1px solid rgba(0,221,255,0.15);
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.6);
+    }
+    .tag button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 0;
+      line-height: 1;
+    }
+    .tag button:hover { color: #ff6b6b; }
+    
+    .output-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .output-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.4);
+    }
+    .output-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .output-code {
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.8);
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .output-code::-webkit-scrollbar { width: 4px; }
+    .output-code::-webkit-scrollbar-track { background: transparent; }
+    .output-code::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    
+    .json-key { color: #00ddff; }
+    .json-str { color: #22c55e; }
+    .json-num { color: #f59e0b; }
+    .json-bool { color: #a78bfa; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="../index.html" class="navbar-brand">
+        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="tool-header reveal">
+          <div class="tool-badges">
+            <span class="badge badge-bedrock">Bedrock</span>
+          </div>
+          <h1 class="tool-title">Manifest Generator</h1>
+          <p class="tool-subtitle">Generate manifest.json for behavior packs, resource packs, and script modules.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Manifest Generator
+            </div>
+
+            <!-- Pack Type -->
+            <label class="input-label">Pack Type</label>
+            <div class="tag-row" id="packTypeRow">
+              <button class="tag active" data-type="behavior">Behavior Pack</button>
+              <button class="tag" data-type="resource">Resource Pack</button>
+              <button class="tag" data-type="script">Script Module</button>
+              <button class="tag" data-type="world">World Template</button>
+            </div>
+
+            <!-- Header -->
+            <div class="section-label">Header</div>
+            
+            <label class="input-label" for="packName">Pack Name</label>
+            <input type="text" id="packName" class="input-field" value="My Behavior Pack" placeholder="Pack name">
+            
+            <label class="input-label" for="packDesc">Description</label>
+            <input type="text" id="packDesc" class="input-field" value="A custom behavior pack" placeholder="Short description">
+            
+            <div class="input-row">
+              <div>
+                <label class="input-label">Pack UUID</label>
+                <div class="uuid-row">
+                  <input type="text" id="packUuid" class="input-field" readonly>
+                  <button class="btn btn-sm" onclick="generateUuid('packUuid')">Generate</button>
+                </div>
+              </div>
+              <div>
+                <label class="input-label" for="packVersion">Pack Version</label>
+                <div class="input-row">
+                  <input type="number" id="verMajor" class="input-field" value="1" min="0" max="999">
+                  <input type="number" id="verMinor" class="input-field" value="0" min="0" max="999">
+                  <input type="number" id="verPatch" class="input-field" value="0" min="0" max="999">
+                </div>
+              </div>
+            </div>
+            
+            <div class="input-row">
+              <div>
+                <label class="input-label" for="minEngine">Min Engine Version</label>
+                <div class="input-row">
+                  <input type="number" id="engineMajor" class="input-field" value="1" min="1" max="99">
+                  <input type="number" id="engineMinor" class="input-field" value="21" min="0" max="99">
+                  <input type="number" id="enginePatch" class="input-field" value="0" min="0" max="99">
+                </div>
+              </div>
+              <div id="packScopeWrap" style="display:none">
+                <label class="input-label" for="packScope">Pack Scope</label>
+                <select id="packScope" class="input-field">
+                  <option value="any">Any (default)</option>
+                  <option value="global">Global only</option>
+                  <option value="world">World only</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Module -->
+            <div class="section-label">Module</div>
+            
+            <label class="input-label">Module UUID</label>
+            <div class="uuid-row">
+              <input type="text" id="moduleUuid" class="input-field" readonly>
+              <button class="btn btn-sm" onclick="generateUuid('moduleUuid')">Generate</button>
+            </div>
+            
+            <label class="input-label" for="moduleDesc">Module Description</label>
+            <input type="text" id="moduleDesc" class="input-field" value="" placeholder="Optional module description">
+
+            <!-- Dependencies -->
+            <div class="section-label">Dependencies</div>
+            
+            <div class="tag-row" id="depTags"></div>
+            <div class="input-row" style="margin-top:0.5rem">
+              <div>
+                <label class="input-label" for="depUuid">Dependency UUID</label>
+                <input type="text" id="depUuid" class="input-field" placeholder="UUID of required pack">
+              </div>
+              <div>
+                <label class="input-label" for="depVersion">Version</label>
+                <div class="input-row">
+                  <input type="number" id="depVerMajor" class="input-field" value="1" min="0">
+                  <input type="number" id="depVerMinor" class="input-field" value="0" min="0">
+                  <input type="number" id="depVerPatch" class="input-field" value="0" min="0">
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-sm" onclick="addDependency()" style="margin-top:0.5rem">+ Add Dependency</button>
+
+            <!-- Metadata -->
+            <div class="section-label">Metadata (optional)</div>
+            
+            <label class="input-label" for="metaAuthors">Authors</label>
+            <input type="text" id="metaAuthors" class="input-field" placeholder="Comma-separated names">
+            
+            <div class="input-row">
+              <div>
+                <label class="input-label" for="metaLicense">License</label>
+                <input type="text" id="metaLicense" class="input-field" value="MIT" placeholder="MIT">
+              </div>
+              <div>
+                <label class="input-label" for="metaUrl">URL</label>
+                <input type="text" id="metaUrl" class="input-field" placeholder="https://...">
+              </div>
+            </div>
+
+            <div class="btn-group" style="margin-top:1.25rem">
+              <button class="btn btn-primary" onclick="generate()">Generate Manifest</button>
+              <button class="btn" onclick="copyJson()">Copy JSON</button>
+              <button class="btn" onclick="downloadJson()">Download</button>
+            </div>
+          </div>
+
+          <!-- Output -->
+          <div class="output-box reveal stagger-2">
+            <div class="output-header">
+              <span class="output-title">manifest.json</span>
+              <div class="output-actions">
+                <button class="btn btn-sm" onclick="copyJson()">Copy</button>
+                <button class="btn btn-sm" onclick="downloadJson()">Download</button>
+              </div>
+            </div>
+            <div class="output-code" id="jsonOutput"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
+          <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+        </div>
+        <nav class="footer-nav">
+          <a href="../index.html" class="footer-link">Home</a>
+          <a href="../tools.html" class="footer-link">Tools</a>
+        </nav>
+        <div class="footer-social">
+          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-link">YouTube</a>
+          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-link">Instagram</a>
+          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        </div>
+      </div>
+      <p class="footer-text">Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../assets/js/performance.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script>
+  (function() {
+    var packType = 'behavior';
+    var dependencies = [];
+    var MODULE_TYPES = {
+      behavior: 'data',
+      resource: 'resources',
+      script: 'script',
+      world: 'world_template'
+    };
+
+    // Pack type selector
+    document.getElementById('packTypeRow').addEventListener('click', function(e) {
+      var btn = e.target.closest('.tag');
+      if (!btn) return;
+      document.querySelectorAll('#packTypeRow .tag').forEach(function(t) { t.classList.remove('active'); });
+      btn.classList.add('active');
+      packType = btn.dataset.type;
+      document.getElementById('packScopeWrap').style.display = packType === 'resource' ? 'block' : 'none';
+      generate();
+    });
+
+    // Auto-generate UUIDs on load
+    generateUuid('packUuid');
+    generateUuid('moduleUuid');
+
+    // Generate UUID v4
+    window.generateUuid = function(inputId) {
+      var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+      document.getElementById(inputId).value = uuid;
+      generate();
+    };
+
+    // Add dependency
+    window.addDependency = function() {
+      var uuid = document.getElementById('depUuid').value.trim();
+      var major = parseInt(document.getElementById('depVerMajor').value) || 1;
+      var minor = parseInt(document.getElementById('depVerMinor').value) || 0;
+      var patch = parseInt(document.getElementById('depVerPatch').value) || 0;
+      if (!uuid) return;
+      dependencies.push({ uuid: uuid, version: [major, minor, patch] });
+      document.getElementById('depUuid').value = '';
+      renderDeps();
+      generate();
+    };
+
+    window.removeDep = function(idx) {
+      dependencies.splice(idx, 1);
+      renderDeps();
+      generate();
+    };
+
+    function renderDeps() {
+      var container = document.getElementById('depTags');
+      container.innerHTML = '';
+      dependencies.forEach(function(dep, i) {
+        var tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.innerHTML = dep.uuid.substring(0, 8) + '... [' + dep.version.join('.') + '] <button onclick="removeDep(' + i + ')">&times;</button>';
+        container.appendChild(tag);
+      });
+    }
+
+    // Generate manifest JSON
+    window.generate = function() {
+      var name = document.getElementById('packName').value || 'My Pack';
+      var desc = document.getElementById('packDesc').value || '';
+      var packUuid = document.getElementById('packUuid').value;
+      var moduleUuid = document.getElementById('moduleUuid').value;
+      var moduleDesc = document.getElementById('moduleDesc').value;
+      var major = parseInt(document.getElementById('verMajor').value) || 1;
+      var minor = parseInt(document.getElementById('verMinor').value) || 0;
+      var patch = parseInt(document.getElementById('verPatch').value) || 0;
+      var engMajor = parseInt(document.getElementById('engineMajor').value) || 1;
+      var engMinor = parseInt(document.getElementById('engineMinor').value) || 21;
+      var engPatch = parseInt(document.getElementById('enginePatch').value) || 0;
+
+      var manifest = {
+        format_version: 2,
+        header: {
+          name: name,
+          description: desc,
+          uuid: packUuid,
+          version: [major, minor, patch],
+          min_engine_version: [engMajor, engMinor, engPatch]
+        },
+        modules: [{
+          type: MODULE_TYPES[packType],
+          uuid: moduleUuid,
+          version: [major, minor, patch]
+        }]
+      };
+
+      if (moduleDesc) {
+        manifest.modules[0].description = moduleDesc;
+      }
+
+      if (packType === 'resource') {
+        var scope = document.getElementById('packScope').value;
+        if (scope !== 'any') manifest.header.pack_scope = scope;
+      }
+
+      if (dependencies.length > 0) {
+        manifest.dependencies = dependencies.map(function(d) {
+          return { uuid: d.uuid, version: d.version };
+        });
+      }
+
+      // Metadata
+      var authors = document.getElementById('metaAuthors').value.trim();
+      var license = document.getElementById('metaLicense').value.trim();
+      var url = document.getElementById('metaUrl').value.trim();
+      if (authors || license || url) {
+        manifest.metadata = {};
+        if (authors) manifest.metadata.authors = authors.split(',').map(function(a) { return a.trim(); });
+        if (license) manifest.metadata.license = license;
+        if (url) manifest.metadata.url = url;
+      }
+
+      var json = JSON.stringify(manifest, null, 2);
+      document.getElementById('jsonOutput').innerHTML = syntaxHighlight(json);
+      window._lastJson = json;
+    };
+
+    function syntaxHighlight(json) {
+      return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"([^"]+)"(?=\s*:)/g, '<span class="json-key">"$1"</span>')
+        .replace(/:\s*"([^"]*)"/g, ': <span class="json-str">"$1"</span>')
+        .replace(/:\s*(\d+)/g, ': <span class="json-num">$1</span>')
+        .replace(/:\s*(true|false)/g, ': <span class="json-bool">$1</span>');
+    }
+
+    window.copyJson = function() {
+      if (!window._lastJson) generate();
+      navigator.clipboard.writeText(window._lastJson).then(function() {
+        var btn = event.target;
+        var orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = orig; }, 1500);
+      });
+    };
+
+    window.downloadJson = function() {
+      if (!window._lastJson) generate();
+      var blob = new Blob([window._lastJson], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'manifest.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    // Auto-generate on input change
+    document.querySelectorAll('input, select').forEach(function(el) {
+      el.addEventListener('input', generate);
+      el.addEventListener('change', generate);
+    });
+
+    generate();
+  })();
+  </script>
+</body>
+</html>
