@@ -39,6 +39,21 @@
     .farm-select {
       grid-column: 1 / -1;
     }
+    .disclaimer-box {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.15);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.5;
+    }
+    .disclaimer-box svg { color: #f59e0b; flex-shrink: 0; margin-top: 2px; }
+    .disclaimer-box strong { color: #f59e0b; }
     .result-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -270,6 +285,24 @@
                 <div class="num" id="resSingleChests">0</div>
                 <div class="lbl">Single Chests</div>
               </div>
+            </div>
+          </div>
+
+          <!-- Disclaimer -->
+          <div class="disclaimer-box reveal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <div>
+              <strong>Disclaimer:</strong> These are estimated rates based on typical farm designs under ideal conditions. Actual yield varies significantly depending on:
+              <ul style="margin:0.3rem 0 0 1.2rem; padding:0; color:rgba(255,255,255,0.4); font-size:0.78rem; line-height:1.6">
+                <li>Farm design and spawn mechanics</li>
+                <li>Lighting, distance, and surrounding cave spawns</li>
+                <li>Server performance and tick speed</li>
+                <li>Edition-specific behavior (Bedrock vs Java)</li>
+                <li>Random tick variation and RNG</li>
+              </ul>
+              Use these numbers as a rough reference, not a guarantee.
             </div>
           </div>
 

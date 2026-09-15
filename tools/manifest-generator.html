@@ -48,6 +48,22 @@
     }
     .uuid-row .input-field { flex: 1; }
     
+    .version-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .version-input {
+      width: 100%;
+      text-align: center;
+      padding: 0.45rem 0.3rem;
+    }
+    .version-dot {
+      color: rgba(255,255,255,0.2);
+      font-size: 1.1rem;
+      font-weight: 300;
+    }
+    
     .btn-sm {
       padding: 0.45rem 0.75rem;
       font-size: 0.72rem;
@@ -202,63 +218,65 @@
             <!-- Header -->
             <div class="section-label">Header</div>
             
-            <label class="input-label" for="packName">Pack Name</label>
-            <input type="text" id="packName" class="input-field" value="My Behavior Pack" placeholder="Pack name">
-            
-            <label class="input-label" for="packDesc">Description</label>
-            <input type="text" id="packDesc" class="input-field" value="A custom behavior pack" placeholder="Short description">
-            
             <div class="input-row">
               <div>
-                <label class="input-label">Pack UUID</label>
-                <div class="uuid-row">
-                  <input type="text" id="packUuid" class="input-field" readonly>
-                  <button class="btn btn-sm" onclick="generateUuid('packUuid')">Generate</button>
-                </div>
+                <label class="input-label" for="packName">Pack Name</label>
+                <input type="text" id="packName" class="input-field" value="My Behavior Pack" placeholder="Pack name">
               </div>
               <div>
-                <label class="input-label" for="packVersion">Pack Version</label>
-                <div class="input-row">
-                  <input type="number" id="verMajor" class="input-field" value="1" min="0" max="999">
-                  <input type="number" id="verMinor" class="input-field" value="0" min="0" max="999">
-                  <input type="number" id="verPatch" class="input-field" value="0" min="0" max="999">
-                </div>
+                <label class="input-label" for="packDesc">Description</label>
+                <input type="text" id="packDesc" class="input-field" value="A custom behavior pack" placeholder="Short description">
               </div>
+            </div>
+            
+            <label class="input-label">Pack UUID</label>
+            <div class="uuid-row">
+              <input type="text" id="packUuid" class="input-field" readonly>
+              <button class="btn btn-sm" onclick="generateUuid('packUuid')">New UUID</button>
             </div>
             
             <div class="input-row">
               <div>
-                <label class="input-label" for="minEngine">Min Engine Version</label>
-                <div class="input-row">
-                  <input type="number" id="engineMajor" class="input-field" value="1" min="1" max="99">
-                  <input type="number" id="engineMinor" class="input-field" value="21" min="0" max="99">
-                  <input type="number" id="enginePatch" class="input-field" value="0" min="0" max="99">
+                <label class="input-label">Version</label>
+                <div class="version-row">
+                  <input type="number" id="verMajor" class="input-field version-input" value="1" min="0" max="999">
+                  <span class="version-dot">.</span>
+                  <input type="number" id="verMinor" class="input-field version-input" value="0" min="0" max="999">
+                  <span class="version-dot">.</span>
+                  <input type="number" id="verPatch" class="input-field version-input" value="0" min="0" max="999">
                 </div>
               </div>
-              <div id="packScopeWrap" style="display:none">
-                <label class="input-label" for="packScope">Pack Scope</label>
-                <select id="packScope" class="input-field">
-                  <option value="any">Any (default)</option>
-                  <option value="global">Global only</option>
-                  <option value="world">World only</option>
-                </select>
+              <div>
+                <label class="input-label">Min Engine Version</label>
+                <div class="version-row">
+                  <input type="number" id="engineMajor" class="input-field version-input" value="1" min="1" max="99">
+                  <span class="version-dot">.</span>
+                  <input type="number" id="engineMinor" class="input-field version-input" value="21" min="0" max="99">
+                  <span class="version-dot">.</span>
+                  <input type="number" id="enginePatch" class="input-field version-input" value="0" min="0" max="99">
+                </div>
               </div>
             </div>
 
             <!-- Module -->
             <div class="section-label">Module</div>
             
-            <label class="input-label">Module UUID</label>
-            <div class="uuid-row">
-              <input type="text" id="moduleUuid" class="input-field" readonly>
-              <button class="btn btn-sm" onclick="generateUuid('moduleUuid')">Generate</button>
+            <div class="input-row">
+              <div>
+                <label class="input-label">Module UUID</label>
+                <div class="uuid-row">
+                  <input type="text" id="moduleUuid" class="input-field" readonly>
+                  <button class="btn btn-sm" onclick="generateUuid('moduleUuid')">New UUID</button>
+                </div>
+              </div>
+              <div>
+                <label class="input-label" for="moduleDesc">Module Description</label>
+                <input type="text" id="moduleDesc" class="input-field" value="" placeholder="Optional">
+              </div>
             </div>
-            
-            <label class="input-label" for="moduleDesc">Module Description</label>
-            <input type="text" id="moduleDesc" class="input-field" value="" placeholder="Optional module description">
 
             <!-- Dependencies -->
-            <div class="section-label">Dependencies</div>
+            <div class="section-label">Dependencies <span style="color:rgba(255,255,255,0.2); font-weight:300; text-transform:none; letter-spacing:0">(e.g. linked Resource Pack for Behavior Pack)</span></div>
             
             <div class="tag-row" id="depTags"></div>
             <div class="input-row" style="margin-top:0.5rem">
@@ -267,11 +285,13 @@
                 <input type="text" id="depUuid" class="input-field" placeholder="UUID of required pack">
               </div>
               <div>
-                <label class="input-label" for="depVersion">Version</label>
-                <div class="input-row">
-                  <input type="number" id="depVerMajor" class="input-field" value="1" min="0">
-                  <input type="number" id="depVerMinor" class="input-field" value="0" min="0">
-                  <input type="number" id="depVerPatch" class="input-field" value="0" min="0">
+                <label class="input-label">Version</label>
+                <div class="version-row">
+                  <input type="number" id="depVerMajor" class="input-field version-input" value="1" min="0">
+                  <span class="version-dot">.</span>
+                  <input type="number" id="depVerMinor" class="input-field version-input" value="0" min="0">
+                  <span class="version-dot">.</span>
+                  <input type="number" id="depVerPatch" class="input-field version-input" value="0" min="0">
                 </div>
               </div>
             </div>
