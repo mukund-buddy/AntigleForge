@@ -674,6 +674,12 @@
     var noResults = document.getElementById('noResults');
     var filterBar = document.getElementById('filterBar');
     var cards = Array.from(toolsGrid.querySelectorAll('.tool-card'));
+    cards.sort(function(a, b) {
+      var na = (a.querySelector('.tool-name') || {}).textContent || '';
+      var nb = (b.querySelector('.tool-name') || {}).textContent || '';
+      return na.localeCompare(nb, undefined, { sensitivity: 'base' });
+    });
+    cards.forEach(function(card) { toolsGrid.appendChild(card); });
     var total = cards.length;
     var activeFilter = 'all';
 
