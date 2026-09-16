@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Material Calculator — AntigleForge</title>
+    <link rel="canonical" href="https://antigleforge.pages.dev/tools/building-material-calculator.html">
+    <meta name="description" content="Free Minecraft building material calculator. Calculate exact blocks needed for any shape, convert to stacks/shulkers, export to .mcstructure and .litematic files.">
+    <meta name="keywords" content="minecraft, building material calculator, block calculator, mcstructure, litematica, structure export, bedrock, java">
+    <meta property="og:title" content="Building Material Calculator — AntigleForge">
+    <meta property="og:description" content="Calculate exact blocks for any shape + export to .mcstructure and .litematic">
+    <meta property="og:url" content="https://antigleforge.pages.dev/tools/building-material-calculator.html">
+    <meta name="twitter:card" content="summary">
+    <link rel="icon" type="image/png" href="../assets/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .shape-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:16px 0}
+        .shape-btn{background:var(--bg-tertiary,#16161e);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 8px;cursor:pointer;text-align:center;transition:all .25s ease;color:var(--text-secondary);font-size:13px;font-family:'Oxanium',sans-serif;font-weight:300}
+        .shape-btn:hover{border-color:var(--primary,#00d4ff);background:rgba(0,212,255,.05)}
+        .shape-btn.active{border-color:var(--primary,#00d4ff);background:rgba(0,212,255,.1);color:var(--primary);box-shadow:0 0 20px rgba(0,212,255,.15)}
+        .shape-icon{font-size:28px;display:block;margin-bottom:6px;filter:grayscale(.3)}
+        .result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin:16px 0}
+        .result-card{background:var(--bg-secondary,#111118);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;text-align:center}
+        .result-card .label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted,#666);margin-bottom:6px;font-family:'Inter',sans-serif}
+        .result-card .value{font-size:26px;font-weight:400;color:var(--primary,#00d4ff);font-family:'Oxanium',sans-serif}
+        .result-card .unit{font-size:12px;color:var(--text-secondary,#999);margin-top:2px}
+        .export-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+        .export-card{background:var(--bg-secondary,#111118);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:20px;text-align:center;transition:all .25s ease}
+        .export-card:hover{border-color:var(--primary,#00d4ff);transform:translateY(-2px)}
+        .export-card h4{font-size:14px;color:var(--text-primary,#eee);margin:8px 0 4px;font-family:'Oxanium',sans-serif;font-weight:400}
+        .export-card p{font-size:11px;color:var(--text-muted,#666);line-height:1.5}
+        .export-card .btn{margin-top:14px;display:inline-block}
+        .material-table{width:100%;border-collapse:collapse;margin:16px 0}
+        .material-table th,.material-table td{padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;font-family:'Inter',sans-serif;font-weight:300}
+        .material-table th{color:var(--text-muted,#666);text-transform:uppercase;letter-spacing:1px;font-size:11px}
+        .material-table td{color:var(--text-primary,#eee)}
+        .material-table tr:hover td{background:rgba(0,212,255,.03)}
+        .input-note{font-size:11px;color:var(--text-muted,#666);margin-top:4px;font-family:'Inter',sans-serif}
+        .step-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+        .step-row .form-group{flex:1;min-width:120px}
+        .dim-inputs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:16px 0}
+        .dim-inputs .form-group{margin:0}
+        .toggle-row{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0}
+        .toggle-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);font-family:'Inter',sans-serif;font-weight:300}
+        .toggle-item input[type="checkbox"]{accent-color:var(--primary);width:16px;height:16px}
+        .shape-preview{width:100%;height:180px;background:var(--bg-secondary);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin:16px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .shape-preview canvas{max-width:100%;max-height:100%}
+        .dimension-notice{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--primary);margin:8px 0;display:none}
+        .dimension-notice.show{display:block}
+        .faq-item{background:var(--bg-secondary,#111118);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:10px;overflow:hidden}
+        .faq-question{padding:16px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text-primary,#f0f1f4);font-size:14px;font-family:'Oxanium',sans-serif;font-weight:400;transition:background .2s}
+        .faq-question:hover{background:rgba(255,255,255,.03)}
+        .faq-arrow{transition:transform .3s ease;color:var(--text-muted,#666);font-size:12px}
+        .faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease;padding:0 20px;color:var(--text-secondary,#b0b5be);font-size:13px;line-height:1.7;font-family:'Inter',sans-serif;font-weight:300}
+        .faq-answer.open{max-height:500px;padding:0 20px 16px}
+        .block-select-wrap{position:relative}
+        .block-select-wrap select{width:100%;appearance:none;-webkit-appearance:none;background:var(--bg-tertiary,#16161e) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E") no-repeat right 12px center;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 36px 10px 14px;color:var(--text-primary,#eee);font-size:14px;font-family:'Oxanium',sans-serif;font-weight:300;cursor:pointer}
+        .block-select-wrap select:focus{outline:none;border-color:var(--primary,#00d4ff)}
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+
+    <main class="tool-page">
+        <div class="tool-container">
+            <div class="tool-header">
+                <div class="tool-icon">🧱</div>
+                <h1>Building Material Calculator</h1>
+                <p>Calculate exact blocks for any shape. Export to .mcstructure and .litematic.</p>
+            </div>
+
+            <div class="tool-card-main">
+                <div class="tool-card-header">
+                    <div class="tool-icon">📐</div>
+                    <h2>Select Shape</h2>
+                </div>
+                <div class="shape-grid" id="shapeGrid">
+                    <button class="shape-btn active" data-shape="cuboid"><span class="shape-icon">📦</span>Solid Cuboid</button>
+                    <button class="shape-btn" data-shape="hollow"><span class="shape-icon">🪟</span>Hollow Cuboid</button>
+                    <button class="shape-btn" data-shape="walls"><span class="shape-icon">🏗️</span>Walls Only</button>
+                    <button class="shape-btn" data-shape="floor"><span class="shape-icon">🔻</span>Floor / Slab</button>
+                    <button class="shape-btn" data-shape="sphere"><span class="shape-icon">🔵</span>Sphere</button>
+                    <button class="shape-btn" data-shape="dome"><span class="shape-icon">🧁</span>Dome</button>
+                    <button class="shape-btn" data-shape="cylinder"><span class="shape-icon">🪵</span>Cylinder</button>
+                    <button class="shape-btn" data-shape="pyramid"><span class="shape-icon">🔺</span>Stepped Pyramid</button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Block Type</label>
+                    <div class="block-select-wrap">
+                        <select id="blockType">
+                            <optgroup label="Building Blocks">
+                                <option value="minecraft:stone">Stone</option>
+                                <option value="minecraft:cobblestone">Cobblestone</option>
+                                <option value="minecraft:stone_bricks">Stone Bricks</option>
+                                <option value="minecraft:deepslate_bricks">Deepslate Bricks</option>
+                                <option value="minecraft:cobbled_deepslate">Cobbled Deepslate</option>
+                                <option value="minecraft:smooth_stone">Smooth Stone</option>
+                                <option value="minecraft:granite">Granite</option>
+                                <option value="minecraft:diorite">Diorite</option>
+                                <option value="minecraft:andesite">Andesite</option>
+                                <option value="minecraft:tuff">Tuff</option>
+                                <option value="minecraft:calcite">Calcite</option>
+                                <option value="minecraft:dripstone_block">Dripstone Block</option>
+                                <option value="minecraft:bricks">Bricks</option>
+                                <option value="minecraft:mossy_stone_bricks">Mossy Stone Bricks</option>
+                                <option value="minecraft:cracked_stone_bricks">Cracked Stone Bricks</option>
+                                <option value="minecraft:chiseled_stone_bricks">Chiseled Stone Bricks</option>
+                                <option value="minecraft:polished_granite">Polished Granite</option>
+                                <option value="minecraft:polished_diorite">Polished Diorite</option>
+                                <option value="minecraft:polished_andesite">Polished Andesite</option>
+                            </optgroup>
+                            <optgroup label="Wood">
+                                <option value="minecraft:oak_planks">Oak Planks</option>
+                                <option value="minecraft:spruce_planks">Spruce Planks</option>
+                                <option value="minecraft:birch_planks">Birch Planks</option>
+                                <option value="minecraft:jungle_planks">Jungle Planks</option>
+                                <option value="minecraft:acacia_planks">Acacia Planks</option>
+                                <option value="minecraft:dark_oak_planks">Dark Oak Planks</option>
+                                <option value="minecraft:mangrove_planks">Mangrove Planks</option>
+                                <option value="minecraft:cherry_planks">Cherry Planks</option>
+                                <option value="minecraft:bamboo_planks">Bamboo Planks</option>
+                                <option value="minecraft:crimson_planks">Crimson Planks</option>
+                                <option value="minecraft:warped_planks">Warped Planks</option>
+                            </optgroup>
+                            <optgroup label="Natural">
+                                <option value="minecraft:dirt">Dirt</option>
+                                <option value="minecraft:grass_block">Grass Block</option>
+                                <option value="minecraft:sand">Sand</option>
+                                <option value="minecraft:red_sand">Red Sand</option>
+                                <option value="minecraft:gravel">Gravel</option>
+                                <option value="minecraft:clay">Clay</option>
+                                <option value="minecraft:snow_block">Snow Block</option>
+                                <option value="minecraft:ice">Ice</option>
+                                <option value="minecraft:blue_ice">Blue Ice</option>
+                                <option value="minecraft:packed_ice">Packed Ice</option>
+                                <option value="minecraft:moss_block">Moss Block</option>
+                                <option value="minecraft:mud">Mud</option>
+                            </optgroup>
+                            <optgroup label="Ore Blocks">
+                                <option value="minecraft:iron_block">Iron Block</option>
+                                <option value="minecraft:gold_block">Gold Block</option>
+                                <option value="minecraft:diamond_block">Diamond Block</option>
+                                <option value="minecraft:emerald_block">Emerald Block</option>
+                                <option value="minecraft:lapis_block">Lapis Block</option>
+                                <option value="minecraft:redstone_block">Redstone Block</option>
+                                <option value="minecraft:coal_block">Coal Block</option>
+                                <option value="minecraft:netherite_block">Netherite Block</option>
+                                <option value="minecraft:copper_block">Copper Block</option>
+                            </optgroup>
+                            <optgroup label="Colored">
+                                <option value="minecraft:white_concrete">White Concrete</option>
+                                <option value="minecraft:orange_concrete">Orange Concrete</option>
+                                <option value="minecraft:magenta_concrete">Magenta Concrete</option>
+                                <option value="minecraft:light_blue_concrete">Light Blue Concrete</option>
+                                <option value="minecraft:yellow_concrete">Yellow Concrete</option>
+                                <option value="minecraft:lime_concrete">Lime Concrete</option>
+                                <option value="minecraft:pink_concrete">Pink Concrete</option>
+                                <option value="minecraft:gray_concrete">Gray Concrete</option>
+                                <option value="minecraft:light_gray_concrete">Light Gray Concrete</option>
+                                <option value="minecraft:cyan_concrete">Cyan Concrete</option>
+                                <option value="minecraft:purple_concrete">Purple Concrete</option>
+                                <option value="minecraft:blue_concrete">Blue Concrete</option>
+                                <option value="minecraft:brown_concrete">Brown Concrete</option>
+                                <option value="minecraft:green_concrete">Green Concrete</option>
+                                <option value="minecraft:red_concrete">Red Concrete</option>
+                                <option value="minecraft:black_concrete">Black Concrete</option>
+                            </optgroup>
+                            <optgroup label="Special">
+                                <option value="minecraft:obsidian">Obsidian</option>
+                                <option value="minecraft:crying_obsidian">Crying Obsidian</option>
+                                <option value="minecraft:end_stone">End Stone</option>
+                                <option value="minecraft:purpur_block">Purpur Block</option>
+                                <option value="minecraft:quartz_block">Quartz Block</option>
+                                <option value="minecraft:prismarine_bricks">Prismarine Bricks</option>
+                                <option value="minecraft:dark_prismarine">Dark Prismarine</option>
+                                <option value="minecraft:sea_lantern">Sea Lantern</option>
+                                <option value="minecraft:glowstone">Glowstone</option>
+                                <option value="minecraft:shroomlight">Shroomlight</option>
+                                <option value="minecraft:respawn_anchor">Respawn Anchor</option>
+                                <option value="minecraft:end_stone_bricks">End Stone Bricks</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="dimNotice" class="dimension-notice">
+                    ⚠️ Structure block limit: 48×48×48. Sphere/Dome/Cylinder/Pyramid will be capped for .mcstructure export.
+                </div>
+
+                <div class="dim-inputs" id="dimInputs">
+                    <div class="form-group" id="dimX">
+                        <label class="form-label">Length (X)</label>
+                        <input type="number" class="form-input" id="inputX" value="10" min="1" max="256">
+                    </div>
+                    <div class="form-group" id="dimY">
+                        <label class="form-label">Height (Y)</label>
+                        <input type="number" class="form-input" id="inputY" value="10" min="1" max="256">
+                    </div>
+                    <div class="form-group" id="dimZ">
+                        <label class="form-label">Width (Z)</label>
+                        <input type="number" class="form-input" id="inputZ" value="10" min="1" max="256">
+                    </div>
+                    <div class="form-group" id="dimT" style="display:none">
+                        <label class="form-label">Thickness</label>
+                        <input type="number" class="form-input" id="inputT" value="1" min="1" max="32">
+                    </div>
+                </div>
+
+                <div class="toggle-row">
+                    <label class="toggle-item"><input type="checkbox" id="showPreview" checked> Show Preview</label>
+                </div>
+
+                <div class="shape-preview" id="previewWrap">
+                    <canvas id="previewCanvas" width="300" height="180"></canvas>
+                </div>
+
+                <div class="tool-card-header" style="margin-top:16px">
+                    <div class="tool-icon">🔢</div>
+                    <h2>Adjustments</h2>
+                </div>
+
+                <div class="dim-inputs">
+                    <div class="form-group">
+                        <label class="form-label">Subtract Openings</label>
+                        <input type="number" class="form-input" id="openings" value="0" min="0" max="10000" placeholder="Doors, windows">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subtract Existing</label>
+                        <input type="number" class="form-input" id="existing" value="0" min="0" max="100000" placeholder="Blocks you have">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Safety Buffer %</label>
+                        <input type="number" class="form-input" id="buffer" value="5" min="0" max="100">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="calculate()" style="width:100%;margin-top:12px">Calculate Materials</button>
+            </div>
+
+            <div id="resultsSection" style="display:none">
+                <div class="tool-card-main">
+                    <div class="tool-card-header">
+                        <div class="tool-icon">📊</div>
+                        <h2>Material Breakdown</h2>
+                    </div>
+
+                    <div class="result-grid" id="resultGrid"></div>
+
+                    <table class="material-table" id="materialTable">
+                        <thead><tr><th>Conversion</th><th>Amount</th><th>Notes</th></tr></thead>
+                        <tbody id="materialBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="tool-card-main">
+                    <div class="tool-card-header">
+                        <div class="tool-icon">💾</div>
+                        <h2>Export Structure</h2>
+                    </div>
+                    <p style="color:var(--text-secondary);font-size:13px;margin:0 0 16px;line-height:1.7">
+                        Export your shape as a structure file. Import it into Minecraft using a Structure Block (Bedrock) or Litematica mod (Java).
+                    </p>
+
+                    <div class="export-grid">
+                        <div class="export-card">
+                            <div style="font-size:32px">🟩</div>
+                            <h4>.mcstructure</h4>
+                            <p>Bedrock Edition. Use Structure Block (Save mode) to import. Max 48×48×48.</p>
+                            <button class="btn btn-primary" onclick="exportMcstructure()" style="margin-top:12px">Download .mcstructure</button>
+                        </div>
+                        <div class="export-card">
+                            <div style="font-size:32px">🟦</div>
+                            <h4>.litematic</h4>
+                            <p>Java Edition. Requires Litematica mod. Paste in survival with material list.</p>
+                            <button class="btn btn-primary" onclick="exportLitematic()" style="margin-top:12px">Download .litematic</button>
+                        </div>
+                    </div>
+
+                    <div id="exportNote" class="input-note" style="margin-top:12px;text-align:center"></div>
+                </div>
+            </div>
+
+            <div class="tool-card-main">
+                <div class="tool-card-header">
+                    <div class="tool-icon">❓</div>
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+                <div id="faqContainer"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/components.js"></script>
+    <script>
+        const SHAPES = {
+            cuboid: { needsY:true, needsT:false, label:'Solid Cuboid', desc:'Fully filled rectangular box' },
+            hollow: { needsY:true, needsT:true, label:'Hollow Cuboid', desc:'Box with hollow interior' },
+            walls:  { needsY:true, needsT:true, label:'Walls Only', desc:'Four walls, no floor/ceiling' },
+            floor:  { needsY:false, needsT:true, label:'Floor / Slab', desc:'Flat platform or slab' },
+            sphere: { needsY:false, needsT:false, label:'Sphere', desc:'Full sphere (radius = X)' },
+            dome:   { needsY:false, needsT:false, label:'Dome', desc:'Half sphere on flat base' },
+            cylinder:{ needsY:true, needsT:false, label:'Cylinder', desc:'Circular column' },
+            pyramid: { needsY:true, needsT:false, label:'Stepped Pyramid', desc:'Layer-by-layer pyramid' }
+        };
+
+        let currentShape = 'cuboid';
+        let currentBlocks = [];
+        let currentSize = [0,0,0];
+        let currentBlockName = 'minecraft:stone';
+
+        document.querySelectorAll('.shape-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentShape = btn.dataset.shape;
+                updateDimInputs();
+            });
+        });
+
+        ['inputX','inputY','inputZ','inputT','openings','existing','buffer'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => { if(currentBlocks.length) calculate(); });
+        });
+        document.getElementById('blockType').addEventListener('change', () => { if(currentBlocks.length) calculate(); });
+        document.getElementById('showPreview').addEventListener('change', () => {
+            document.getElementById('previewWrap').style.display = document.getElementById('showPreview').checked ? 'flex' : 'none';
+            if(currentBlocks.length && document.getElementById('showPreview').checked) drawPreview();
+        });
+
+        function updateDimInputs(){
+            const s = SHAPES[currentShape];
+            document.getElementById('dimY').style.display = s.needsY ? '' : 'none';
+            document.getElementById('dimT').style.display = s.needsT ? '' : 'none';
+            if(!s.needsY) document.getElementById('inputY').value = 10;
+            if(!s.needsT) document.getElementById('inputT').value = 1;
+            const notice = document.getElementById('dimNotice');
+            notice.classList.toggle('show', ['sphere','dome','cylinder','pyramid'].includes(currentShape));
+        }
+
+        function getDims(){
+            const x = Math.max(1, Math.min(256, parseInt(document.getElementById('inputX').value)||10));
+            const y = Math.max(1, Math.min(256, parseInt(document.getElementById('inputY').value)||10));
+            const z = Math.max(1, Math.min(256, parseInt(document.getElementById('inputZ').value)||10));
+            const t = Math.max(1, Math.min(32, parseInt(document.getElementById('inputT').value)||1));
+            return {x,y,z,t};
+        }
+
+        function generateBlocks(shape, x, y, z, t){
+            const blocks = [];
+            switch(shape){
+                case 'cuboid':
+                    for(let ix=0;ix<x;ix++) for(let iy=0;iy<y;iy++) for(let iz=0;iz<z;iz++) blocks.push([ix,iy,iz]);
+                    break;
+                case 'hollow':
+                    for(let ix=0;ix<x;ix++) for(let iy=0;iy<y;iy++) for(let iz=0;iz<z;iz++){
+                        if(ix<t||ix>=x-t||iy<t||iy>=y-t||iz<t||iz>=z-t) blocks.push([ix,iy,iz]);
+                    }
+                    break;
+                case 'walls':
+                    for(let ix=0;ix<x;ix++) for(let iy=0;iy<y;iy++) for(let iz=0;iz<z;iz++){
+                        if(ix<t||ix>=x-t||iz<t||iz>=z-t) blocks.push([ix,iy,iz]);
+                    }
+                    break;
+                case 'floor':
+                    for(let ix=0;ix<x;ix++) for(let iz=0;iz<z;iz++) for(let iy=0;iy<t;iy++) blocks.push([ix,iy,iz]);
+                    break;
+                case 'sphere': {
+                    const r=Math.max(x,y,z)/2, cx=r, cy=r, cz=r;
+                    for(let ix=0;ix<Math.ceil(r*2);ix++) for(let iy=0;iy<Math.ceil(r*2);iy++) for(let iz=0;iz<Math.ceil(r*2);iz++){
+                        const dx=ix+0.5-cx, dy=iy+0.5-cy, dz=iz+0.5-cz;
+                        if(Math.sqrt(dx*dx+dy*dy+dz*dz)<=r) blocks.push([ix,iy,iz]);
+                    }
+                    break;
+                }
+                case 'dome': {
+                    const r=Math.max(x,z)/2, cx=r, cy=0, cz=r, h=Math.min(y,Math.ceil(r));
+                    for(let ix=0;ix<Math.ceil(r*2);ix++) for(let iy=0;iy<h;iy++) for(let iz=0;iz<Math.ceil(r*2);iz++){
+                        const dx=ix+0.5-cx, dy=iy+0.5-cy, dz=iz+0.5-cz;
+                        if(Math.sqrt(dx*dx+dy*dy+dz*dz)<=r) blocks.push([ix,iy,iz]);
+                    }
+                    break;
+                }
+                case 'cylinder': {
+                    const r=Math.max(x,z)/2, cx=r, cz=r;
+                    for(let ix=0;ix<Math.ceil(r*2);ix++) for(let iy=0;iy<y;iy++) for(let iz=0;iz<Math.ceil(r*2);iz++){
+                        const dx=ix+0.5-cx, dz=iz+0.5-cz;
+                        if(Math.sqrt(dx*dx+dz*dz)<=r) blocks.push([ix,iy,iz]);
+                    }
+                    break;
+                }
+                case 'pyramid':
+                    for(let iy=0;iy<y;iy++){
+                        const inset=iy;
+                        const px=Math.max(1,x-inset*2), pz=Math.max(1,z-inset*2);
+                        const ox=Math.floor((x-px)/2), oz=Math.floor((z-pz)/2);
+                        for(let ix=ox;ix<ox+px;ix++) for(let iz=oz;iz<oz+pz;iz++) blocks.push([ix,iy,iz]);
+                    }
+                    break;
+            }
+            return blocks;
+        }
+
+        function calculate(){
+            const d = getDims();
+            currentBlockName = document.getElementById('blockType').value;
+            currentBlocks = generateBlocks(currentShape, d.x, d.y, d.z, d.t);
+
+            const total = currentBlocks.length;
+            const ox = parseInt(document.getElementById('openings').value)||0;
+            const ex = parseInt(document.getElementById('existing').value)||0;
+            const buf = parseFloat(document.getElementById('buffer').value)||0;
+            const needed = Math.max(0, total - ox - ex);
+            const withBuffer = Math.ceil(needed * (1 + buf/100));
+            const stacks = Math.ceil(withBuffer/64);
+            const shulkers = Math.ceil(withBuffer/1728);
+            const doubleChests = Math.ceil(withBuffer/3456);
+
+            currentSize = [d.x, d.y, d.z];
+            if(['sphere','dome','cylinder','pyramid'].includes(currentShape)){
+                currentSize[0] = Math.min(d.x, 48);
+                currentSize[2] = Math.min(d.z, 48);
+            }
+
+            const grid = document.getElementById('resultGrid');
+            grid.innerHTML = `
+                <div class="result-card"><div class="label">Total Blocks</div><div class="value">${total.toLocaleString()}</div><div class="unit">raw count</div></div>
+                <div class="result-card"><div class="label">After Adjustments</div><div class="value">${withBuffer.toLocaleString()}</div><div class="unit">blocks to craft/mine</div></div>
+                <div class="result-card"><div class="label">Stacks of 64</div><div class="value">${stacks.toLocaleString()}</div><div class="unit">${withBuffer} ÷ 64</div></div>
+                <div class="result-card"><div class="label">Shulker Boxes</div><div class="value">${shulkers.toLocaleString()}</div><div class="unit">${withBuffer} ÷ 1728</div></div>
+                <div class="result-card"><div class="label">Double Chests</div><div class="value">${doubleChests.toLocaleString()}</div><div class="unit">${withBuffer} ÷ 3456</div></div>
+                <div class="result-card"><div class="label">Dimensions</div><div class="value">${d.x}×${d.y}×${d.z}</div><div class="unit">blocks (X×Y×Z)</div></div>
+            `;
+
+            const tbody = document.getElementById('materialBody');
+            tbody.innerHTML = '';
+            const addRow = (conv, amt, note) => {
+                tbody.innerHTML += `<tr><td>${conv}</td><td>${amt.toLocaleString()}</td><td>${note}</td></tr>`;
+            };
+            addRow('Total raw blocks', total, 'Before any adjustments');
+            if(ox > 0) addRow('Minus openings', `-${ox.toLocaleString()}`, 'Doors, windows, passages');
+            if(ex > 0) addRow('Minus existing', `-${ex.toLocaleString()}`, 'Blocks already in inventory');
+            if(buf > 0) addRow(`+ ${buf}% safety buffer`, `+${Math.ceil(needed*buf/100).toLocaleString()}`, 'Breakage, miscraft, variations');
+            addRow('Final needed', withBuffer.toLocaleString(), 'Blocks to obtain');
+            addRow('Crafting (logs → planks)', Math.ceil(withBuffer/4).toLocaleString(), '4 planks per log');
+            addRow('Crafting (cobble → stone)', withBuffer.toLocaleString(), 'Furnace smelting required');
+            addRow('Crafting (sand → glass)', withBuffer.toLocaleString(), 'Furnace smelting required');
+            addRow('Crafting (cobble → slabs)', Math.ceil(withBuffer/2).toLocaleString(), '3 blocks = 6 slabs');
+            addRow('Crafting (blocks → stairs)', Math.ceil(withBuffer*0.75).toLocaleString(), '6 blocks = 4 stairs');
+
+            document.getElementById('resultsSection').style.display = '';
+            document.getElementById('resultsSection').scrollIntoView({behavior:'smooth', block:'start'});
+            if(document.getElementById('showPreview').checked) drawPreview();
+        }
+
+        function drawPreview(){
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0,0,w,h);
+            if(!currentBlocks.length) return;
+
+            const xs = currentBlocks.map(b=>b[0]), ys = currentBlocks.map(b=>b[1]), zs = currentBlocks.map(b=>b[2]);
+            const minX=Math.min(...xs), maxX=Math.max(...xs);
+            const minY=Math.min(...ys), maxY=Math.max(...ys);
+            const minZ=Math.min(...zs), maxZ=Math.max(...zs);
+            const sx=maxX-minX+1, sy=maxY-minY+1, sz=maxZ-minZ+1;
+
+            const scale = Math.min((w-40)/sx, (h-40)/Math.max(sy,sz*0.5)) * 0.85;
+            const ox = w/2, oy = h/2 + 15;
+            const isoX = (x,y,z) => ox + (x - z) * scale * 0.7;
+            const isoY = (x,y,z) => oy - y * scale + (x + z) * scale * 0.35;
+
+            const visible = new Set();
+            for(const b of currentBlocks) visible.add(`${b[0]},${b[1]},${b[2]}`);
+
+            const sorted = [...currentBlocks].sort((a,b) => {
+                const da = isoY(a[0],a[1],a[2]) + a[1]*0.01;
+                const db = isoY(b[0],b[1],b[2]) + b[1]*0.01;
+                return da - db;
+            });
+
+            for(const [x,y,z] of sorted){
+                const sx2 = isoX(x,y,z), sy2 = isoY(x,y,z);
+                const r = scale * 0.35;
+                const light = 0.4 + 0.6 * (1 - (y-minY)/Math.max(sy,1));
+
+                ctx.fillStyle = `rgba(0,${Math.floor(180*light+75)},${Math.floor(220*light+35)},0.85)`;
+                ctx.strokeStyle = 'rgba(0,212,255,0.15)';
+                ctx.lineWidth = 0.5;
+
+                ctx.beginPath();
+                ctx.moveTo(sx2, sy2 - r);
+                ctx.lineTo(sx2 + r*0.7, sy2 - r*0.3);
+                ctx.lineTo(sx2 + r*0.7, sy2 + r*0.3);
+                ctx.lineTo(sx2, sy2 + r);
+                ctx.lineTo(sx2 - r*0.7, sy2 + r*0.3);
+                ctx.lineTo(sx2 - r*0.7, sy2 - r*0.3);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+        }
+
+        /* ========== NBT Writer ========== */
+        const NBT = {
+            types: { byte:1, short:2, int:3, long:4, float:5, double:6, byte_array:7, string:8, list:9, compound:10, int_array:11, long_array:12 },
+
+            write(val, le=true){
+                const buf = [];
+                this._writeTag(buf, '', val, le);
+                return new Uint8Array(buf);
+            },
+
+            _writeTag(buf, name, val, le){
+                if(val === null || val === undefined){
+                    buf.push(0);
+                    this._writeString(buf, name, le);
+                    return;
+                }
+                if(typeof val === 'boolean'){
+                    buf.push(val ? 1 : 0);
+                    this._writeString(buf, name, le);
+                    buf.push(val ? 1 : 0);
+                } else if(typeof val === 'number'){
+                    if(Number.isInteger(val) && val >= -128 && val <= 127){
+                        buf.push(1);
+                        this._writeString(buf, name, le);
+                        buf.push(val & 0xff);
+                    } else if(Number.isInteger(val) && val >= -32768 && val <= 32767){
+                        buf.push(2);
+                        this._writeString(buf, name, le);
+                        this._writeShort(buf, val, le);
+                    } else if(Number.isInteger(val)){
+                        buf.push(3);
+                        this._writeString(buf, name, le);
+                        this._writeInt(buf, val, le);
+                    } else {
+                        buf.push(5);
+                        this._writeString(buf, name, le);
+                        this._writeFloat(buf, val, le);
+                    }
+                } else if(typeof val === 'bigint'){
+                    buf.push(4);
+                    this._writeString(buf, name, le);
+                    this._writeLong(buf, val, le);
+                } else if(typeof val === 'string'){
+                    buf.push(8);
+                    this._writeString(buf, name, le);
+                    this._writeString(buf, val, le);
+                } else if(Array.isArray(val)){
+                    if(val.length === 0){
+                        buf.push(9);
+                        this._writeString(buf, name, le);
+                        buf.push(0);
+                        this._writeInt(buf, 0, le);
+                    } else if(typeof val[0] === 'number' && Number.isInteger(val[0]) && (val[0] >= -128 && val[0] <= 127)){
+                        buf.push(7);
+                        this._writeString(buf, name, le);
+                        this._writeInt(buf, val.length, le);
+                        for(const v of val) buf.push(v & 0xff);
+                    } else if(typeof val[0] === 'number' && Number.isInteger(val[0])){
+                        buf.push(11);
+                        this._writeString(buf, name, le);
+                        this._writeInt(buf, val.length, le);
+                        for(const v of val) this._writeInt(buf, v, le);
+                    } else if(typeof val[0] === 'bigint'){
+                        buf.push(12);
+                        this._writeString(buf, name, le);
+                        this._writeInt(buf, val.length, le);
+                        for(const v of val) this._writeLong(buf, v, le);
+                    } else {
+                        buf.push(9);
+                        this._writeString(buf, name, le);
+                        const itemType = this._getTagType(val[0]);
+                        buf.push(itemType);
+                        this._writeInt(buf, val.length, le);
+                        for(const item of val) this._writePayload(buf, item, le);
+                    }
+                } else if(typeof val === 'object'){
+                    buf.push(10);
+                    this._writeString(buf, name, le);
+                    this._writeCompound(buf, val, le);
+                }
+            },
+
+            _writePayload(buf, val, le){
+                if(typeof val === 'boolean'){
+                    buf.push(val ? 1 : 0);
+                } else if(typeof val === 'number'){
+                    if(Number.isInteger(val) && val >= -128 && val <= 127) buf.push(val & 0xff);
+                    else if(Number.isInteger(val) && val >= -32768 && val <= 32767) this._writeShort(buf, val, le);
+                    else if(Number.isInteger(val)) this._writeInt(buf, val, le);
+                    else this._writeFloat(buf, val, le);
+                } else if(typeof val === 'bigint'){
+                    this._writeLong(buf, val, le);
+                } else if(typeof val === 'string'){
+                    this._writeString(buf, val, le);
+                } else if(typeof val === 'object' && !Array.isArray(val)){
+                    this._writeCompound(buf, val, le);
+                }
+            },
+
+            _getTagType(val){
+                if(typeof val === 'boolean') return 1;
+                if(typeof val === 'number'){
+                    if(Number.isInteger(val) && val >= -128 && val <= 127) return 1;
+                    if(Number.isInteger(val) && val >= -32768 && val <= 32767) return 2;
+                    if(Number.isInteger(val)) return 3;
+                    return 5;
+                }
+                if(typeof val === 'bigint') return 4;
+                if(typeof val === 'string') return 8;
+                if(Array.isArray(val)) return 9;
+                if(typeof val === 'object') return 10;
+                return 0;
+            },
+
+            _writeCompound(buf, obj, le){
+                for(const [k,v] of Object.entries(obj)){
+                    this._writeTag(buf, k, v, le);
+                }
+                buf.push(0);
+            },
+
+            _writeString(buf, str, le){
+                const enc = new TextEncoder().encode(str);
+                this._writeShort(buf, enc.length, le);
+                for(const b of enc) buf.push(b);
+            },
+
+            _writeShort(buf, val, le){
+                if(le){
+                    buf.push(val & 0xff);
+                    buf.push((val >> 8) & 0xff);
+                } else {
+                    buf.push((val >> 8) & 0xff);
+                    buf.push(val & 0xff);
+                }
+            },
+
+            _writeInt(buf, val, le){
+                if(le){
+                    buf.push(val & 0xff);
+                    buf.push((val >> 8) & 0xff);
+                    buf.push((val >> 16) & 0xff);
+                    buf.push((val >> 24) & 0xff);
+                } else {
+                    buf.push((val >> 24) & 0xff);
+                    buf.push((val >> 16) & 0xff);
+                    buf.push((val >> 8) & 0xff);
+                    buf.push(val & 0xff);
+                }
+            },
+
+            _writeLong(buf, val, le){
+                const lo = Number(val & 0xffffffffn);
+                const hi = Number((val >> 32n) & 0xffffffffn);
+                if(le){
+                    this._writeInt(buf, lo, true);
+                    this._writeInt(buf, hi, true);
+                } else {
+                    this._writeInt(buf, hi, false);
+                    this._writeInt(buf, lo, false);
+                }
+            },
+
+            _writeFloat(buf, val, le){
+                const f32 = new Float32Array([val]);
+                const u8 = new Uint8Array(f32.buffer);
+                if(le){ for(let i=0;i<4;i++) buf.push(u8[i]); }
+                else { for(let i=3;i>=0;i--) buf.push(u8[i]); }
+            }
+        };
+
+        /* ========== .mcstructure Export ========== */
+        function exportMcstructure(){
+            if(!currentBlocks.length) return calculate();
+            const sz = currentSize;
+            const blockName = document.getElementById('blockType').value;
+
+            const blockPalette = [{ name: blockName, states: {}, version: 18168865 }];
+            const indices = new Array(sz[0]*sz[1]*sz[2]).fill(1);
+            for(const [x,y,z] of currentBlocks) indices[x + z*sz[0] + y*sz[0]*sz[2]] = 0;
+            const secondary = new Array(sz[0]*sz[1]*sz[2]).fill(1);
+
+            const nbtObj = {
+                format_version: 1,
+                size: sz,
+                structure: {
+                    block_indices: [indices, secondary],
+                    entities: [],
+                    palette: {
+                        default: {
+                            block_palette: blockPalette,
+                            block_position_data: {}
+                        }
+                    }
+                },
+                structure_world_origin: [0, 0, 0]
+            };
+
+            const bytes = NBT.write(nbtObj, true);
+            const name = `antigleforge_${currentShape}_${sz[0]}x${sz[1]}x${sz[2]}`;
+            downloadBlob(bytes, name + '.mcstructure', 'application/octet-stream');
+            document.getElementById('exportNote').textContent = `✅ Downloaded ${name}.mcstructure — Place in behavior pack structures/ folder or use Structure Block in-game.`;
+        }
+
+        /* ========== .litematic Export ========== */
+        function exportLitematic(){
+            if(!currentBlocks.length) return calculate();
+            const sz = currentSize;
+            const blockName = document.getElementById('blockType').value;
+
+            const palette = [{ Name: blockName }];
+            const paletteIdx = 0;
+
+            const totalBlocks = sz[0]*sz[1]*sz[2];
+            const bitsNeeded = Math.max(4, Math.ceil(Math.log2(Math.max(2, palette.length))));
+            const blocksPerLong = Math.floor(64 / bitsNeeded);
+            const totalLongs = Math.ceil(totalBlocks / blocksPerLong);
+
+            const blockSet = new Set(currentBlocks.map(b => `${b[0]},${b[1]},${b[2]}`));
+            const blockStates = new Array(totalLongs).fill(0n);
+            let bi = 0;
+            for(let y=0;y<sz[1];y++) for(let z=0;z<sz[2];z++) for(let x=0;x<sz[0];x++){
+                const longIdx = Math.floor(bi / blocksPerLong);
+                const bitOffset = (bi % blocksPerLong) * bitsNeeded;
+                if(blockSet.has(`${x},${y},${z}`)){
+                    blockStates[longIdx] |= BigInt(paletteIdx) << BigInt(bitOffset);
+                }
+                bi++;
+            }
+
+            const xArr = new Array(totalBlocks).fill(0);
+            const yArr = new Array(totalBlocks).fill(0);
+            const zArr = new Array(totalBlocks).fill(0);
+            let idx = 0;
+            for(let y=0;y<sz[1];y++) for(let z=0;z<sz[2];z++) for(let x=0;x<sz[0];x++){
+                xArr[idx]=x; yArr[idx]=y; zArr[idx]=z; idx++;
+            }
+
+            const nbtObj = {
+                MinecraftDataVersion: 3700,
+                MinecraftVersion: '1.21.0',
+                Description: `AntigleForge ${currentShape} ${sz[0]}x${sz[1]}x${sz[2]}`,
+                Regions: {
+                    Structure: {
+                        Size: sz,
+                        Offset: [0,0,0],
+                        BlockStatesPalette: palette,
+                        BlockStates: blockStates,
+                        TileEntities: [],
+                        Entities: [],
+                        PendingBlockTicks: [],
+                        PendingFluidTicks: [],
+                        MovingBlockEntities: [],
+                        Biomes: { palette: ['minecraft:plains'], data: new Array(totalBlocks).fill(0) }
+                    }
+                },
+                RegionCount: 1,
+                TotalBlocks: currentBlocks.length
+            };
+
+            const bytes = NBT.write(nbtObj, false);
+
+            const len = bytes.length;
+            const gzBytes = deflateGzip(bytes);
+
+            const name = `antigleforge_${currentShape}_${sz[0]}x${sz[1]}x${sz[2]}`;
+            downloadBlob(gzBytes, name + '.litematic', 'application/octet-stream');
+            document.getElementById('exportNote').textContent = `✅ Downloaded ${name}.litematic — Place in .minecraft/schematics/ and load with Litematica mod.`;
+        }
+
+        /* ========== Simple Gzip Deflate ========== */
+        function deflateGzip(data){
+            const raw = deflateRaw(data);
+            const crc = crc32(data);
+            const out = [0x1f, 0x8b, 0x08, 0x00, 0,0,0,0, 0x00, 0xff];
+            for(const b of raw) out.push(b);
+            out.push(crc&0xff, (crc>>8)&0xff, (crc>>16)&0xff, (crc>>24)&0xff);
+            out.push(data.length&0xff, (data.length>>8)&0xff, (data.length>>16)&0xff, (data.length>>24)&0xff);
+            return new Uint8Array(out);
+        }
+
+        function deflateRaw(data){
+            const out = [];
+            let pos = 0;
+            while(pos < data.length){
+                const blockStart = pos;
+                const blockLen = Math.min(65535, data.length - pos);
+                const isLast = pos + blockLen >= data.length;
+                out.push(isLast ? 0x01 : 0x00);
+                out.push(blockLen & 0xff, (blockLen >> 8) & 0xff);
+                out.push((~blockLen) & 0xff, ((~blockLen) >> 8) & 0xff);
+                for(let i = 0; i < blockLen; i++) out.push(data[pos++]);
+            }
+            return out;
+        }
+
+        function crc32(buf){
+            let c = 0xffffffff;
+            const tbl = new Uint32Array(256);
+            for(let n=0;n<256;n++){
+                let v = n;
+                for(let k=0;k<8;k++) v = v&1 ? 0xedb88320^(v>>>1) : v>>>1;
+                tbl[n]=v;
+            }
+            for(let i=0;i<buf.length;i++) c = tbl[(c^buf[i])&0xff]^(c>>>8);
+            return (c^0xffffffff)>>>0;
+        }
+
+        function downloadBlob(bytes, name, mime){
+            const blob = new Blob([bytes], {type:mime});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = name;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        /* ========== Init ========== */
+        updateDimInputs();
+        AntigleComponents.init([
+            { q: 'How do I import .mcstructure into Minecraft Bedrock?', a: 'Open Minecraft Bedrock, place a Structure Block and set mode to "Load". Place the .mcstructure file in your behavior pack\'s structures/ folder, or use /structure load command. Structure blocks support up to 48×48×48 blocks.' },
+            { q: 'How do I use .litematic files?', a: 'Install the Litematica mod on Java Edition (Fabric or Forge). Place the .litematic file in your .minecraft/schematics/ folder. In-game, use the Litematica menu (default: M key) to load and paste the structure. It also shows a material list for survival mode.' },
+            { q: 'What does "Safety Buffer" do?', a: 'Adds a percentage extra blocks to your count. This accounts for blocks you might miscraft, break accidentally, or need for variations. Default 5% is recommended for large builds.' },
+            { q: 'Can I subtract doors and windows?', a: 'Yes! Use the "Subtract Openings" field to remove blocks for doors, windows, and passages. The calculator adjusts the total accordingly before applying the safety buffer.' },
+            { q: 'Which shape should I pick for a house?', a: 'For a simple box house, use "Hollow Cuboid" with wall thickness 1. For walls only (no floor/ceiling), use "Walls Only". For a flat platform or floor, use "Floor / Slab". For domes and round builds, use "Dome" or "Cylinder".' },
+            { q: 'Are the block counts accurate?', a: 'Yes — the calculator uses exact mathematical formulas for each shape. Cuboid, walls, and floor counts are 100% precise. Sphere and dome use a center-point test which gives ±1 block accuracy depending on even/odd dimensions.' }
+        ]);
+    </script>
+</body>
+</html>
