@@ -510,7 +510,9 @@
 
             write(val, le=true){
                 const buf = [];
-                this._writeTag(buf, '', val, le);
+                buf.push(10);
+                this._writeString(buf, '', le);
+                this._writeCompound(buf, val, le);
                 return new Uint8Array(buf);
             },
 
@@ -681,7 +683,10 @@
             const sz = currentSize;
             const blockName = document.getElementById('blockType').value;
 
-            const blockPalette = [{ name: blockName, states: {}, version: 18168865 }];
+            const blockPalette = [
+                { name: blockName, states: {}, version: 18168865 },
+                { name: 'minecraft:air', states: {}, version: 18168865 }
+            ];
             const indices = new Array(sz[0]*sz[1]*sz[2]).fill(1);
             for(const [x,y,z] of currentBlocks) indices[x + z*sz[0] + y*sz[0]*sz[2]] = 0;
             const secondary = new Array(sz[0]*sz[1]*sz[2]).fill(1);
