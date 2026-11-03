@@ -1460,8 +1460,8 @@ input[type="range"] {
 .mode-status {
   padding: 14px;
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.32);
-  border: 1px solid var(--paper-line);
+  background: linear-gradient(180deg, #fbf6ea, #f2ead9);
+  border: 1px solid #cfc4ae;
   border-radius: 6px;
 }
 

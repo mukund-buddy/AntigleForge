@@ -1,0 +1,258 @@
+/* ============================================================
+   AntigleForge - Tool panel contrast layer
+   ------------------------------------------------------------
+   Loaded AFTER theme.css by every tool page.
+
+   Why this file exists:
+   Each tool page ships its own inline <style> block, and it is
+   written before theme.css, so the shared theme rules used to win
+   and paint cards with rgba(255,255,255,0.32) - a grey overlay on
+   a cream page. The text inside those cards was still authored for
+   a dark card (rgba(255,255,255,0.25)), which left labels close to
+   invisible.
+
+   This layer gives every tool page ONE palette:
+     panel      #f2ead9  (paper card on the cream page)
+     chip       #fbf6ea  (inputs, small buttons, rows)
+     border     rgba(42,28,20,0.16)
+     text       #2a1c14  /  muted #5b4a3c  /  accent #9c1610
+     code       #1a0f0c with #f5ecd9 text
+
+   Previews that render a real colour (beam, text preview, swatch)
+   keep their own background - only their labels are normalised.
+   ============================================================ */
+
+:root {
+  --panel-bg: #f2ead9;
+  --panel-chip: #fbf6ea;
+  --panel-line: rgba(42, 28, 20, 0.16);
+  --panel-line-strong: #cfc4ae;
+  --panel-text: #2a1c14;
+  --panel-muted: #5b4a3c;
+  --panel-label: #6b5745;
+  --panel-accent: #9c1610;
+  --panel-code-bg: #1a0f0c;
+  --panel-code-text: #f5ecd9;
+}
+
+/* ------------------------------------------------------------
+   1. Cards, rows and summary blocks
+   ------------------------------------------------------------ */
+
+.beam-preview,
+.glass-stack,
+.stack-layer,
+.crop-card,
+.mob-card,
+.trade-card,
+.potion-card,
+.potion-recipe,
+.pool-card,
+.condition-card,
+.segment-row,
+.value-card,
+.cost-summary,
+.enchant-list,
+.selected-enchantments,
+.storage-item,
+.portal-card,
+.result-card,
+.guide-step,
+.block-item,
+.toggle-row,
+.type-toggle,
+.cmd-type-selector,
+.event-type-select,
+.format-tabs,
+.output-card,
+.effect-preview {
+  color: var(--panel-text);
+  background: linear-gradient(180deg, #fbf6ea, #f2ead9);
+  border: 1px solid var(--panel-line-strong);
+  box-shadow: none;
+}
+
+.stack-layer,
+.segment-row,
+.toggle-row,
+.block-item {
+  background: var(--panel-chip);
+}
+
+/* Keep the coloured preview surfaces, normalise only their frame. */
+.beam-preview,
+.text-preview-box {
+  border-color: var(--panel-line-strong);
+}
+
+/* ------------------------------------------------------------
+   2. Labels, hints and secondary text
+   ------------------------------------------------------------ */
+
+.result-label,
+.result-sub,
+.crop-card-title,
+.savings-label,
+.sel-header,
+.sel-item .sel-level,
+.cost-label,
+.output-label,
+.section-label,
+.value-unit,
+.repeater-detail,
+.note-text,
+.trade-section-title,
+.xp-result-label,
+.xp-result-sub,
+.mob-xp-unit,
+.xp-bar-label,
+.hint-text,
+.info-text,
+.callout,
+.guide-step p,
+.formula-note,
+.portal-tip,
+.direction-arrows,
+.brewing-note,
+.recipe-label,
+.potion-duration,
+.edition-note,
+.effect-preview-desc,
+.eff-info-item,
+.enchant-item .en-max,
+.event-row label,
+.target-input label,
+.stack-title,
+.layer-label,
+.beam-label,
+.beam-rgb,
+.color-name,
+.color-code-chip .chip-label,
+.step-arrow,
+.version-dot {
+  color: var(--panel-muted);
+}
+
+.stack-title,
+.trade-section-title,
+.sel-header {
+  font-weight: 700;
+}
+
+/* Low-alpha separators / dots */
+.section-divider,
+.version-dot {
+  background: var(--panel-line-strong);
+  border-color: var(--panel-line-strong);
+}
+
+/* ------------------------------------------------------------
+   3. Small buttons, pills and tabs
+   ------------------------------------------------------------ */
+
+.preset-btn,
+.filter-btn,
+.filter-pill,
+.xp-tab,
+.type-btn,
+.cmd-type-btn,
+.exp-type-btn,
+.format-tab,
+.discount-btn,
+.reset-btn,
+.copy-btn,
+.add-entry-btn,
+.add-pool-btn,
+.add-condition-btn,
+.add-segment-btn,
+.target-preset,
+.clear-btn,
+.effect-option .eff-type,
+.level-adjust button {
+  color: var(--panel-muted);
+  background: var(--panel-chip);
+  border: 1px solid var(--panel-line-strong);
+}
+
+.preset-btn:hover,
+.filter-btn:hover,
+.xp-tab:hover,
+.type-btn:hover,
+.cmd-type-btn:hover,
+.exp-type-btn:hover,
+.format-tab:hover,
+.discount-btn:hover,
+.reset-btn:hover,
+.copy-btn:hover,
+.add-entry-btn:hover,
+.add-pool-btn:hover,
+.add-condition-btn:hover,
+.add-segment-btn:hover,
+.target-preset:hover,
+.level-adjust button:hover {
+  color: var(--panel-accent);
+  border-color: var(--panel-accent);
+}
+
+.preset-btn.active,
+.filter-btn.active,
+.xp-tab.active,
+.type-btn.active,
+.cmd-type-btn.active,
+.exp-type-btn.active,
+.format-tab.active,
+.discount-btn.active {
+  color: var(--cream);
+  background: var(--panel-accent);
+  border-color: var(--panel-accent);
+}
+
+/* Remove buttons stay red so they never read as harmless text */
+.layer-remove,
+.sel-item .sel-remove,
+.pool-remove,
+.condition-remove,
+.segment-remove,
+.lore-remove {
+  color: var(--panel-accent);
+}
+
+/* ------------------------------------------------------------
+   4. Code / command output: always a dark terminal panel
+   ------------------------------------------------------------ */
+
+.json-output,
+.command-output,
+.output-box {
+  color: var(--panel-code-text);
+  background: var(--panel-code-bg);
+  border: 1px solid rgba(232, 179, 45, 0.28);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* The borderless text preview keeps its dark canvas but gets light text. */
+.text-preview-box {
+  color: var(--panel-code-text);
+}
+
+/* ------------------------------------------------------------
+   5. Anything still using the old grey surface
+   ------------------------------------------------------------ */
+
+.tool-card-main .preview-box,
+.tool-card-main .crafting-slot,
+.tool-card-main .result-slot {
+  border-color: var(--panel-line-strong);
+}
+
+/* Badges and tags sitting inside a panel need ink, not cream */
+.tool-card-main .badge-neutral {
+  color: var(--panel-muted);
+  border-color: var(--panel-line-strong);
+  background: var(--panel-chip);
+}
