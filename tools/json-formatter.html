@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Format, minify and validate Minecraft JSON files in your browser. Find syntax errors with line and column numbers.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0d0807">
+  <title>JSON Formatter &amp; Validator - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/json-formatter">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/json-formatter">
+  <meta property="og:title" content="JSON Formatter &amp; Validator - AntigleForge">
+  <meta property="og:description" content="Format, minify and validate addon JSON with clear error locations.">
+
+  <style>
+    .jf-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 0.9rem; }
+
+    .jf-area {
+      width: 100%;
+      min-height: 240px;
+      padding: 0.85rem 1rem;
+      color: #f5ecd9;
+      background: #1a0f0c;
+      border: 2px solid rgba(232, 179, 45, 0.28);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      resize: vertical;
+      tab-size: 2;
+    }
+    .jf-area:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(232, 179, 45, 0.18);
+    }
+
+    .jf-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.85rem 0;
+      padding: 0.6rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      border: 1px solid rgba(42, 28, 20, 0.2);
+      background: rgba(255, 255, 255, 0.45);
+      color: var(--ink-soft);
+    }
+    .jf-status.ok { color: #14532d; border-color: rgba(20, 83, 45, 0.35); background: rgba(34, 197, 94, 0.14); }
+    .jf-status.err { color: #7f1d1d; border-color: rgba(127, 29, 29, 0.35); background: rgba(211, 36, 27, 0.14); }
+
+    .jf-out {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      color: #f5ecd9;
+      background: #1a0f0c;
+      border: 1px solid rgba(232, 179, 45, 0.28);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-x: auto;
+      max-height: 420px;
+    }
+
+    .jf-label {
+      display: block;
+      margin: 0 0 0.4rem;
+      color: var(--ink-soft);
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+  </style>
+
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+</head>
+<body>
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="back-row">
+          <a href="../tools.html" class="back-link">‹ Back to tools</a>
+        </div>
+
+        <div class="tool-header reveal">
+          <div class="tool-badges"><span class="badge">MINECRAFT TOOL · FREE</span></div>
+          <h1 class="tool-title">JSON Formatter &amp; Validator</h1>
+          <p class="tool-subtitle">Paste a manifest, loot table or any addon JSON to format, minify or validate it — with the exact line and column of a syntax error.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2"/>
+                <path d="M16 3h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2"/>
+              </svg>
+              Your JSON
+            </div>
+
+            <div class="jf-actions">
+              <button type="button" class="btn btn-primary" id="formatBtn">Format</button>
+              <button type="button" class="btn btn-ghost" id="minifyBtn">Minify</button>
+              <button type="button" class="btn btn-ghost" id="validateBtn">Validate</button>
+              <button type="button" class="btn btn-ghost" id="sampleBtn">Load sample</button>
+              <button type="button" class="btn btn-ghost" id="clearBtn">Clear</button>
+            </div>
+
+            <label class="jf-label" for="jsonInput">Input</label>
+            <textarea id="jsonInput" class="jf-area" spellcheck="false" autocomplete="off"
+              placeholder='{"format_version": 2, "minecraft:item": {}}</textarea>
+
+            <div class="jf-status" id="status">Waiting for JSON…</div>
+
+            <label class="jf-label" for="jsonOutput">Output</label>
+            <pre class="jf-out" id="jsonOutput" aria-live="polite"></pre>
+
+            <div class="jf-actions" style="margin-top:0.9rem;">
+              <button type="button" class="btn btn-ghost" id="copyBtn">Copy output</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/performance.js?v=3"></script>
+  <script src="../assets/js/main.js?v=3"></script>
+  <script src="../assets/js/components.js?v=3"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'What is the difference between Format and Minify?', a: 'Format re-prints the JSON with <strong>2-space indentation</strong> so you can read it. Minify removes every space and newline to make the file as small as possible for a pack.' },
+    { q: 'How do I find a syntax error?', a: 'Press <strong>Validate</strong>. The message shows the error plus the <strong>line and column</strong>, and the output panel repeats the broken line with a caret under the problem.' },
+    { q: 'Common Minecraft JSON mistakes?', a: 'Trailing commas before <code>}</code>, single quotes instead of double quotes, comments, and a missing comma between two entries. Minecraft does not allow any of these.' },
+    { q: 'Does it keep the key order?', a: 'Yes. The JSON is parsed and re-printed, so the keys keep their original order — nothing is sorted or renamed.' },
+    { q: 'Is my JSON sent to a server?', a: 'No. Everything happens in your browser with <code>JSON.parse</code> and <code>JSON.stringify</code>, so addon code never leaves your device.' }
+  ]);
+  </script>
+  <script>
+  (function () {
+    var input = document.getElementById('jsonInput');
+    var output = document.getElementById('jsonOutput');
+    var status = document.getElementById('status');
+
+    function setStatus(kind, message) {
+      status.className = 'jf-status' + (kind ? ' ' + kind : '');
+      status.textContent = message;
+    }
+
+    function positionToLineCol(text, position) {
+      var upTo = text.slice(0, position);
+      var line = upTo.split('\n').length;
+      var lastBreak = upTo.lastIndexOf('\n');
+      var column = position - lastBreak;
+      return { line: line, column: column };
+    }
+
+    function describeError(err, text) {
+      var message = err && err.message ? err.message : 'Invalid JSON';
+
+      var lineCol = message.match(/line (\d+) column (\d+)/i);
+      if (lineCol) {
+        return {
+          message: message.replace(/\s*in JSON at position \d+.*$/i, ''),
+          line: parseInt(lineCol[1], 10),
+          column: parseInt(lineCol[2], 10)
+        };
+      }
+
+      var at = message.match(/position (\d+)/i);
+      if (at) {
+        var loc = positionToLineCol(text, parseInt(at[1], 10));
+        return {
+          message: message.replace(/\s*in JSON at position \d+.*$/i, ''),
+          line: loc.line,
+          column: loc.column
+        };
+      }
+
+      return { message: message.replace(/\s*in JSON at position \d+.*$/i, ''), line: null, column: null };
+    }
+
+    function parseInput() {
+      var text = input.value;
+      if (!text.trim()) {
+        setStatus('', 'Input is empty — paste some JSON first.');
+        return null;
+      }
+      try {
+        return { value: JSON.parse(text), text: text };
+      } catch (err) {
+        var info = describeError(err, text);
+        var where = info.line ? ' (line ' + info.line + ', column ' + info.column + ')' : '';
+        setStatus('err', '✕ ' + info.message + where);
+        output.textContent = buildPointer(text, info);
+        return null;
+      }
+    }
+
+    function buildPointer(text, info) {
+      if (!info.line) return info.message;
+      var lines = text.split('\n');
+      var lineText = lines[info.line - 1] || '';
+      var caret = new Array(Math.max(info.column, 1)).join(' ') + '^';
+      return 'Line ' + info.line + ', column ' + info.column + ': ' + info.message + '\n\n' + lineText + '\n' + caret;
+    }
+
+    document.getElementById('formatBtn').addEventListener('click', function () {
+      var parsed = parseInput();
+      if (!parsed) return;
+      output.textContent = JSON.stringify(parsed.value, null, 2);
+      setStatus('ok', '✓ Valid JSON — formatted with 2-space indentation.');
+    });
+
+    document.getElementById('minifyBtn').addEventListener('click', function () {
+      var parsed = parseInput();
+      if (!parsed) return;
+      var minified = JSON.stringify(parsed.value);
+      output.textContent = minified;
+      var saved = parsed.text.length - minified.length;
+      setStatus('ok', '✓ Minified. ' + saved + ' characters smaller than the input.');
+    });
+
+    document.getElementById('validateBtn').addEventListener('click', function () {
+      var parsed = parseInput();
+      if (!parsed) return;
+      var kind = Array.isArray(parsed.value) ? 'array' : typeof parsed.value;
+      var keys = (kind === 'object' && parsed.value) ? Object.keys(parsed.value).length : 0;
+      output.textContent = 'Valid JSON.\nTop level: ' + kind +
+        (kind === 'object' ? '\nKeys: ' + keys : '') +
+        '\nCharacters: ' + parsed.text.length;
+      setStatus('ok', '✓ No syntax errors found.');
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function () {
+      var text = output.textContent;
+      if (!text) {
+        setStatus('', 'Nothing to copy yet.');
+        return;
+      }
+      if (window.AntigleForge && AntigleForge.copyToClipboard) {
+        AntigleForge.copyToClipboard(text);
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).catch(function () {});
+      }
+      setStatus('ok', '✓ Output copied to clipboard.');
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', function () {
+      input.value = '';
+      output.textContent = '';
+      setStatus('', 'Waiting for JSON…');
+      input.focus();
+    });
+
+    document.getElementById('sampleBtn').addEventListener('click', function () {
+      input.value = JSON.stringify({
+        format_version: '1.20.0',
+        'minecraft:item': {
+          description: { identifier: 'demo:ruby', category: 'items' },
+          components: { 'minecraft:max_stack_size': 64, 'minecraft:icon': { texture: 'ruby' } }
+        }
+      }, null, 2);
+      setStatus('', 'Sample loaded — try Format, Minify or Validate.');
+    });
+
+    // Ctrl/Cmd+Enter formats, Tab inserts two spaces instead of leaving the field.
+    input.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('formatBtn').click();
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        var start = input.selectionStart;
+        var end = input.selectionEnd;
+        input.value = input.value.slice(0, start) + '  ' + input.value.slice(end);
+        input.selectionStart = input.selectionEnd = start + 2;
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

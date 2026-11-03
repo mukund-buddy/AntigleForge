@@ -11,59 +11,22 @@ const AntigleForge = (() => {
     if (isInitialized) return;
     isInitialized = true;
 
-    setupNavigation();
+    /* Navigation (hamburger, language switcher) lives in components.js now.
+       Binding it here as well toggled the menu twice, so it never opened. */
     setupFAQs();
     setupLazyLoading();
     setupScrollReveal();
     setupCardEffects();
   }
 
-  function setupNavigation() {
-    const hamburger = document.getElementById('hamburger');
-    const nav = document.getElementById('navbar-nav');
+  /* Navigation is owned by components.js (header is injected there).
+     Do not bind hamburger handlers here or clicks fire twice. */
 
-    if (hamburger && nav) {
-      hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        nav.classList.toggle('active');
-        hamburger.setAttribute('aria-expanded', 
-          hamburger.classList.contains('active'));
-      });
-
-      nav.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-          hamburger.classList.remove('active');
-          nav.classList.remove('active');
-          hamburger.setAttribute('aria-expanded', 'false');
-        });
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!hamburger.contains(e.target) && !nav.contains(e.target)) {
-          hamburger.classList.remove('active');
-          nav.classList.remove('active');
-          hamburger.setAttribute('aria-expanded', 'false');
-        }
-      });
-    }
-  }
-
-  function setupFAQs() {
-    document.querySelectorAll('.faq-question').forEach(question => {
-      question.addEventListener('click', () => {
-        const item = question.parentElement;
-        const wasOpen = item.classList.contains('open');
-
-        item.parentElement.querySelectorAll('.faq-item').forEach(i => {
-          i.classList.remove('open');
-        });
-
-        if (!wasOpen) {
-          item.classList.add('open');
-        }
-      });
-    });
-  }
+  /* FAQ accordion handling lives entirely in components.js (delegated
+     document-level listener). Binding here too broke the accordion:
+     direct handler added .open, then the delegated handler saw it open
+     and removed it again, so FAQs never expanded. */
+  function setupFAQs() {}
 
   function setupLazyLoading() {
     const observer = new IntersectionObserver((entries) => {

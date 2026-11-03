@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Convert Minecraft block coordinates to chunk and region coordinates, and see the distance from 0,0. Works for Java and Bedrock.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0d0807">
+  <title>Coordinate Converter - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/coordinate-converter">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/coordinate-converter">
+  <meta property="og:title" content="Coordinate Converter - AntigleForge">
+  <meta property="og:description" content="Convert block coordinates to chunk and region coordinates instantly.">
+
+  <style>
+    .cc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; align-items: start; }
+    @media (max-width: 640px) { .cc-grid { grid-template-columns: 1fr; } }
+
+    .cc-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .cc-row > span {
+      width: 22px;
+      flex: none;
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--ink-soft);
+    }
+
+    .cc-hint { margin: 0.7rem 0 0; font-size: 0.8rem; line-height: 1.55; color: var(--ink-soft); }
+
+    .cc-out {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px dashed rgba(42, 28, 20, 0.18);
+      font-size: 0.9rem;
+    }
+    .cc-out:last-child { border-bottom: 0; }
+    .cc-out > span { color: var(--ink-soft); font-size: 0.8rem; letter-spacing: 0.04em; }
+    .cc-out > b { font-family: var(--font-mono); font-weight: 700; color: var(--ink); }
+    .cc-out.group {
+      margin-top: 0.6rem;
+      padding-bottom: 0.2rem;
+      border-bottom: 2px solid rgba(42, 28, 20, 0.25);
+      color: var(--red-deep);
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .cc-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
+
+    .cc-pre {
+      margin: 1rem 0 0;
+      padding: 0.9rem 1rem;
+      color: #f5ecd9;
+      background: #1a0f0c;
+      border: 1px solid rgba(232, 179, 45, 0.28);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+  </style>
+
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+</head>
+<body>
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="back-row">
+          <a href="../tools.html" class="back-link">‹ Back to tools</a>
+        </div>
+
+        <div class="tool-header reveal">
+          <div class="tool-badges"><span class="badge">MINECRAFT TOOL · FREE</span></div>
+          <h1 class="tool-title">Coordinate Converter</h1>
+          <p class="tool-subtitle">Turn block coordinates into chunk and region coordinates, find the block inside its chunk, and see how far you are from 0,0.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal stagger-1">
+            <div class="tool-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>
+              </svg>
+              Block · Chunk · Region
+            </div>
+
+            <div class="cc-grid">
+              <div>
+                <label class="gen-label" for="blockX">Block position</label>
+                <div class="cc-row">
+                  <span>X</span>
+                  <input class="form-input gen-input" type="number" id="blockX" value="0" step="1" inputmode="numeric">
+                </div>
+                <div class="cc-row">
+                  <span>Y</span>
+                  <input class="form-input gen-input" type="number" id="blockY" value="64" step="1" inputmode="numeric">
+                </div>
+                <div class="cc-row">
+                  <span>Z</span>
+                  <input class="form-input gen-input" type="number" id="blockZ" value="0" step="1" inputmode="numeric">
+                </div>
+                <p class="cc-hint">Coordinates update live. Negative values are fine — Minecraft floors them, so block −1 sits in chunk −1.</p>
+              </div>
+
+              <div class="result-card">
+                <div class="cc-out group">Chunk</div>
+                <div class="cc-out"><span>Chunk</span><b id="outChunk">0, 0</b></div>
+                <div class="cc-out"><span>Block in chunk</span><b id="outLocal">0, 0</b></div>
+
+                <div class="cc-out group">Region</div>
+                <div class="cc-out"><span>Region (32×32 chunks)</span><b id="outRegion">0, 0</b></div>
+                <div class="cc-out"><span>Chunk in region</span><b id="outRegionLocal">0, 0</b></div>
+
+                <div class="cc-out group">Distance from 0,0</div>
+                <div class="cc-out"><span>Horizontal (X/Z)</span><b id="outDist2d">0 blocks</b></div>
+                <div class="cc-out"><span>Horizontal</span><b id="outDistChunks">0 chunks</b></div>
+                <div class="cc-out"><span>3D (X/Y/Z)</span><b id="outDist3d">64 blocks</b></div>
+
+                <div class="cc-out group">Nether equivalent</div>
+                <div class="cc-out"><span>Same position ÷ 8</span><b id="outNether">0, 64, 0</b></div>
+              </div>
+            </div>
+
+            <div class="cc-actions">
+              <button type="button" class="btn btn-primary" id="copyBtn">Copy summary</button>
+              <button type="button" class="btn btn-ghost" id="tpBtn">Copy /tp command</button>
+              <button type="button" class="btn btn-ghost" id="resetBtn">Reset</button>
+            </div>
+
+            <pre class="cc-pre" id="summary" aria-live="polite"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/performance.js?v=3"></script>
+  <script src="../assets/js/main.js?v=3"></script>
+  <script src="../assets/js/components.js?v=3"></script>
+  <script>
+  AntigleComponents.init([
+    { q: 'How big is a chunk and a region?', a: 'A chunk is <strong>16 × 16 blocks</strong> and a region file holds <strong>32 × 32 chunks</strong> (512 × 512 blocks). Region coordinates are what you see in files like <code>r.0.0.mca</code>.' },
+    { q: 'Why do negative coordinates give a different chunk?', a: 'Minecraft floors the value instead of rounding. Block −1 becomes chunk −1, not chunk 0, so the border at 0 is handled correctly.' },
+    { q: 'What does “block in chunk” mean?', a: 'It is the position inside the 16 × 16 chunk, from 0 to 15. Add it to the chunk corner to get the world block position back.' },
+    { q: 'How is the distance calculated?', a: 'Horizontal distance is <code>√(x² + z²)</code> and 3D distance adds Y. Chunk distance divides the block distance by 16.' },
+    { q: 'Is my data uploaded anywhere?', a: 'No. The conversion runs in your browser with plain JavaScript, so the numbers never leave your device.' }
+  ]);
+  </script>
+  <script>
+  (function () {
+    var blockX = document.getElementById('blockX');
+    var blockY = document.getElementById('blockY');
+    var blockZ = document.getElementById('blockZ');
+    var outChunk = document.getElementById('outChunk');
+    var outLocal = document.getElementById('outLocal');
+    var outRegion = document.getElementById('outRegion');
+    var outRegionLocal = document.getElementById('outRegionLocal');
+    var outDist2d = document.getElementById('outDist2d');
+    var outDistChunks = document.getElementById('outDistChunks');
+    var outDist3d = document.getElementById('outDist3d');
+    var outNether = document.getElementById('outNether');
+    var summary = document.getElementById('summary');
+
+    function num(el, fallback) {
+      var v = parseInt(el.value, 10);
+      return isNaN(v) ? fallback : v;
+    }
+
+    function floorDiv(a, b) {
+      return Math.floor(a / b);
+    }
+
+    function posMod(a, b) {
+      return ((a % b) + b) % b;
+    }
+
+    function calculate() {
+      var x = num(blockX, 0);
+      var y = num(blockY, 0);
+      var z = num(blockZ, 0);
+
+      var chunkX = floorDiv(x, 16);
+      var chunkZ = floorDiv(z, 16);
+      var localX = posMod(x, 16);
+      var localZ = posMod(z, 16);
+      var regionX = floorDiv(chunkX, 32);
+      var regionZ = floorDiv(chunkZ, 32);
+      var regionChunkX = posMod(chunkX, 32);
+      var regionChunkZ = posMod(chunkZ, 32);
+
+      var dist2d = Math.sqrt(x * x + z * z);
+      var dist3d = Math.sqrt(x * x + y * y + z * z);
+
+      outChunk.textContent = chunkX + ', ' + chunkZ;
+      outLocal.textContent = localX + ', ' + localZ;
+      outRegion.textContent = regionX + ', ' + regionZ;
+      outRegionLocal.textContent = regionChunkX + ', ' + regionChunkZ;
+      outDist2d.textContent = Math.round(dist2d) + ' blocks';
+      outDistChunks.textContent = (dist2d / 16).toFixed(1) + ' chunks';
+      outDist3d.textContent = Math.round(dist3d) + ' blocks';
+      outNether.textContent = Math.round(x / 8) + ', ' + y + ', ' + Math.round(z / 8);
+
+      summary.textContent =
+        'Block:    ' + x + ' ' + y + ' ' + z + '\n' +
+        'Chunk:    ' + chunkX + ' ' + chunkZ + '   (block ' + localX + ' ' + localZ + ' inside the chunk)\n' +
+        'Region:   ' + regionX + ' ' + regionZ + '   (chunk ' + regionChunkX + ' ' + regionChunkZ + ' inside the region)\n' +
+        'Distance: ' + Math.round(dist2d) + ' blocks from 0,0 (' + (dist2d / 16).toFixed(1) + ' chunks, ' + Math.round(dist3d) + ' blocks in 3D)\n' +
+        'Nether:   ' + Math.round(x / 8) + ' ' + y + ' ' + Math.round(z / 8);
+    }
+
+    function copy(text, message) {
+      if (window.AntigleForge && AntigleForge.copyToClipboard) {
+        AntigleForge.copyToClipboard(text);
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          if (window.AntigleForge) AntigleForge.showToast('Copied!');
+        }).catch(function () {});
+      }
+    }
+
+    [blockX, blockY, blockZ].forEach(function (el) {
+      el.addEventListener('input', calculate);
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function () {
+      copy(summary.textContent, 'Copied!');
+    });
+
+    document.getElementById('tpBtn').addEventListener('click', function () {
+      copy('/tp @s ' + num(blockX, 0) + ' ' + num(blockY, 0) + ' ' + num(blockZ, 0), 'Copied!');
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', function () {
+      blockX.value = 0;
+      blockY.value = 64;
+      blockZ.value = 0;
+      calculate();
+    });
+
+    calculate();
+  })();
+  </script>
+</body>
+</html>
