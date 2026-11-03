@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Convert between Minecraft color codes, hex, and RGB values. Free online color converter for Bedrock and Java Edition.">
   <meta name="author" content="Mukund">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#0d0807">
   <title>Color Converter - AntigleForge</title>
   <link rel="canonical" href="https://antigleforge.pages.dev/tools/color-converter">
   
@@ -15,17 +15,11 @@
   <meta property="og:description" content="Convert between Minecraft color codes, hex, and RGB.">
   
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
-  
-  <!-- Styles -->
-  <link rel="stylesheet" href="../assets/css/style.css">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="../assets/images/logo.png">
-  
-  <style>
+
+
+<!-- Styles -->
+<!-- Favicon -->
+<style>
     .converter-layout { display: grid; gap: 1.5rem; }
     .input-section { }
     .output-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
@@ -38,7 +32,7 @@
     }
     .output-card:hover { border-color: rgba(255,255,255,0.12); }
     .output-label {
-      font-family: 'Oxanium', sans-serif;
+      font-family: 'Oswald', sans-serif;
       font-size: 0.75rem;
       font-weight: 600;
       color: rgba(255,255,255,0.4);
@@ -47,7 +41,7 @@
       margin-bottom: 0.5rem;
     }
     .output-value {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Courier Prime', sans-serif;
       font-size: 0.95rem;
       color: #fff;
       background: rgba(0,0,0,0.3);
@@ -62,7 +56,7 @@
     }
     .output-value code {
       flex: 1;
-      font-family: 'Inter', monospace;
+      font-family: 'Courier Prime', monospace;
       font-size: 0.85rem;
       color: #e0e0e0;
       word-break: break-all;
@@ -87,18 +81,18 @@
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 6px;
       padding: 0.35rem 0.7rem;
-      font-family: 'Inter', monospace;
+      font-family: 'Courier Prime', monospace;
       font-size: 0.8rem;
       color: #ccc;
       cursor: pointer;
       transition: all 0.15s;
     }
     .color-code-chip:hover {
-      background: rgba(0,221,255,0.1);
-      border-color: rgba(0,221,255,0.3);
+      background: rgba(232,179,45,0.1);
+      border-color: rgba(232,179,45,0.3);
     }
     .color-code-chip .chip-label {
-      font-family: 'Oxanium', sans-serif;
+      font-family: 'Oswald', sans-serif;
       font-size: 0.65rem;
       font-weight: 600;
       color: rgba(255,255,255,0.35);
@@ -140,7 +134,7 @@
       padding: 0.5rem;
       text-align: center;
       border-radius: 6px;
-      font-family: 'Oxanium', sans-serif;
+      font-family: 'Oswald', sans-serif;
       font-size: 0.75rem;
       font-weight: 600;
       color: rgba(255,255,255,0.4);
@@ -150,14 +144,14 @@
       border: none;
     }
     .format-tab.active {
-      background: rgba(0,221,255,0.15);
-      color: #00ddff;
+      background: rgba(232,179,45,0.15);
+      color: #e8b32d;
     }
     .format-tab:hover:not(.active) {
       color: rgba(255,255,255,0.6);
     }
     .section-label {
-      font-family: 'Oxanium', sans-serif;
+      font-family: 'Oswald', sans-serif;
       font-size: 0.75rem;
       font-weight: 600;
       color: rgba(255,255,255,0.35);
@@ -190,43 +184,27 @@
       font-style: italic;
     }
   </style>
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Theme -->
+  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="navbar" role="navigation" aria-label="Main navigation">
-    <div class="navbar-container">
-      <a href="../index.html" class="navbar-brand">
-        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
-        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
-      </a>
-      
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-      
-      <ul class="navbar-nav" id="navbar-nav">
-        <li><a href="../index.html" class="nav-link">Home</a></li>
-        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
-      </ul>
-      
-      <div class="navbar-actions">
-        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="btn btn-social" aria-label="YouTube">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
+<!-- Main Content -->
   <main id="main-content" class="main-content">
     <section class="tool-page">
       <div class="container">
+        <div class="back-row">
+          <a href="../tools.html" class="back-link">‹ Back to tools</a>
+          <span class="back-hint">Runs locally · no uploads ›</span>
+        </div>
         <div class="tool-header reveal">
-          <h1 class="tool-title">Color Converter</h1>
+                    <div class="tool-badges"><span class="badge">MINECRAFT TOOL · FREE</span></div>
+<h1 class="tool-title">Color Converter</h1>
           <p class="tool-subtitle">Convert between Minecraft color codes, hex, and RGB values. Works with both Java and Bedrock Edition.</p>
         </div>
 
@@ -256,7 +234,7 @@
               <div class="input-group" id="hexInput">
                 <label class="form-label" for="hexValue">Hex Color</label>
                 <div style="display:flex;gap:0.5rem;align-items:center;">
-                  <input type="text" id="hexValue" class="form-input" placeholder="#FF5555" maxlength="7" style="flex:1;">
+                  <input type="text" id="hexValue" class="form-input" placeholder="#d3241b" maxlength="7" style="flex:1;">
                   <input type="color" id="colorPicker" style="width:44px;height:44px;border:none;background:none;cursor:pointer;" title="Pick a color">
                 </div>
               </div>
@@ -285,12 +263,12 @@
                 <label class="form-label" for="sectionCode">Section Code Character</label>
                 <div style="display:flex;gap:0.5rem;align-items:center;">
                   <input type="text" id="sectionCode" class="form-input" placeholder="§c" maxlength="2" style="flex:1;">
-                  <span style="color:rgba(255,255,255,0.3);font-size:0.8rem;">or just the code: <code style="color:#ff5555;">c</code></span>
+                  <span style="color:rgba(255,255,255,0.3);font-size:0.8rem;">or just the code: <code style="color:#d3241b;">c</code></span>
                 </div>
               </div>
 
               <!-- Color preview -->
-              <div class="color-preview-bar" id="colorPreview" style="background:#FF5555;"></div>
+              <div class="color-preview-bar" id="colorPreview" style="background:#d3241b;"></div>
 
               <!-- Output chips -->
               <div class="color-code-row" id="outputChips">
@@ -300,7 +278,7 @@
                 </div>
                 <div class="color-code-chip" data-copy="hex" title="Click to copy">
                   <span class="chip-label">Hex</span>
-                  <code id="outHex">#FF5555</code>
+                  <code id="outHex">#d3241b</code>
                 </div>
                 <div class="color-code-chip" data-copy="rgb" title="Click to copy">
                   <span class="chip-label">RGB</span>
@@ -345,63 +323,18 @@
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
-          <span class="brand-text brand-text-sm">Antigle<span class="brand-accent">Forge</span></span>
-        </div>
-        <nav class="footer-nav">
-          <a href="../index.html" class="footer-link">Home</a>
-          <a href="../tools.html" class="footer-link">Tools</a>
-        </nav>
-        <div class="footer-social">
-          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="YouTube">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-            </svg>
-          </a>
-          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-            </svg>
-          </a>
-          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Scripts -->
-  <script src="../assets/js/performance.js"></script>
-  <script src="../assets/js/main.js"></script>
-  <script src="../assets/js/components.js"></script>
+<!-- Scripts -->
+  <script src="../assets/js/performance.js?v=3"></script>
+  <script src="../assets/js/main.js?v=3"></script>
+  <script src="../assets/js/components.js?v=3"></script>
   <script>
   AntigleComponents.init([
     { q: 'What are Minecraft color codes?', a: 'Color codes use the section symbol (§) followed by a character to color text in Minecraft. §c makes text red, §a makes it green, etc. They work in signs, books, chat, and commands on both Java and Bedrock editions.' },
-    { q: 'What is a hex color code?', a: 'Hex codes are 6-digit values like #FF5555 that represent colors using Red, Green, and Blue channels. Minecraft Bedrock Edition supports hex colors in some text components using the "color" field.' },
-    { q: 'How do I use these codes in Bedrock?', a: 'In Bedrock Edition, use the section code (§c) in signs, book & quills, and name tags. For /tellraw commands, use the JSON text format with "color": "red" or "color": "#FF5555".' },
+    { q: 'What is a hex color code?', a: 'Hex codes are 6-digit values like #d3241b that represent colors using Red, Green, and Blue channels. Minecraft Bedrock Edition supports hex colors in some text components using the "color" field.' },
+    { q: 'How do I use these codes in Bedrock?', a: 'In Bedrock Edition, use the section code (§c) in signs, book & quills, and name tags. For /tellraw commands, use the JSON text format with "color": "red" or "color": "#d3241b".' },
     { q: 'What does the Name field show?', a: 'The Name field shows the human-readable Minecraft color name (like "Red", "Green", "Gold") that corresponds to the nearest color code. This is useful for /tellraw JSON text components.' }
   ]);
 
-  // Backup FAQ handler
-  document.addEventListener('click', function(e) {
-    var q = e.target.closest('.faq-question');
-    if (!q) return;
-    var item = q.parentElement;
-    var wasOpen = item.classList.contains('open');
-    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
-    if (!wasOpen) item.classList.add('open');
-  });
   </script>
   <script>
   (function() {
@@ -419,7 +352,7 @@
       '9': { name: 'Blue',        hex: '#5555FF' },
       'a': { name: 'Green',       hex: '#55FF55' },
       'b': { name: 'Aqua',        hex: '#55FFFF' },
-      'c': { name: 'Red',         hex: '#FF5555' },
+      'c': { name: 'Red',         hex: '#d3241b' },
       'd': { name: 'Light Purple',hex: '#FF55FF' },
       'e': { name: 'Yellow',      hex: '#FFFF55' },
       'f': { name: 'White',       hex: '#FFFFFF' }
@@ -450,7 +383,7 @@
     var rgbGroup = document.getElementById('rgbInput');
     var sectionGroup = document.getElementById('sectionInput');
 
-    var currentHex = '#FF5555';
+    var currentHex = '#d3241b';
     var currentFormat = 'hex';
 
     // Hex to RGB

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Create custom 3D Minecraft shapes with live preview. Export as .mcstructure for Bedrock Edition.">
   <meta name="author" content="Mukund">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#0d0807">
   <title>Shape Generator - AntigleForge</title>
   <link rel="canonical" href="https://antigleforge.pages.dev/tools/shape-generator">
   
@@ -13,43 +13,40 @@
   <meta property="og:url" content="https://antigleforge.pages.dev/tools/shape-generator">
   <meta property="og:title" content="Shape Generator - AntigleForge">
   <meta property="og:description" content="Create custom 3D Minecraft shapes with live preview.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="icon" type="image/png" href="../assets/images/logo.png">
-  <style>
+
+
+<style>
     .gen-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start}
     @media(max-width:900px){.gen-grid{grid-template-columns:1fr}}
     .gen-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);overflow:hidden}
-    .gen-card-header{padding:.8rem 1rem;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:.5rem;font-family:var(--font-heading);font-size:.95rem;color:var(--primary);background:rgba(6,182,212,.04)}
+    .gen-card-header{padding:.8rem 1rem;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:.5rem;font-family:var(--font-heading);font-size:.95rem;color:var(--primary);background:rgba(232,179,45,.04)}
     .gen-card-header svg{width:16px;height:16px;flex-shrink:0}
     .gen-card-body{padding:1rem}
     .gen-card+.gen-card{margin-top:1rem}
     .gen-label{display:block;font-size:.78rem;color:var(--text-muted);margin-bottom:.3rem;font-weight:500}
     .gen-input,.gen-select{width:100%;padding:.5rem .7rem;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-body);font-size:.85rem;transition:border-color .2s;box-sizing:border-box}
-    .gen-input:focus,.gen-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(6,182,212,.15)}
+    .gen-input:focus,.gen-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(232,179,45,.15)}
     .gen-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.7rem}
     .gen-row .gen-col{flex:1;min-width:120px}
     .shape-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
     .shape-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:8px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s}
     .shape-btn:hover{border-color:var(--text-muted)}
-    .shape-btn.active{border-color:var(--primary);background:rgba(6,182,212,.1);color:var(--primary)}
+    .shape-btn.active{border-color:var(--primary);background:rgba(232,179,45,.1);color:var(--primary)}
     .shape-btn svg{width:22px;height:22px}
     .shape-btn span{font-size:9px;color:var(--text-muted)}
     .shape-btn.active span{color:var(--primary)}
     .orient-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
     .orient-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:5px;cursor:pointer;font-size:10px;color:var(--text-muted);text-align:center;transition:all .15s}
     .orient-btn:hover{border-color:var(--text-muted)}
-    .orient-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(6,182,212,.1)}
+    .orient-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(232,179,45,.1)}
     .tri-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
     .tri-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:5px;cursor:pointer;font-size:10px;color:var(--text-muted);text-align:center;transition:all .15s}
     .tri-btn:hover{border-color:var(--text-muted)}
-    .tri-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(6,182,212,.1)}
+    .tri-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(232,179,45,.1)}
     .block-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
     .block-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--bg-elevated);border:2px solid var(--border-color);border-radius:6px;padding:4px;cursor:pointer;transition:all .15s}
     .block-btn:hover{border-color:var(--text-muted);transform:scale(1.05)}
-    .block-btn.active{border-color:var(--primary);box-shadow:0 0 0 2px rgba(6,182,212,.2)}
+    .block-btn.active{border-color:var(--primary);box-shadow:0 0 0 2px rgba(232,179,45,.2)}
     .block-btn img{width:28px;height:28px;border-radius:3px;image-rendering:pixelated;pointer-events:none}
     .block-btn span{font-size:8px;color:var(--text-muted);line-height:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
     .block-btn.active span{color:var(--primary)}
@@ -65,8 +62,8 @@
     .viewport-wrap{position:relative;background:linear-gradient(180deg,#87CEEB 0%,#5BA3D9 40%,#4A90C4 60%,#5D8B4A 60%,#4A7A3A 100%);border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border-color)}
     #viewport3d{width:100%;height:450px}
     .viewport-wrap canvas{width:100%!important;height:100%!important;display:block}
-    .gen-generate-overlay{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10;padding:.55rem 2rem;background:linear-gradient(135deg,var(--accent),var(--secondary));border:none;border-radius:24px;color:#fff;font-family:var(--font-heading);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;box-shadow:0 4px 20px rgba(109,93,252,.5);white-space:nowrap}
-    .gen-generate-overlay:hover{filter:brightness(1.15);transform:translateX(-50%) translateY(-2px);box-shadow:0 6px 25px rgba(109,93,252,.6)}
+    .gen-generate-overlay{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10;padding:.55rem 2rem;background:linear-gradient(135deg,var(--accent),var(--secondary));border:none;border-radius:24px;color:#fff;font-family:var(--font-heading);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;box-shadow:0 4px 20px rgba(156,22,16,.5);white-space:nowrap}
+    .gen-generate-overlay:hover{filter:brightness(1.15);transform:translateX(-50%) translateY(-2px);box-shadow:0 6px 25px rgba(156,22,16,.6)}
     .gen-generate-overlay:disabled{opacity:.6;cursor:not-allowed;transform:translateX(-50%);filter:none}
     .gen-bottom{display:flex;align-items:center;gap:.5rem;padding:.6rem .8rem;background:var(--bg-card);border-top:1px solid var(--border-color);flex-wrap:wrap}
     .gen-stats{display:flex;gap:1rem;font-size:.75rem;color:var(--text-muted);font-family:'Consolas',monospace}
@@ -75,37 +72,144 @@
     .gen-actions .btn,.gen-actions .vp-btn{background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:5px 12px;cursor:pointer;font-size:.75rem;font-weight:500;color:var(--text-primary);transition:all .15s}
     .gen-actions .btn:hover,.gen-actions .vp-btn:hover{border-color:var(--primary);color:var(--primary)}
     .gen-actions .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-    .gen-actions .btn.primary:hover{background:#2ba0e8}
+    .gen-actions .btn.primary:hover{background:#9c1610}
     .dim-hide{display:none!important}
+  </style>
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Theme -->
+  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
+
+  <!-- Panel palette: light parchment surfaces with dark ink text.
+       Loaded after the theme so .gen-* containers are never the grey
+       50%-white default, and every label/icon stays readable before it
+       is selected (previously the shape buttons were dark ink on a dark
+       tile, so a shape only showed up once it became .active). -->
+  <style>
+    body {
+      --bg-card: #f1e9d7;
+      --bg-elevated: #fbf6ea;
+      --text-primary: #2a1c14;
+      --text-secondary: #4a3a2c;
+      --text-muted: #6b5745;
+      --border-color: #cfc4ae;
+      --border-hover: #9c8b70;
+      --primary: #9c1610;
+      --primary-dark: #78100c;
+      --accent: #d3241b;
+      --secondary: #b8860f;
+    }
+
+    body .gen-card {
+      padding: 0;
+      color: #2a1c14;
+      background: #f1e9d7;
+      border: 2px solid #cfc4ae;
+      text-align: left;
+      box-shadow: 0 3px 0 rgba(185, 173, 149, 0.55);
+    }
+
+    body .gen-card-body {
+      padding: 1rem;
+      color: #2a1c14;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    body .gen-card-header {
+      color: #9c1610;
+      background: rgba(156, 22, 16, 0.07);
+      border-bottom: 1px solid #cfc4ae;
+    }
+
+    body .gen-label { color: #6b5745; }
+
+    body .gen-input,
+    body .gen-select {
+      color: #2a1c14;
+      background: #fbf6ea;
+      border-color: #cfc4ae;
+    }
+
+    body .shape-btn,
+    body .orient-btn,
+    body .tri-btn,
+    body .block-btn {
+      color: #2a1c14;
+      background: #fbf6ea;
+      border-color: #cfc4ae;
+    }
+
+    body .shape-btn span,
+    body .block-btn span,
+    body .orient-btn,
+    body .tri-btn { color: #5b4a3c; }
+
+    body .shape-btn:hover,
+    body .block-btn:hover,
+    body .orient-btn:hover,
+    body .tri-btn:hover { border-color: #9c8b70; }
+
+    body .shape-btn.active,
+    body .orient-btn.active,
+    body .tri-btn.active,
+    body .block-btn.active {
+      color: #9c1610;
+      background: rgba(211, 36, 27, 0.08);
+      border-color: #9c1610;
+      box-shadow: 0 0 0 2px rgba(211, 36, 27, 0.14);
+    }
+
+    body .shape-btn.active span,
+    body .block-btn.active span { color: #9c1610; }
+
+    body .toggle-track { background: #cfc4ae; }
+
+    body .gen-bottom {
+      background: #f1e9d7;
+      border-top: 1px solid #cfc4ae;
+    }
+
+    body .gen-stats { color: #5b4a3c; }
+    body .gen-stats b { color: #2a1c14; }
+
+    body .gen-actions .btn,
+    body .gen-actions .vp-btn {
+      color: #2a1c14;
+      background: #fbf6ea;
+      border-color: #cfc4ae;
+    }
+
+    body .gen-actions .btn:hover,
+    body .gen-actions .vp-btn:hover {
+      color: #9c1610;
+      border-color: #9c1610;
+    }
+
+    body .gen-actions .btn.primary {
+      color: #fff;
+      background: #d3241b;
+      border-color: #d3241b;
+    }
   </style>
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-container">
-      <a href="../index.html" class="navbar-brand">
-        <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo">
-        <span>AntigleForge</span>
-      </a>
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-      <ul class="navbar-nav" id="navbar-nav">
-        <li><a href="../index.html" class="nav-link">Home</a></li>
-        <li><a href="../tools.html" class="nav-link active">Tools</a></li>
-      </ul>
-      <div class="navbar-actions"></div>
-    </div>
-  </nav>
-
-  <main class="main-content">
-    <section class="section">
+<main class="main-content">
+    <section class="tool-page">
       <div class="container">
-        <div class="section-header">
-          <h1 class="section-title">Shape Generator</h1>
-          <p style="color:var(--text-muted);margin-top:.3rem;">Create 3D Minecraft shapes with live preview. Export as .mcstructure for Bedrock Edition.</p>
+        <div class="back-row">
+          <a href="../tools.html" class="back-link">‹ Back to tools</a>
+        </div>
+        <div class="tool-header reveal">
+                    <div class="tool-badges"><span class="badge">MINECRAFT TOOL · FREE</span></div>
+<h1 class="tool-title">Shape Generator</h1>
+          <p class="tool-subtitle">Create 3D Minecraft shapes with live preview. Export as .mcstructure for Bedrock Edition.</p>
         </div>
 
         <div class="gen-grid">
@@ -232,7 +336,7 @@
                 </div>
               </div>
             </div>
-            <div style="margin-top:.8rem;padding:.7rem 1rem;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);border-radius:var(--radius-sm);font-size:.8rem;color:var(--text-secondary);line-height:1.5;">
+            <div style="margin-top:.8rem;padding:.7rem 1rem;background:rgba(232,179,45,.06);border:1px solid rgba(232,179,45,.15);border-radius:var(--radius-sm);font-size:.8rem;color:var(--text-secondary);line-height:1.5;">
               <strong style="color:var(--primary);">Note:</strong> 3D preview sirf visual hai — agar preview load nahi ho rahi toh shape generator pe koi farq nahi padta. Sab options (shape, dimensions, block, hollow) select karo, phir <strong>"Generate Shape"</strong> button zaroor dabao. Download (.mcstructure) hamesha sahi kaam karega chahe preview dikh ya na dikhe.
             </div>
           </div>
@@ -241,44 +345,8 @@
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <img src="../assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
-          <span class="brand-text brand-text-sm">Antigle<span class="brand-accent">Forge</span></span>
-        </div>
-        <nav class="footer-nav">
-          <a href="../index.html" class="footer-link">Home</a>
-          <a href="../tools.html" class="footer-link">Tools</a>
-        </nav>
-        <div class="footer-social">
-          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="YouTube">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-            </svg>
-          </a>
-          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-            </svg>
-          </a>
-          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="../assets/js/main.js"></script>
-  <script src="../assets/js/components.js"></script>
+<script src="../assets/js/main.js?v=3"></script>
+  <script src="../assets/js/components.js?v=3"></script>
   <script>
   AntigleComponents.init([
     { q: 'Which shapes are available?', a: '9 shapes: <strong>Circle</strong>, <strong>Oval</strong>, <strong>Rectangle</strong>, <strong>Triangle (Equilateral)</strong>, <strong>Triangle (Right-Angled)</strong>, <strong>Parallelogram</strong>, <strong>Star</strong>, <strong>Diamond</strong>, <strong>Hexagon</strong>.' },
@@ -288,15 +356,6 @@
     { q: 'How to make hollow shape?', a: 'Toggle <strong>"Hollow"</strong> in Options section — only outer surface blocks generate.' },
     { q: 'Maximum shape size?', a: '<strong>64 x 256 x 64 blocks</strong> (Width x Height x Depth).' }
   ]);
-  // Backup FAQ handler
-  document.addEventListener('click', function(e) {
-    var q = e.target.closest('.faq-question');
-    if (!q) return;
-    var item = q.parentElement;
-    var wasOpen = item.classList.contains('open');
-    item.parentElement.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
-    if (!wasOpen) item.classList.add('open');
-  });
   </script>
 
  <script type="importmap">
@@ -604,7 +663,7 @@
     c.fillStyle=sky;c.fillRect(0,0,cv.width,cv.height);
     c.drawImage(src,0,0);
     const arr=Array.from(state.blocks.values()),b=arr.length?bounds(arr):{sx:0,sy:0,sz:0};
-    c.fillStyle='#38BDF8';c.font='bold '+Math.round(pad*.32)+'px sans-serif';
+    c.fillStyle='#e8b32d';c.font='bold '+Math.round(pad*.32)+'px sans-serif';
     c.fillText(state.shape.toUpperCase()+'  '+b.sx+' x '+b.sy+' x '+b.sz,16,src.height+Math.round(pad*.38));
     c.fillStyle='#94A3B8';c.font=Math.round(pad*.28)+'px monospace';
     c.fillText(arr.length+' blocks  '+state.block.split(':')[1].replace(/_/g,' '),16,src.height+Math.round(pad*.78));

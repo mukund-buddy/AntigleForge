@@ -16,6 +16,21 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://antigleforge.pages.dev/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://antigleforge.pages.dev/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://antigleforge.pages.dev/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
     <loc>https://antigleforge.pages.dev/tools/uuid-generator</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -127,6 +142,16 @@
   </url>
   <url>
     <loc>https://antigleforge.pages.dev/tools/building-material-calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://antigleforge.pages.dev/tools/coordinate-converter</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://antigleforge.pages.dev/tools/json-formatter</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

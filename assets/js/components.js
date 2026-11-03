@@ -1,100 +1,378 @@
-/* ========================================
+/* ============================================================
    AntigleForge - Shared Components
-   Footer + FAQ (edit here for all pages)
-   ======================================== */
+   Header + Footer + FAQ (edit here for all pages)
+
+   Header, footer aur FAQ sirf isi file me edit karo.
+   Har page yahin se inject karta hai.
+
+   Depends on: nothing. Safe to load on every page.
+   ============================================================ */
 
 const AntigleComponents = (() => {
+  let headerReady = false;
+  let footerReady = false;
+  let faqReady = false;
+  let headerBound = false;
+
+  /* ----------------------------------------------------------
+     Paths / page detection
+     ---------------------------------------------------------- */
 
   function getBasePath() {
-    const path = window.location.pathname;
+    const path = window.location.pathname.replace(/\\/g, '/');
     if (path.includes('/tools/')) return '../';
     return './';
   }
 
+  function getPage() {
+    const path = window.location.pathname.replace(/\\/g, '/');
+    const file = path.split('/').pop() || 'index.html';
+
+    if (file === 'tools.html' || file === 'tools') return 'tools';
+    if (path.includes('/tools/')) return 'tool-detail';
+    if (file === 'mode.html' || file === 'mode') return 'mode';
+    if (file.indexOf('about') === 0) return 'about';
+    if (file.indexOf('privacy') === 0) return 'privacy';
+    if (file.indexOf('terms') === 0) return 'terms';
+    return 'home';
+  }
+
+  function navActive(page, target) {
+    if (target === 'tools' && (page === 'tools' || page === 'tool-detail')) return ' active';
+    return page === target ? ' active' : '';
+  }
+
+  /* ----------------------------------------------------------
+     Icons (inline so there is no extra request)
+     ---------------------------------------------------------- */
+
+  const ICONS = {
+    youtube:
+      '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      '<path fill="currentColor" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.3 5 12 5 12 5s-6.3 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26.2 26.2 0 0 0 2 12a26.2 26.2 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.7 19 12 19 12 19s6.3 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26.2 26.2 0 0 0 22 12a26.2 26.2 0 0 0-.4-4.8z"/>' +
+      '<path fill="#0d0807" d="M10 15.2V8.8L15.5 12 10 15.2z"/>' +
+      '</svg>',
+    github:
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' +
+      '<path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12 12 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>' +
+      '</svg>',
+    arrow:
+      '<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">' +
+      '<polyline points="6 9 12 15 18 9"/></svg>'
+  };
+
+  /* ----------------------------------------------------------
+     Header
+     ---------------------------------------------------------- */
+
+  function getHeader() {
+    const page = getPage();
+    const base = getBasePath();
+
+    return `
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-container">
+      <a href="${base}index.html" class="navbar-brand" aria-label="AntigleForge home">
+        <img src="${base}assets/images/logo-mark.svg" alt="" class="brand-logo" width="36" height="36">
+        <span class="brand-text">Antigle<span class="brand-accent">Forge</span></span>
+      </a>
+
+      <ul class="navbar-nav" id="navbar-nav">
+        <li><a href="${base}index.html" class="nav-link${navActive(page, 'home')}">Home</a></li>
+        <li><a href="${base}tools.html" class="nav-link${navActive(page, 'tools')}">Tools</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer"
+           class="btn-social" aria-label="AntigleForge on YouTube" title="YouTube">
+          ${ICONS.youtube}
+        </a>
+
+        <button type="button" class="hamburger" id="hamburger" aria-label="Toggle menu"
+                aria-expanded="false" aria-controls="navbar-nav">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </div>
+  </nav>`;
+  }
+
+  /* ----------------------------------------------------------
+     Footer
+     ---------------------------------------------------------- */
+
   const FOOTER_HTML = `
-  <footer class="footer">
+  <footer class="footer site-footer">
     <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <img src="__BASE__assets/images/logo.png" alt="AntigleForge" class="brand-logo brand-logo-sm">
-          <span class="brand-text brand-text-sm">Antigle<span class="brand-accent">Forge</span></span>
+      <div class="footer-grid">
+        <div class="footer-col footer-col-brand">
+          <a href="__BASE__index.html" class="footer-brand" aria-label="AntigleForge home">
+            <img src="__BASE__assets/images/logo-mark.svg" alt="" class="brand-logo brand-logo-sm" width="32" height="32">
+            <span class="brand-text brand-text-sm">Antigle<span class="brand-accent">Forge</span></span>
+          </a>
+          <p class="footer-desc">Free, private Minecraft tools. Everything runs in your browser — no uploads, no accounts, no tracking.</p>
         </div>
-        <nav class="footer-nav">
-          <a href="__BASE__index.html" class="footer-link">Home</a>
-          <a href="__BASE__tools.html" class="footer-link">Tools</a>
-        </nav>
-        <div class="footer-social">
-          <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="YouTube">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.872.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136c.502-1.884.502-5.814.502-5.814s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-          </a>
-          <a href="https://instagram.com/antigle_official" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.8C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-          </a>
-          <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          </a>
+
+        <div class="footer-col">
+          <h2 class="footer-heading">Explore</h2>
+          <ul class="footer-list">
+            <li><a href="__BASE__index.html" class="footer-link">Home</a></li>
+            <li><a href="__BASE__tools.html" class="footer-link">All Tools</a></li>
+            <li><a href="__BASE__about.html" class="footer-link">About</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h2 class="footer-heading">Legal</h2>
+          <ul class="footer-list">
+            <li><a href="__BASE__privacy.html" class="footer-link">Privacy Policy</a></li>
+            <li><a href="__BASE__terms.html" class="footer-link">Terms of Use</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h2 class="footer-heading">Connect</h2>
+          <ul class="footer-list footer-list-social">
+            <li>
+              <a href="https://youtube.com/@notgamingplayz" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-link" title="YouTube channel">
+                ${ICONS.youtube}<span>YouTube</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/mukund-buddy" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-link" title="GitHub profile">
+                ${ICONS.github}<span>GitHub</span>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
+
       <div class="footer-bottom">
-        <p>Created by Mukund | &copy; 2026 AntigleForge. All rights reserved.</p>
+        <p>
+          <span>&copy; <span id="footerYear">2026</span> AntigleForge</span>
+          <span class="footer-dot" aria-hidden="true">·</span>
+          <span>All rights reserved.</span>
+          <span class="footer-dot" aria-hidden="true">·</span>
+          <span>Created by Mukund</span>
+        </p>
       </div>
     </div>
   </footer>`;
 
-  function getFAQ(items) {
-    const base = getBasePath();
-    const arrow = `<svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>`;
-    let html = `
-    <section class="section">
-      <div class="container">
-        <div class="faq-section">
-          <h2 class="faq-title">Frequently Asked Questions</h2>`;
-    items.forEach(faq => {
-      html += `
-          <div class="faq-item">
-            <div class="faq-question">${faq.q}${arrow}</div>
-            <div class="faq-answer">${faq.a}</div>
-          </div>`;
-    });
-    html += `
-        </div>
-      </div>
-    </section>`;
-    return html;
-  }
+  /* ----------------------------------------------------------
+     FAQ (accessible accordion)
+     ---------------------------------------------------------- */
 
-  function injectFooter() {
-    const existing = document.querySelector('.footer');
-    if (existing) return;
-    const base = getBasePath();
-    const html = FOOTER_HTML.replace(/__BASE__/g, base);
-    document.body.insertAdjacentHTML('beforeend', html);
+  /* FAQ answers are written in the page markup and may use <strong>/<em>/<code>.
+     Everything is escaped first, then only that small tag allowlist is
+     restored, so no injected markup can ever be executed. */
+  function renderAnswer(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/&lt;(\/?)(strong|b|em|i|code|br)&gt;/g, '<$1$2>');
   }
 
   function injectFAQ(items) {
-    const existing = document.querySelector('.faq-section');
-    if (existing) return;
+    if (!items || !items.length) return;
+    if (document.querySelector('.faq-section')) return;
+
     const main = document.querySelector('main');
     if (!main) return;
-    main.insertAdjacentHTML('beforeend', getFAQ(items));
+
+    const section = document.createElement('section');
+    section.className = 'section faq-block';
+
+    const container = document.createElement('div');
+    container.className = 'container';
+
+    const faqSection = document.createElement('div');
+    faqSection.className = 'faq-section';
+
+    const heading = document.createElement('h2');
+    heading.className = 'faq-title';
+    heading.textContent = 'Frequently Asked Questions';
+
+    const sub = document.createElement('p');
+    sub.className = 'faq-subtitle';
+    sub.textContent = 'Quick answers about this tool. Everything runs locally in your browser.';
+
+    faqSection.appendChild(heading);
+    faqSection.appendChild(sub);
+
+    items.forEach((faq, i) => {
+      const item = document.createElement('div');
+      item.className = 'faq-item';
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'faq-question';
+      button.id = 'faq-q-' + (i + 1);
+      button.setAttribute('aria-expanded', 'false');
+      button.setAttribute('aria-controls', 'faq-a-' + (i + 1));
+
+      const label = document.createElement('span');
+      label.className = 'faq-question-text';
+      label.textContent = faq.q;
+      button.appendChild(label);
+      button.insertAdjacentHTML('beforeend', ICONS.arrow);
+
+      const answer = document.createElement('div');
+      answer.className = 'faq-answer';
+      answer.id = 'faq-a-' + (i + 1);
+      answer.setAttribute('role', 'region');
+      answer.setAttribute('aria-labelledby', button.id);
+
+      const para = document.createElement('p');
+      para.innerHTML = renderAnswer(faq.a);
+      answer.appendChild(para);
+
+      item.appendChild(button);
+      item.appendChild(answer);
+      faqSection.appendChild(item);
+    });
+
+    container.appendChild(faqSection);
+    section.appendChild(container);
+    main.appendChild(section);
+  }
+
+  /* ----------------------------------------------------------
+     Wiring
+     ---------------------------------------------------------- */
+
+  function injectHeader() {
+    if (headerReady || !document.body) return;
+    headerReady = true;
+
+    const existing = document.querySelector('nav.navbar');
+    if (existing) existing.remove();
+
+    document.body.insertAdjacentHTML('afterbegin', getHeader());
+  }
+
+  function injectFooter() {
+    if (footerReady || !document.body) return;
+    footerReady = true;
+
+    const existing = document.querySelector('footer.footer');
+    if (existing) existing.remove();
+
+    document.body.insertAdjacentHTML('beforeend', FOOTER_HTML.replace(/__BASE__/g, getBasePath()));
+
+    const year = document.getElementById('footerYear');
+    if (year) year.textContent = String(new Date().getFullYear());
+  }
+
+  function closeMenu(hamburger, nav) {
+    if (!hamburger || !nav) return;
+    hamburger.classList.remove('active');
+    nav.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+
+  function setupHeader() {
+    if (headerBound) return;
+    headerBound = true;
+
+    const hamburger = document.getElementById('hamburger');
+    const nav = document.getElementById('navbar-nav');
+
+    if (hamburger && nav) {
+      hamburger.addEventListener('click', () => {
+        const open = !nav.classList.contains('active');
+        nav.classList.toggle('active', open);
+        hamburger.classList.toggle('active', open);
+        hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+
+      nav.querySelectorAll('.nav-link').forEach((link) => {
+        link.addEventListener('click', () => closeMenu(hamburger, nav));
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (hamburger && nav && !hamburger.contains(e.target) && !nav.contains(e.target)) {
+        closeMenu(hamburger, nav);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMenu(hamburger, nav);
+      }
+    });
+
+    // Sticky header shadow once the page scrolls.
+    const navbar = document.querySelector('nav.navbar');
+    if (navbar) {
+      const onScroll = () => navbar.classList.toggle('is-scrolled', window.scrollY > 8);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
   }
 
   function setupFAQ() {
-    document.addEventListener('click', function(e) {
+    if (faqReady) return;
+    faqReady = true;
+
+    document.addEventListener('click', (e) => {
       const question = e.target.closest('.faq-question');
       if (!question) return;
-      const item = question.parentElement;
-      const wasOpen = item.classList.contains('open');
-      item.parentElement.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if (!wasOpen) item.classList.add('open');
+
+      const item = question.closest('.faq-item');
+      if (!item) return;
+
+      const isOpen = item.classList.contains('open');
+      const parent = item.parentElement;
+
+      if (parent) {
+        parent.querySelectorAll('.faq-item').forEach((other) => {
+          other.classList.remove('open');
+          const btn = other.querySelector('.faq-question');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      if (!isOpen) {
+        item.classList.add('open');
+        question.setAttribute('aria-expanded', 'true');
+      }
     });
   }
 
   function init(faqs) {
+    if (getPage() === 'mode') return;
+    injectHeader();
     injectFooter();
-    if (faqs && faqs.length) injectFAQ(faqs);
+    setupHeader();
+    injectFAQ(faqs);
     setupFAQ();
   }
 
-  return { init, getFAQ, getBasePath };
+  /* ----------------------------------------------------------
+     Auto-boot: header/footer exist before DOMContentLoaded so
+     main.js and page scripts can find their elements.
+     ---------------------------------------------------------- */
+
+  function boot() {
+    if (getPage() === 'mode') return;
+    injectHeader();
+    injectFooter();
+    setupHeader();
+    setupFAQ();
+  }
+
+  if (document.body) {
+    boot();
+  } else {
+    document.addEventListener('DOMContentLoaded', boot);
+  }
+
+  return { init, getFAQ: injectFAQ, getBasePath };
 })();
