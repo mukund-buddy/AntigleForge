@@ -143,11 +143,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
   <!-- Performance Mode Indicator -->
@@ -176,7 +177,7 @@
           <!-- Form -->
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               Pack Details
             </div>
 
@@ -304,17 +305,17 @@
           <div class="reveal stagger-2">
             <div class="tool-card-main">
               <div class="tool-card-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                 manifest.json
               </div>
               <div class="json-output" id="jsonOutput"></div>
               <div class="action-row">
                 <button class="btn btn-primary" onclick="copyJson()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                   Copy JSON
                 </button>
                 <button class="btn btn-secondary" onclick="downloadJson()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   Download
                 </button>
                 <button class="btn btn-secondary" onclick="generateUuids()">New UUIDs</button>
@@ -326,24 +327,24 @@
         <!-- Guide -->
         <div class="tool-card-main reveal" style="margin-top:1.5rem">
           <div class="tool-card-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             How it works
           </div>
           <div class="guide-steps">
             <div class="guide-step">
-              <h3>1. Pick your pack type</h3>
+              <h2>1. Pick your pack type</h2>
               <p>Choose resource pack (textures, sounds), behavior pack (entities, loot, functions), or world template. The form adapts: world templates skip min_engine_version, and resource packs get a pack scope option.</p>
             </div>
             <div class="guide-step">
-              <h3>2. Fill in the basics</h3>
+              <h2>2. Fill in the basics</h2>
               <p>Name and description appear in-game. Set your pack version — bump it whenever you publish an update so Minecraft replaces older imports.</p>
             </div>
             <div class="guide-step">
-              <h3>3. Add a scripting module (optional)</h3>
+              <h2>3. Add a scripting module (optional)</h2>
               <p>Enable <strong>Add a script module</strong> for Script API features. Set the entry file and the @minecraft/server version. The manifest gets dependencies and script_eval capability automatically.</p>
             </div>
             <div class="guide-step">
-              <h3>4. Copy or download</h3>
+              <h2>4. Copy or download</h2>
               <p>UUIDs are generated securely in your browser. Hit Copy JSON to paste into your project, or Download and drop manifest.json into your pack's root folder.</p>
             </div>
           </div>
@@ -353,11 +354,11 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'What is a manifest.json in Minecraft Bedrock?', a: 'manifest.json is the identity file every resource pack, behavior pack, and world template needs. It defines the pack name, description, unique UUID, version, and the modules the pack provides so Minecraft can load it correctly.' },
     { q: 'What does the Manifest Generator create?', a: 'It generates a format_version 2 manifest for resource packs, behavior packs, and world templates, including pack UUIDs, module UUIDs, min_engine_version, an optional scripting module with @minecraft/server dependency, capabilities, and metadata — ready to copy or download as manifest.json.' },
     { q: 'Is the manifest.json generator free?', a: 'Yes. Every tool on AntigleForge is free and runs entirely in your browser. Nothing is uploaded, stored, or processed on a server.' },
@@ -365,7 +366,6 @@
     { q: 'Where do I put the generated manifest.json?', a: 'Download it and place it in the root folder of your resource or behavior pack, next to your pack\'s contents. The pack folder can then be zipped and imported into Minecraft Bedrock.' },
     { q: 'Why does my script module need a @minecraft/server version?', a: 'Script modules use the Minecraft Script API, and the manifest declares which version of the built-in @minecraft/server module your code was written against. Minecraft loads that module version automatically.' }
   ]);
-
   </script>
   <script>
   (function() {

@@ -75,9 +75,10 @@
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
   <main id="main-content" class="main-content">
@@ -96,7 +97,7 @@
         <div class="tool-container">
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>
               </svg>
               Block · Chunk · Region
@@ -152,11 +153,11 @@
     </section>
   </main>
 
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'How big is a chunk and a region?', a: 'A chunk is <strong>16 × 16 blocks</strong> and a region file holds <strong>32 × 32 chunks</strong> (512 × 512 blocks). Region coordinates are what you see in files like <code>r.0.0.mca</code>.' },
     { q: 'Why do negative coordinates give a different chunk?', a: 'Minecraft floors the value instead of rounding. Block −1 becomes chunk −1, not chunk 0, so the border at 0 is handled correctly.' },
     { q: 'What does “block in chunk” mean?', a: 'It is the position inside the 16 × 16 chunk, from 0 to 15. Add it to the chunk corner to get the world block position back.' },

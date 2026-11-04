@@ -153,11 +153,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -176,7 +177,7 @@
         <div class="tool-container">
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
               Effect Command Builder
@@ -242,7 +243,7 @@
             <div class="command-output" id="commandOutput">
               <pre id="commandText"></pre>
               <button class="btn btn-primary copy-cmd-btn" id="copyCmdBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                 Copy
               </button>
             </div>
@@ -253,17 +254,16 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'What is the /effect command syntax?', a: 'Bedrock syntax: /effect <target> <effect> [duration] [amplifier] [hideParticles]. Duration is in seconds (default 30), amplifier starts at 0 (default), and hideParticles is true/false (default false).' },
     { q: 'What amplifier values are there?', a: 'Amplifier 0 = level I, amplifier 1 = level II, amplifier 2 = level III, etc. The maximum is 255 (level 256). Higher amplifiers have stronger effects but some have diminishing returns.' },
     { q: 'How do I clear effects?', a: 'Use /effect <target> clear to remove all effects from a target. Use /effect <target> <effect> clear to remove a specific effect only.' },
     { q: 'Are all effects the same on Bedrock?', a: 'Most effects work identically on Bedrock and Java, but some have minor differences in duration or amplifier behavior. This tool generates Bedrock-specific syntax.' }
   ]);
-
   </script>
   <script>
   (function() {

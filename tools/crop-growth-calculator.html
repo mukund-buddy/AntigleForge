@@ -127,11 +127,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -154,7 +155,7 @@
         <div class="tool-container">
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
               Crop Growth Calculator
@@ -271,11 +272,11 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { "q": "How is the growth time calculated?", "a": "The tool takes the random-tick growth chance for your crop, farmland and hydration, multiplies it by the edition's random tick interval and the number of growth stages. Java random ticks run about three times faster than Bedrock, which is why the times differ." },
     { "q": "Why is my farm slower than the estimate?", "a": "The estimate assumes random ticks always land on your crop. Lag, unloaded chunks, players standing far away, low light and dry farmland all slow real growth down." },
     { "q": "Does bone meal change the result?", "a": "Yes. Bone meal finishes stages instantly, so the calculator adds the bone meal you plan to use on top of natural growth. With 0 bone meal you get the pure natural time." },

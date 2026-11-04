@@ -177,11 +177,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -200,7 +201,7 @@
         <div class="tool-container">
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 3h6v4H9zM7 7l-4 13h18L17 7"/>
               </svg>
               Brewing Recipes
@@ -227,17 +228,16 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'What is the base for all potions?', a: 'All potions start from an Awkward Potion, made by brewing Nether Wart into a Water Bottle. The Awkward Potion has no effect on its own but is the base ingredient for every useful potion.' },
     { q: 'What does Redstone do?', a: 'Redstone extends the duration of a potion. For example, a regular Potion of Swiftness lasts 3:00, but with Redstone it becomes 8:00. Not all potions can be extended — some enhanced versions cannot use Redstone.' },
     { q: 'What does Glowstone do?', a: 'Glowstone enhances the effect level but reduces the duration. For example, Potion of Healing I becomes Potion of Healing II (restores more health but lasts half as long). Enhanced potions cannot be extended with Redstone.' },
     { q: 'How do I make Splash or Lingering potions?', a: 'Add Gunpowder to any potion to make it a Splash potion (throwable). Add Dragon\'s Breath to a Splash potion to make it Lingering (creates a cloud effect). Both reduce the effect duration slightly.' }
   ]);
-
   </script>
   <script>
   (function() {

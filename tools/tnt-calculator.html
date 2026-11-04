@@ -114,11 +114,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -138,7 +139,7 @@
           <!-- Config -->
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
               Explosion Configuration
@@ -167,7 +168,7 @@
           <!-- Results -->
           <div class="tool-card-main reveal stagger-2">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
               Explosion Results
@@ -183,7 +184,7 @@
           <!-- Block Damage Reference -->
           <div class="tool-card-main reveal stagger-3">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
               </svg>
               Block Blast Resistance Reference
@@ -197,17 +198,16 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'What is the TNT explosion radius?', a: 'A single TNT block has an explosion power of 4, which creates a radius of about 7 blocks. The explosion destroys blocks with blast resistance below 4 within close range, and weaker blocks further out.' },
     { q: 'How does explosion power scale?', a: 'Explosion power scales with the number of TNT blocks. 1 TNT = power 4, 2 TNT = power ~5.7, 4 TNT = power ~8, etc. The formula is power = 4 × (count)^(1/3). Damage and radius increase with more TNT.' },
     { q: 'What blocks resist explosions?', a: 'Obsidian (blast resistance 1200), bedrock (18000000), end portal frames (18000000), and enchanting tables (5) resist most explosions. Water and lava also absorb explosion damage.' },
     { q: 'Do explosions work the same on Bedrock?', a: 'Mostly yes, but Bedrock Edition has slightly different explosion mechanics. Bedrock explosions are less likely to destroy blocks compared to Java, and the maximum explosion power is capped differently.' }
   ]);
-
   </script>
   <script>
   (function() {

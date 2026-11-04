@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Format, minify and validate Minecraft JSON files in your browser. Find syntax errors with line and column numbers.">
   <meta name="author" content="Mukund">
-  <meta name="theme-color" content="#0d0807">
+  <meta name="theme-color" content="#0D0D0D">
   <title>JSON Formatter &amp; Validator - AntigleForge</title>
   <link rel="canonical" href="https://antigleforge.pages.dev/tools/json-formatter">
 
@@ -14,8 +14,41 @@
   <meta property="og:title" content="JSON Formatter &amp; Validator - AntigleForge">
   <meta property="og:description" content="Format, minify and validate addon JSON with clear error locations.">
 
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Oswald:wght@300;600&amp;family=Courier+Prime:wght@400;700&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Oswald:wght@300;600&amp;family=Courier+Prime:wght@400;700&amp;display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
+
   <style>
-    .jf-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 0.9rem; }
+    .jf-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 0.9rem;
+    }
+
+    .jf-actions .btn {
+      min-height: 36px;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+
+    .jf-actions .btn-ghost {
+      color: #2a1c14;
+      background: #fbf6ea;
+      border: 1px solid #cfc4ae;
+    }
+
+    .jf-actions .btn-ghost:hover,
+    .jf-actions .btn-ghost:focus-visible {
+      color: #C62828;
+      background: #fffdf7;
+      border-color: #C62828;
+    }
 
     .jf-area {
       width: 100%;
@@ -31,6 +64,11 @@
       resize: vertical;
       tab-size: 2;
     }
+
+    .jf-area::placeholder {
+      color: rgba(245, 236, 217, 0.4);
+    }
+
     .jf-area:focus {
       outline: none;
       border-color: var(--gold);
@@ -50,8 +88,26 @@
       background: rgba(255, 255, 255, 0.45);
       color: var(--ink-soft);
     }
-    .jf-status.ok { color: #14532d; border-color: rgba(20, 83, 45, 0.35); background: rgba(34, 197, 94, 0.14); }
-    .jf-status.err { color: #7f1d1d; border-color: rgba(127, 29, 29, 0.35); background: rgba(211, 36, 27, 0.14); }
+
+    .jf-status.ok {
+      color: #14532d;
+      border-color: rgba(20, 83, 45, 0.35);
+      background: rgba(34, 197, 94, 0.14);
+    }
+
+    .jf-status.err {
+      color: #7f1d1d;
+      border-color: rgba(127, 29, 29, 0.35);
+      background: rgba(211, 36, 27, 0.14);
+    }
+
+    .jf-output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin: 0 0 0.4rem;
+    }
 
     .jf-out {
       margin: 0;
@@ -66,6 +122,7 @@
       white-space: pre-wrap;
       word-break: break-word;
       overflow-x: auto;
+      min-height: 140px;
       max-height: 420px;
     }
 
@@ -80,15 +137,13 @@
       text-transform: uppercase;
     }
   </style>
-
-  <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
 </head>
 <body>
+  <div class="perf-indicator" id="perfIndicator">
+    <span class="perf-icon" aria-hidden="true">⚡</span>
+    <span class="perf-text">Performance Mode</span>
+  </div>
+
   <main id="main-content" class="main-content">
     <section class="tool-page">
       <div class="container">
@@ -97,7 +152,11 @@
         </div>
 
         <div class="tool-header reveal">
-          <div class="tool-badges"><span class="badge">MINECRAFT TOOL · FREE</span></div>
+          <div class="tool-badges">
+            <span class="badge badge-bedrock">Bedrock</span>
+            <span class="badge badge-java">Java</span>
+            <span class="badge">MINECRAFT TOOL · FREE</span>
+          </div>
           <h1 class="tool-title">JSON Formatter &amp; Validator</h1>
           <p class="tool-subtitle">Paste a manifest, loot table or any addon JSON to format, minify or validate it — with the exact line and column of a syntax error.</p>
         </div>
@@ -105,50 +164,49 @@
         <div class="tool-container">
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M8 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2"/>
                 <path d="M16 3h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2"/>
               </svg>
-              Your JSON
+              <h2>Your JSON</h2>
             </div>
 
             <div class="jf-actions">
               <button type="button" class="btn btn-primary" id="formatBtn">Format</button>
               <button type="button" class="btn btn-ghost" id="minifyBtn">Minify</button>
               <button type="button" class="btn btn-ghost" id="validateBtn">Validate</button>
-              <button type="button" class="btn btn-ghost" id="sampleBtn">Load sample</button>
+              <button type="button" class="btn btn-ghost" id="sampleBtn">Load Sample</button>
               <button type="button" class="btn btn-ghost" id="clearBtn">Clear</button>
             </div>
 
             <label class="jf-label" for="jsonInput">Input</label>
             <textarea id="jsonInput" class="jf-area" spellcheck="false" autocomplete="off"
-              placeholder='{"format_version": 2, "minecraft:item": {}}</textarea>
+              placeholder='{"format_version": 2, "minecraft:item": {}}'></textarea>
 
             <div class="jf-status" id="status">Waiting for JSON…</div>
 
-            <label class="jf-label" for="jsonOutput">Output</label>
-            <pre class="jf-out" id="jsonOutput" aria-live="polite"></pre>
-
-            <div class="jf-actions" style="margin-top:0.9rem;">
-              <button type="button" class="btn btn-ghost" id="copyBtn">Copy output</button>
+            <div class="jf-output-header">
+              <label class="jf-label" for="jsonOutput" style="margin:0;">Output</label>
+              <button type="button" class="copy-btn" id="copyBtn">Copy Output</button>
             </div>
+            <pre class="jf-out" id="jsonOutput" aria-live="polite"></pre>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
-    { q: 'What is the difference between Format and Minify?', a: 'Format re-prints the JSON with <strong>2-space indentation</strong> so you can read it. Minify removes every space and newline to make the file as small as possible for a pack.' },
-    { q: 'How do I find a syntax error?', a: 'Press <strong>Validate</strong>. The message shows the error plus the <strong>line and column</strong>, and the output panel repeats the broken line with a caret under the problem.' },
-    { q: 'Common Minecraft JSON mistakes?', a: 'Trailing commas before <code>}</code>, single quotes instead of double quotes, comments, and a missing comma between two entries. Minecraft does not allow any of these.' },
-    { q: 'Does it keep the key order?', a: 'Yes. The JSON is parsed and re-printed, so the keys keep their original order — nothing is sorted or renamed.' },
-    { q: 'Is my JSON sent to a server?', a: 'No. Everything happens in your browser with <code>JSON.parse</code> and <code>JSON.stringify</code>, so addon code never leaves your device.' }
-  ]);
+    AntigleComponents.init([
+      { q: 'What is the difference between Format and Minify?', a: 'Format re-prints the JSON with <strong>2-space indentation</strong> so you can read it. Minify removes every space and newline to make the file as small as possible for a pack.' },
+      { q: 'How do I find a syntax error?', a: 'Press <strong>Validate</strong>. The message shows the error plus the <strong>line and column</strong>, and the output panel repeats the broken line with a caret under the problem.' },
+      { q: 'Common Minecraft JSON mistakes?', a: 'Trailing commas before <code>}</code>, single quotes instead of double quotes, comments, and a missing comma between two entries. Minecraft does not allow any of these.' },
+      { q: 'Does it keep the key order?', a: 'Yes. The JSON is parsed and re-printed, so the keys keep their original order — nothing is sorted or renamed.' },
+      { q: 'Is my JSON sent to a server?', a: 'No. Everything happens in your browser with <code>JSON.parse</code> and <code>JSON.stringify</code>, so addon code never leaves your device.' }
+    ]);
   </script>
   <script>
   (function () {

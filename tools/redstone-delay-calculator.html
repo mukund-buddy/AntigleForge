@@ -116,11 +116,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -140,7 +141,7 @@
           <!-- Converter -->
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
               </svg>
               Tick Converter
@@ -174,7 +175,7 @@
           <!-- Repeater Reference -->
           <div class="tool-card-main reveal stagger-2">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
               </svg>
               Redstone Component Delays
@@ -192,17 +193,16 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'What is a redstone tick?', a: 'A redstone tick (RT) is the basic unit of redstone timing. 1 redstone tick = 2 game ticks = 0.1 seconds. Most redstone components operate on redstone ticks, not game ticks.' },
     { q: 'How do repeaters work for delays?', a: 'A redstone repeater has 4 delay settings: 1 tick (0.1s), 2 ticks (0.2s), 3 ticks (0.3s), and 4 ticks (0.4s). To get longer delays, chain multiple repeaters together.' },
     { q: 'What is the difference between redstone ticks and game ticks?', a: 'Game ticks are the server\'s internal timing (20 per second). Redstone ticks are half that (10 per second). Commands use game ticks, but redstone components use redstone ticks.' },
     { q: 'How do I get exact second delays?', a: 'For 1 second delay: 10 redstone ticks (e.g., 3 repeaters at 4+4+2 ticks). For 5 seconds: 50 redstone ticks. The calculator shows you exactly how many repeaters you need.' }
   ]);
-
   </script>
   <script>
   (function() {

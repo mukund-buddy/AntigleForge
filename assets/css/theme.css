@@ -1,15 +1,51 @@
 /* ============================================================
+   Font Metric Overrides (Zero CLS / FOUT Protection)
+   ============================================================ */
+
+@font-face {
+  font-family: "Anton Fallback";
+  src: local("Impact"), local("Arial Narrow"), local("Arial Bold");
+  size-adjust: 108%;
+  ascent-override: 96%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Oswald Fallback";
+  src: local("Arial Narrow"), local("Roboto Condensed"), local("Arial");
+  size-adjust: 94%;
+  ascent-override: 98%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Courier Prime Fallback";
+  src: local("Courier New"), local("Consolas"), local("Liberation Mono");
+  size-adjust: 100%;
+  ascent-override: 84%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+/* ============================================================
    AntigleForge - "Paper on Dark" theme
    Rebuilt around the existing markup and JavaScript hooks.
    ============================================================ */
 
 :root {
-  --bg: #0d0807;
+  --bg: #0D0D0D;
   --bg-2: #2a0e0b;
   --bg-3: #1a0f0c;
   --code-bg: #1a0f0c;
-  --red: #d3241b;
-  --red-deep: #9c1610;
+  --red: #C62828;
+  --red-hover: #B91C1C;
+  --red-accent: #EF4444;
+  --red-deep: #8E1B1B;
   --gold: #e8b32d;
   --gold-dim: #c9a24a;
   --gold-line: #7a5d22;
@@ -21,10 +57,10 @@
   --cream: #f5ecd9;
   --white: #f5ecd9;
 
-  --font-display: "Anton", Impact, "Arial Narrow", sans-serif;
-  --font-ui: "Oswald", "Arial Narrow", sans-serif;
-  --font-body: "Courier Prime", "Courier New", monospace;
-  --font-mono: "Courier Prime", "Courier New", monospace;
+  --font-display: "Anton", "Anton Fallback", Impact, "Arial Narrow", sans-serif;
+  --font-ui: "Oswald", "Oswald Fallback", "Arial Narrow", sans-serif;
+  --font-body: "Courier Prime", "Courier Prime Fallback", "Courier New", monospace;
+  --font-mono: "Courier Prime", "Courier Prime Fallback", "Courier New", monospace;
 
   --wrap: 960px;
   --nav-h: 72px;
@@ -41,8 +77,8 @@
   --bg-secondary: var(--bg-2);
   --bg-tertiary: var(--bg-3);
   --text-primary: var(--cream);
-  --text-secondary: rgba(245, 236, 217, 0.72);
-  --text-muted: rgba(245, 236, 217, 0.48);
+  --text-secondary: #D4D4DC;
+  --text-muted: #B8B8C0;
   --border-color: rgba(232, 179, 45, 0.22);
   --border-hover: rgba(232, 179, 45, 0.5);
   --font-heading: var(--font-display);
@@ -186,7 +222,7 @@ button {
 }
 
 .brand-accent {
-  color: var(--red);
+  color: var(--red-accent, #EF4444);
 }
 
 .navbar-nav {
@@ -201,7 +237,7 @@ button {
 .nav-link {
   display: block;
   padding: 10px 12px;
-  color: rgba(245, 236, 217, 0.68);
+  color: #D4D4DC;
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
@@ -236,23 +272,24 @@ button {
 .btn-social {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   padding: 0;
-  color: var(--cream);
-  background: var(--red);
-  border: 1px solid var(--red-deep);
+  color: #FFFFFF;
+  background: #C62828;
+  border: 1px solid #8E1B1B;
   border-radius: 8px;
-  box-shadow: 0 4px 0 var(--red-deep);
+  box-shadow: 0 4px 0 #8E1B1B;
   transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
 }
 
-.btn-social:hover {
-  color: var(--cream);
-  border-color: #e02a20;
-  background: #e02a20;
+.btn-social:hover,
+.btn-social:focus-visible {
+  color: #FFFFFF;
+  border-color: #B91C1C;
+  background: #B91C1C;
   transform: translateY(2px);
-  box-shadow: 0 2px 0 var(--red-deep);
+  box-shadow: 0 2px 0 #8E1B1B;
 }
 
 .btn-social svg {
@@ -527,15 +564,20 @@ button {
   display: block;
 }
 
-.title-accent {
-  color: var(--red);
+.title-accent,
+.text-red {
+  color: var(--red-accent, #EF4444);
   text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6);
+}
+
+.text-white {
+  color: #FFFFFF;
 }
 
 .hero-desc {
   max-width: 620px;
   margin: 0 auto;
-  color: var(--gold-dim);
+  color: #B8B8C0;
   font-family: var(--font-ui);
   font-size: clamp(1.2rem, 2.5vw, 1.5rem);
   font-weight: 300;
@@ -565,10 +607,11 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-height: 48px;
   padding: 13px 22px;
-  color: var(--cream);
+  color: #FFFFFF;
   background: transparent;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   border-radius: 6px;
   font-family: var(--font-display);
   font-size: 16px;
@@ -584,21 +627,40 @@ button {
 }
 
 .btn-primary {
-  color: var(--cream);
-  background: var(--red);
-  border-color: var(--red);
-  box-shadow: 0 4px 0 var(--red-deep);
+  color: #FFFFFF;
+  background: #C62828;
+  border-color: #C62828;
+  box-shadow: 0 4px 0 #8E1B1B;
 }
 
-.btn-primary:hover {
-  background: #e02a20;
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  color: #FFFFFF;
+  background: #B91C1C;
+  border-color: #B91C1C;
   transform: translateY(2px);
-  box-shadow: 0 2px 0 var(--red-deep);
+  box-shadow: 0 2px 0 #8E1B1B;
 }
 
 .btn-primary:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 var(--red-deep);
+  box-shadow: 0 2px 0 #8E1B1B;
+}
+
+.btn-ghost {
+  min-height: 48px;
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+}
+
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -657,7 +719,7 @@ button {
 
 .section-desc {
   margin: 0;
-  color: var(--gold-dim);
+  color: #B8B8C0;
   font-family: var(--font-ui);
   font-size: 15px;
   font-weight: 300;
@@ -728,7 +790,7 @@ button {
 
 .tool-desc {
   margin: 0;
-  color: #b3a386;
+  color: #B8B8C0;
   font-family: var(--font-body);
   font-size: 12.5px;
   line-height: 1.55;
@@ -754,7 +816,7 @@ button {
   gap: 10px;
   margin-top: 6px;
   padding-top: 12px;
-  color: #b3a386;
+  color: #B8B8C0;
   border-top: 1px dashed #4a3a2c;
   font-family: var(--font-body);
   font-size: 11px;
@@ -849,7 +911,7 @@ button {
 }
 
 .back-hint {
-  color: rgba(245, 236, 217, 0.42);
+  color: #B8B8C0;
   font-family: var(--font-body);
   font-size: 10px;
   letter-spacing: 0.1em;
@@ -882,7 +944,7 @@ button {
 .tool-subtitle {
   max-width: 680px;
   margin: 0 auto;
-  color: var(--gold-dim);
+  color: #B8B8C0;
   font-family: var(--font-ui);
   font-size: 15px;
   font-weight: 300;
@@ -2131,7 +2193,7 @@ input[type="range"] {
 .faq-subtitle {
   max-width: 620px;
   margin: 0 auto 24px;
-  color: var(--gold-dim);
+  color: #B8B8C0;
   font-family: var(--font-ui);
   font-size: 14px;
   font-weight: 300;
@@ -2245,7 +2307,7 @@ input[type="range"] {
 
 .footer-desc {
   margin: 0;
-  color: rgba(245, 236, 217, 0.55);
+  color: #B8B8C0;
   font-family: var(--font-body);
   font-size: 11.5px;
   line-height: 1.7;
@@ -2356,7 +2418,7 @@ input[type="range"] {
 
 .footer-bottom p {
   margin: 0;
-  color: rgba(245, 236, 217, 0.45);
+  color: #B8B8C0;
   font-family: var(--font-body);
   font-size: 10px;
   letter-spacing: 0.08em;
@@ -2379,7 +2441,7 @@ input[type="range"] {
 
 .tool-count {
   margin-bottom: 14px;
-  color: rgba(245, 236, 217, 0.45);
+  color: #B8B8C0;
   font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 600;
@@ -2453,7 +2515,7 @@ input[type="range"] {
 
 .mode-subtitle {
   margin: 0;
-  color: var(--gold-dim);
+  color: #B8B8C0;
   font-family: var(--font-ui);
   font-size: 14px;
   font-weight: 300;
@@ -2528,7 +2590,7 @@ input[type="range"] {
 
 .mode-card-desc {
   margin: 0 0 12px;
-  color: #b3a386;
+  color: #B8B8C0;
   font-size: 12.5px;
   line-height: 1.6;
 }
@@ -2921,4 +2983,227 @@ body.performance-mode *::after {
     font-size: 0.72rem;
     letter-spacing: 0.2em;
   }
+}
+
+
+/* ------------------------------------------------------------
+   Edition Badges, Quick Directory & Accessibility Utilities
+   ------------------------------------------------------------ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tool-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.tool-title-row .tool-name {
+  margin: 0;
+}
+
+.edition-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.edition-both {
+  color: #F5ECD9;
+  background: rgba(232, 179, 45, 0.14);
+  border: 1px solid rgba(232, 179, 45, 0.45);
+}
+
+.edition-bedrock {
+  color: #FFDAD6;
+  background: rgba(198, 40, 40, 0.28);
+  border: 1px solid rgba(239, 68, 68, 0.55);
+}
+
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.tools-directory {
+  margin-top: 40px;
+  padding: 24px;
+  background: #140D0B;
+  border: 1px solid #4A3A2C;
+  border-radius: 8px;
+  box-shadow: inset 0 -2px 0 #2E211A;
+}
+
+.tools-directory-header {
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.tools-directory-title {
+  margin: 0 0 6px;
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tools-directory-desc {
+  margin: 0;
+  color: #B8B8C0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.tools-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.directory-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  color: #F5ECD9;
+  background: #1C1210;
+  border: 1px solid #4A3A2C;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-decoration: none;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.directory-pill:hover,
+.directory-pill:focus-visible {
+  color: #FFFFFF;
+  background: #281916;
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.directory-pill-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.directory-pill-badge {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pill-both {
+  color: #F5ECD9;
+  background: rgba(232, 179, 45, 0.14);
+  border: 1px solid rgba(232, 179, 45, 0.4);
+}
+
+.pill-bedrock {
+  color: #FFDAD6;
+  background: rgba(198, 40, 40, 0.28);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+
+/* ------------------------------------------------------------
+   Compact Copy Buttons & Deterministic FAQ Click Handling
+   ------------------------------------------------------------ */
+
+.faq-question * {
+  pointer-events: none;
+}
+
+.faq-answer p {
+  margin: 0;
+}
+
+.copy-btn,
+.copy-small,
+.copy-hist,
+.copy-cmd-btn,
+.copy-json-btn,
+#copyBtn,
+#copyCmdBtn,
+#copyJsonBtn,
+#cmd-copy,
+#uuid-copy-btn,
+#tpBtn,
+#copyPlain,
+#copyJson,
+#copyBedrock,
+#copySection .btn,
+button[onclick*="copy"] {
+  min-height: 28px !important;
+  padding: 5px 10px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.06em !important;
+  line-height: 1.2 !important;
+  border-radius: 4px !important;
+  gap: 5px !important;
+  width: auto !important;
+}
+
+.copy-btn svg,
+.copy-small svg,
+.copy-hist svg,
+.copy-cmd-btn svg,
+.copy-json-btn svg,
+#copyBtn svg,
+#copyCmdBtn svg,
+#copyJsonBtn svg,
+#cmd-copy svg,
+#uuid-copy-btn svg,
+#tpBtn svg,
+#copySection .btn svg,
+button[onclick*="copy"] svg {
+  width: 13px !important;
+  height: 13px !important;
+}
+
+#copySection {
+  display: flex;
+  justify-content: flex-end;
 }

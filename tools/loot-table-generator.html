@@ -137,11 +137,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -161,7 +162,7 @@
           <!-- Config -->
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               </svg>
               Loot Table Configuration
@@ -191,7 +192,7 @@
           <!-- Pools -->
           <div class="tool-card-main reveal stagger-2">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
               </svg>
               Loot Pools
@@ -200,7 +201,7 @@
             <div id="poolsContainer"></div>
 
             <button class="add-pool-btn" id="addPoolBtn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add Pool
             </button>
           </div>
@@ -208,17 +209,17 @@
           <!-- Output -->
           <div class="tool-card-main reveal stagger-3">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
               </svg>
               Generated JSON
               <div style="margin-left:auto;display:flex;gap:0.4rem;">
                 <button class="btn btn-primary copy-json-btn" id="copyJsonBtn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                  <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                   Copy
                 </button>
                 <button class="download-btn" id="downloadBtn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   Download .json
                 </button>
               </div>
@@ -233,17 +234,16 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'What is a loot table?', a: 'A loot table is a JSON file that defines what items drop from blocks, entities, or chests in Bedrock Edition. Each loot table can have multiple pools, and each pool can have multiple entries with different chances and quantities.' },
     { q: 'Where do I put the loot table file?', a: 'Place the loot table JSON in your behavior pack under the "loot_tables" folder. The file path should match what you specified in the block or entity definition (e.g., loot_tables/blocks/my_block.json).' },
     { q: 'What are pools and entries?', a: 'Pools are groups of possible drops. Each pool rolls once (or multiple times based on "rolls"). Entries within a pool are individual items that can drop, each with a weight (chance) and count range.' },
     { q: 'How do I set drop chances?', a: 'Each entry has a "weight" field. Higher weight means higher chance. For example, weight 10 is twice as likely as weight 5. The total weight of all entries in a pool determines the probability of each item dropping.' }
   ]);
-
   </script>
   <script>
   (function() {
@@ -302,7 +302,7 @@
         html += '<div style="display:flex;gap:0.4rem;align-items:center;">';
         html += '<label style="font-size:0.7rem;color:rgba(255,255,255,0.3);">Rolls:</label>';
         html += '<input type="number" class="form-input pool-rolls" data-pid="' + pool.id + '" value="' + pool.rolls + '" min="1" max="100" style="width:60px;font-size:0.8rem;">';
-        html += '<button class="pool-remove" data-pid="' + pool.id + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+        html += '<button class="pool-remove" data-pid="' + pool.id + '"><svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
         html += '</div></div>';
 
         pool.entries.forEach(function(entry, eIdx) {
@@ -312,7 +312,7 @@
           html += '<span style="color:rgba(255,255,255,0.2);">to</span>';
           html += '<input type="number" class="form-input entry-max" data-pid="' + pool.id + '" data-eidx="' + eIdx + '" value="' + entry.countMax + '" min="0" max="64" title="Max count" style="width:60px;font-size:0.8rem;">';
           html += '<input type="number" class="form-input entry-weight" data-pid="' + pool.id + '" data-eidx="' + eIdx + '" value="' + entry.weight + '" min="1" max="1000" title="Weight" style="width:60px;font-size:0.8rem;">';
-          html += '<button class="pool-remove entry-remove" data-pid="' + pool.id + '" data-eidx="' + eIdx + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+          html += '<button class="pool-remove entry-remove" data-pid="' + pool.id + '" data-eidx="' + eIdx + '"><svg aria-hidden="true" focusable="false" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
           html += '</div>';
         });
 

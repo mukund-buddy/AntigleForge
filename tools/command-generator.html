@@ -23,11 +23,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -49,7 +50,7 @@
           <!-- Command Selector -->
           <div class="tool-card-main reveal stagger-2">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="4 17 10 11 4 5"/>
                 <line x1="12" y1="19" x2="20" y2="19"/>
               </svg>
@@ -93,7 +94,7 @@
           <!-- Command Builder -->
           <div class="tool-card-main reveal stagger-3" id="cmd-builder" style="display:none;">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
               </svg>
               <span id="cmd-builder-title">Build Command</span>
@@ -107,7 +108,7 @@
           <!-- Output -->
           <div class="tool-card-main reveal stagger-4" id="cmd-output-card" style="display:none;">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
               </svg>
@@ -118,14 +119,14 @@
             
             <div class="action-buttons">
               <button class="btn btn-primary" id="cmd-copy">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                 </svg>
                 Copy Command
               </button>
               <button class="btn btn-secondary" id="cmd-reset">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="1 4 1 10 7 10"/>
                   <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
                 </svg>
@@ -139,17 +140,16 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'How do I use commands in Bedrock?', a: 'Open chat (T or D-pad right) and type the command. Most commands require cheats enabled. On servers, you need operator permissions.' },
     { q: 'What are target selectors?', a: '<strong>@p</strong> - Nearest player | <strong>@a</strong> - All players | <strong>@r</strong> - Random player | <strong>@e</strong> - All entities | <strong>@s</strong> - Yourself | <strong>@initiator</strong> - NPC trigger (Bedrock only)' },
     { q: 'What is the difference between Bedrock and Java commands?', a: 'Bedrock uses <code>true/false</code> instead of <code>0/1</code>, doesn\'t need <code>minecraft:</code> prefix, has exclusive commands like <code>/tickingarea</code>, <code>/camerashake</code>, <code>/music</code>.' },
     { q: 'What Bedrock commands don\'t exist in Java?', a: '<code>/ability</code>, <code>/camerashake</code>, <code>/clearspawnpoint</code>, <code>/daylock</code>, <code>/dialogue</code>, <code>/event</code>, <code>/fog</code>, <code>/hud</code>, <code>/mobevent</code>, <code>/music</code>, <code>/playanimation</code>, <code>/ride</code>, <code>/structure</code>, <code>/tickingarea</code>, <code>/transfer</code>' }
   ]);
-
   </script>
   <script src="../assets/js/tools/command-generator.js"></script>
 </body>

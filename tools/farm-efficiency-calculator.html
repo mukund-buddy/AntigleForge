@@ -115,11 +115,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
   <!-- Performance Mode Indicator -->
@@ -136,9 +137,10 @@
           <a href="../tools.html" class="back-link">‹ Back to tools</a>
         </div>
         <div class="tool-header reveal">
-          <div class="tool-badge">
-            <span class="edition-tag bedrock">Bedrock</span>
-            <span class="edition-tag java">Java</span>
+          <div class="tool-badges">
+            <span class="badge badge-bedrock">Bedrock</span>
+            <span class="badge badge-java">Java</span>
+            <span class="badge">MINECRAFT TOOL · FREE</span>
           </div>
           <h1 class="tool-title">Farm Efficiency Calculator</h1>
           <p class="tool-subtitle">Calculate items per hour, storage needs, and AFK time for your farms.</p>
@@ -147,7 +149,7 @@
         <div class="tool-container">
           <div class="tool-card-main reveal">
             <div class="tool-card-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
               </svg>
               Farm Settings
@@ -267,7 +269,7 @@
 
           <!-- Disclaimer -->
           <div class="disclaimer-box reveal">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
             <div>
@@ -293,11 +295,11 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { "q": "How are these rates calculated?", "a": "Every farm type has a baseline items-per-hour rate. The calculator multiplies it by the number of modules, your efficiency percentage, the kill method bonus and a small edition modifier." },
     { "q": "Why is my real farm different?", "a": "Spawn rates depend on lighting, nearby cave spawns, chunk loading, server tick speed and the farm design itself. Use the numbers to compare designs, not as a guarantee." },
     { "q": "What does the storage section mean?", "a": "It converts the total yield of an AFK session into double chests, single chests and shulker boxes, so you can prepare storage before you start." },

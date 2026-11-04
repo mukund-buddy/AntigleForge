@@ -188,11 +188,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Theme -->
-  <link rel="stylesheet" href="../assets/css/theme.css?v=3">
-  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=3">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
 </head>
 <body>
 <!-- Main Content -->
@@ -213,7 +214,7 @@
           <!-- Input Card -->
           <div class="tool-card-main reveal stagger-1">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="13.5" cy="6.5" r="2.5"/>
                 <circle cx="17.5" cy="10.5" r="2.5"/>
                 <circle cx="8.5" cy="7.5" r="2.5"/>
@@ -296,7 +297,7 @@
           <!-- Minecraft Color Palette -->
           <div class="tool-card-main reveal stagger-2">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
               </svg>
               Minecraft Color Palette
@@ -308,7 +309,7 @@
           <!-- Text Preview -->
           <div class="tool-card-main reveal stagger-3">
             <div class="tool-card-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
               </svg>
               Colored Text Preview
@@ -325,17 +326,16 @@
   </main>
 
 <!-- Scripts -->
-  <script src="../assets/js/performance.js?v=3"></script>
-  <script src="../assets/js/main.js?v=3"></script>
-  <script src="../assets/js/components.js?v=3"></script>
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
   <script>
-  AntigleComponents.init([
+    AntigleComponents.init([
     { q: 'What are Minecraft color codes?', a: 'Color codes use the section symbol (§) followed by a character to color text in Minecraft. §c makes text red, §a makes it green, etc. They work in signs, books, chat, and commands on both Java and Bedrock editions.' },
     { q: 'What is a hex color code?', a: 'Hex codes are 6-digit values like #d3241b that represent colors using Red, Green, and Blue channels. Minecraft Bedrock Edition supports hex colors in some text components using the "color" field.' },
     { q: 'How do I use these codes in Bedrock?', a: 'In Bedrock Edition, use the section code (§c) in signs, book & quills, and name tags. For /tellraw commands, use the JSON text format with "color": "red" or "color": "#d3241b".' },
     { q: 'What does the Name field show?', a: 'The Name field shows the human-readable Minecraft color name (like "Red", "Green", "Gold") that corresponds to the nearest color code. This is useful for /tellraw JSON text components.' }
   ]);
-
   </script>
   <script>
   (function() {

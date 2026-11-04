@@ -28,7 +28,8 @@ const PerformanceMode = (() => {
     
     if (!isModePage) {
       // Check saved preference for non-mode pages
-      const savedMode = localStorage.getItem(CONFIG.STORAGE_KEY);
+      let savedMode = null;
+      try { savedMode = localStorage.getItem(CONFIG.STORAGE_KEY); } catch (e) {}
       if (savedMode === 'true') {
         enablePerformanceMode(false);
       }
@@ -99,7 +100,7 @@ const PerformanceMode = (() => {
     }
 
     if (save) {
-      localStorage.setItem(CONFIG.STORAGE_KEY, 'true');
+      try { localStorage.setItem(CONFIG.STORAGE_KEY, 'true'); } catch (e) {}
     }
 
     window.dispatchEvent(new CustomEvent('performanceModeChange', {
@@ -119,7 +120,7 @@ const PerformanceMode = (() => {
     }
 
     if (save) {
-      localStorage.setItem(CONFIG.STORAGE_KEY, 'false');
+      try { localStorage.setItem(CONFIG.STORAGE_KEY, 'false'); } catch (e) {}
     }
 
     window.dispatchEvent(new CustomEvent('performanceModeChange', {

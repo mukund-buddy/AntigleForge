@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free online Minecraft NBT Editor for Java and Bedrock Edition. View, search, edit, and export .dat, .old_dat, .dat_old, .mcstructure, .litematic, and .nbt files in your browser.">
+  <meta name="author" content="Mukund">
+  <meta name="theme-color" content="#0D0D0D">
+  <title>NBT Editor (.dat, .old_dat, .mcstructure, .litematic) - AntigleForge</title>
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/nbt-editor">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/nbt-editor">
+  <meta property="og:title" content="NBT Editor (.dat, .old_dat, .mcstructure, .litematic) - AntigleForge">
+  <meta property="og:description" content="Edit Minecraft .dat, .old_dat, .mcstructure, .litematic, and .nbt files directly in your browser.">
+
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Oswald:wght@300;600&amp;family=Courier+Prime:wght@400;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="../assets/css/tool-panel.css?v=5">
+  <style>
+    .nbt-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 14px 0;
+      padding: 12px;
+      background: #fbf6ea;
+      border: 1px solid #cfc4ae;
+      border-radius: 6px;
+    }
+    .nbt-toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .nbt-meta-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .nbt-meta-card {
+      padding: 10px 12px;
+      background: #fbf6ea;
+      border: 1px solid #cfc4ae;
+      border-radius: 6px;
+      text-align: left;
+    }
+    .nbt-meta-card .meta-label {
+      display: block;
+      color: #5b4a3c;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .nbt-meta-card .meta-val {
+      margin-top: 3px;
+      color: #2a1c14;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      word-break: break-all;
+    }
+    .nbt-tree-wrap {
+      max-height: 560px;
+      overflow: auto;
+      padding: 14px;
+      background: #140d0b;
+      border: 2px solid #2a0e0b;
+      border-radius: 6px;
+      color: #f5ecd9;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+    .nbt-node {
+      margin-left: 16px;
+      border-left: 1px dashed rgba(232, 179, 45, 0.22);
+      padding-left: 10px;
+    }
+    .nbt-node-root {
+      margin-left: 0;
+      border-left: none;
+      padding-left: 0;
+    }
+    .nbt-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      transition: background 100ms ease;
+    }
+    .nbt-row:hover {
+      background: rgba(232, 179, 45, 0.08);
+    }
+    .nbt-toggle {
+      display: inline-grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      color: #e8b32d;
+      background: rgba(232, 179, 45, 0.12);
+      border: 1px solid rgba(232, 179, 45, 0.35);
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .nbt-toggle-spacer {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+    }
+    .nbt-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .nbt-badge-compound { background: rgba(232, 179, 45, 0.2); color: #ffd97d; border: 1px solid rgba(232, 179, 45, 0.45); }
+    .nbt-badge-list     { background: rgba(249, 115, 22, 0.2); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.45); }
+    .nbt-badge-string   { background: rgba(34, 197, 94, 0.2);  color: #86efac; border: 1px solid rgba(34, 197, 94, 0.45); }
+    .nbt-badge-int, .nbt-badge-short, .nbt-badge-byte, .nbt-badge-long {
+      background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.45);
+    }
+    .nbt-badge-float, .nbt-badge-double {
+      background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.45);
+    }
+    .nbt-badge-byte_array, .nbt-badge-int_array, .nbt-badge-long_array {
+      background: rgba(236, 72, 153, 0.2); color: #f9a8d4; border: 1px solid rgba(236, 72, 153, 0.45);
+    }
+    .nbt-key {
+      color: #f5ecd9;
+      font-weight: 700;
+    }
+    .nbt-colon {
+      color: #B8B8C0;
+    }
+    .nbt-val {
+      color: #e8b32d;
+      word-break: break-all;
+      cursor: pointer;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid transparent;
+    }
+    .nbt-val:hover {
+      border-color: rgba(232, 179, 45, 0.45);
+      background: rgba(232, 179, 45, 0.1);
+    }
+    .nbt-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      opacity: 0.75;
+    }
+    .nbt-row:hover .nbt-actions {
+      opacity: 1;
+    }
+    .nbt-act-btn {
+      padding: 2px 6px;
+      color: #d9ccb0;
+      background: #281916;
+      border: 1px solid #4a3a2c;
+      border-radius: 3px;
+      font-family: var(--font-ui);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .nbt-act-btn:hover {
+      color: #ffffff;
+      background: #C62828;
+      border-color: #C62828;
+    }
+    .nbt-inline-input {
+      padding: 2px 6px;
+      color: #f5ecd9;
+      background: #2a0e0b;
+      border: 1px solid #e8b32d;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      min-width: 140px;
+    }
+    .palette-swap-box {
+      margin: 14px 0;
+      padding: 14px;
+      background: #fbf6ea;
+      border: 1px solid #cfc4ae;
+      border-radius: 6px;
+    }
+    .palette-swap-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .sample-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="perf-indicator" id="perfIndicator">
+    <span class="perf-icon" aria-hidden="true">⚡</span>
+    <span class="perf-text">Performance Mode</span>
+  </div>
+
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="back-row">
+          <a href="../tools.html" class="back-link">‹ Back to tools</a>
+        </div>
+
+        <div class="tool-header reveal">
+          <div class="tool-badges">
+            <span class="badge badge-bedrock">Bedrock</span>
+            <span class="badge badge-java">Java</span>
+            <span class="badge">MINECRAFT TOOL · FREE</span>
+          </div>
+          <h1 class="tool-title">NBT Editor</h1>
+          <p class="tool-subtitle">View, edit, add, and export Minecraft <strong>.dat</strong>, <strong>.old_dat</strong> (<strong>.dat_old</strong>), <strong>.mcstructure</strong>, <strong>.litematic</strong>, and <strong>.nbt</strong> files directly in your browser.</p>
+        </div>
+
+        <div class="tool-container">
+          <div class="tool-card-main reveal">
+            <div class="tool-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="8" y1="13" x2="16" y2="13"/>
+                <line x1="8" y1="17" x2="16" y2="17"/>
+              </svg>
+              <h2>Upload or Load Sample NBT File</h2>
+            </div>
+
+            <div class="upload-zone" id="nbtUploadZone">
+              <div class="icon" aria-hidden="true">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <div class="title">Drop your Minecraft NBT / Structure file here</div>
+              <div class="subtitle">Supports <strong>.dat</strong>, <strong>.old_dat</strong>, <strong>.dat_old</strong>, <strong>.mcstructure</strong>, <strong>.litematic</strong>, <strong>.nbt</strong>, <strong>.schematic</strong>, <strong>.schem</strong> (Java &amp; Bedrock)</div>
+              <input type="file" id="nbtFileInput" accept=".dat,.old_dat,.dat_old,.mcstructure,.litematic,.nbt,.schematic,.schem">
+            </div>
+
+            <div class="sample-pills">
+              <button type="button" class="preset-btn" onclick="loadSample('bedrock_dat')">Sample Bedrock level.dat</button>
+              <button type="button" class="preset-btn" onclick="loadSample('java_dat')">Sample Java level.dat</button>
+              <button type="button" class="preset-btn" onclick="loadSample('mcstructure')">Sample .mcstructure</button>
+              <button type="button" class="preset-btn" onclick="loadSample('litematic')">Sample .litematic</button>
+            </div>
+
+            <div id="nbtStatusMsg" class="success-msg" style="display:none;margin-top:14px"></div>
+            <div id="nbtErrorMsg" class="error-msg" style="display:none;margin-top:14px"></div>
+
+            <div id="nbtEditorWorkspace" style="display:none;margin-top:18px">
+              <div class="nbt-meta-bar">
+                <div class="nbt-meta-card">
+                  <span class="meta-label">File Name</span>
+                  <div class="meta-val" id="metaFileName">level.dat</div>
+                </div>
+                <div class="nbt-meta-card">
+                  <span class="meta-label">Detected Format</span>
+                  <div class="meta-val" id="metaFormat">Bedrock level.dat</div>
+                </div>
+                <div class="nbt-meta-card">
+                  <span class="meta-label">Endianness</span>
+                  <div class="meta-val">
+                    <select id="metaEndian" class="form-select" style="padding:3px 6px;font-size:11px;height:auto">
+                      <option value="le">Little-Endian (Bedrock)</option>
+                      <option value="be">Big-Endian (Java)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="nbt-meta-card">
+                  <span class="meta-label">Compression</span>
+                  <div class="meta-val">
+                    <select id="metaCompression" class="form-select" style="padding:3px 6px;font-size:11px;height:auto">
+                      <option value="none">Uncompressed</option>
+                      <option value="gzip">GZip Compressed</option>
+                      <option value="zlib">Zlib Compressed</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="nbt-meta-card">
+                  <span class="meta-label">Total Tags</span>
+                  <div class="meta-val" id="metaTagCount">0</div>
+                </div>
+              </div>
+
+              <!-- Structure Block Palette Quick Swapper (auto-shown for .mcstructure & .litematic) -->
+              <div id="paletteSwapPanel" class="palette-swap-box" style="display:none">
+                <div style="font-family:var(--font-ui);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#2a1c14">
+                  Structure Block Palette Quick-Replacer
+                </div>
+                <p style="margin:4px 0 8px;font-size:12px;color:#5b4a3c">
+                  Detected structure palette! Quickly replace any block in this <code>.mcstructure</code> or <code>.litematic</code> file:
+                </p>
+                <div class="palette-swap-row">
+                  <select id="paletteOldBlock" class="form-select" style="flex:1 1 180px"></select>
+                  <span style="font-weight:700;color:#2a1c14">→</span>
+                  <input type="text" id="paletteNewBlock" class="form-input" style="flex:1 1 180px" placeholder="minecraft:diamond_block" value="minecraft:quartz_block">
+                  <button type="button" class="btn btn-primary copy-small" onclick="replacePaletteBlock()">Replace Block</button>
+                </div>
+              </div>
+
+              <div class="tab-bar">
+                <button type="button" class="tab-btn active" id="tabTreeBtn" onclick="switchEditorView('tree')">Interactive NBT Tree</button>
+                <button type="button" class="tab-btn" id="tabJsonBtn" onclick="switchEditorView('json')">Typed JSON View</button>
+              </div>
+
+              <div id="viewTree">
+                <div class="nbt-toolbar">
+                  <div class="nbt-toolbar-group" style="flex:1 1 220px">
+                    <input type="text" id="nbtSearchInput" class="form-input" placeholder="Search tag names or values..." style="padding:6px 10px;font-size:12px">
+                  </div>
+                  <div class="nbt-toolbar-group">
+                    <button type="button" class="preset-btn" onclick="expandAllNodes(true)">Expand All</button>
+                    <button type="button" class="preset-btn" onclick="expandAllNodes(false)">Collapse All</button>
+                    <button type="button" class="btn btn-primary copy-small" onclick="downloadEditedNBT()">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                      Download File
+                    </button>
+                  </div>
+                </div>
+
+                <div class="nbt-tree-wrap" id="nbtTreeContainer" role="tree" aria-label="NBT tag hierarchy"></div>
+              </div>
+
+              <div id="viewJson" style="display:none">
+                <div class="nbt-toolbar">
+                  <span style="font-size:12px;color:#5b4a3c">Edit raw typed NBT JSON directly and click <strong>Apply JSON Changes</strong>.</span>
+                  <div class="nbt-toolbar-group">
+                    <button type="button" class="copy-btn" onclick="copyJsonTree()">Copy JSON</button>
+                    <button type="button" class="btn btn-primary copy-small" onclick="applyJsonChanges()">Apply JSON Changes</button>
+                  </div>
+                </div>
+                <textarea id="nbtJsonTextarea" class="form-textarea" style="min-height:380px;font-family:var(--font-mono);font-size:12px;background:#140d0b;color:#f5ecd9;border-color:#2a0e0b"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/performance.js?v=5"></script>
+  <script src="../assets/js/main.js?v=5"></script>
+  <script src="../assets/js/components.js?v=5"></script>
+  <script>
+    /* ============================================================
+       AntigleForge Complete Client-Side NBT Codec & Tree Editor
+       Supports: .dat, .old_dat, .dat_old, .mcstructure, .litematic, .nbt, .schem
+       ============================================================ */
+
+    const TAG_IDS = {
+      end: 0, byte: 1, short: 2, int: 3, long: 4, float: 5, double: 6,
+      byte_array: 7, string: 8, list: 9, compound: 10, int_array: 11, long_array: 12
+    };
+    const ID_TO_TAG = Object.fromEntries(Object.entries(TAG_IDS).map(([k, v]) => [v, k]));
+
+    let nbtState = {
+      fileName: 'level.dat',
+      littleEndian: true,
+      compression: 'none', // 'none' | 'gzip' | 'zlib'
+      bedrockHeaderVersion: null, // Integer if 8-byte Bedrock level.dat header present
+      root: null,
+      expandedPaths: new Set(['root'])
+    };
+
+    /* ---- Compression / Decompression Helpers ---- */
+    async function decompressBytes(raw) {
+      if (raw.length >= 2 && raw[0] === 0x1f && raw[1] === 0x8b) {
+        if (typeof DecompressionStream !== 'undefined') {
+          const ds = new DecompressionStream('gzip');
+          const writer = ds.writable.getWriter();
+          writer.write(raw);
+          writer.close();
+          return { bytes: new Uint8Array(await new Response(ds.readable).arrayBuffer()), compression: 'gzip' };
+        }
+      }
+      if (raw.length >= 2 && raw[0] === 0x78 && ((raw[0] * 256 + raw[1]) % 31 === 0)) {
+        if (typeof DecompressionStream !== 'undefined') {
+          const ds = new DecompressionStream('deflate');
+          const writer = ds.writable.getWriter();
+          writer.write(raw);
+          writer.close();
+          return { bytes: new Uint8Array(await new Response(ds.readable).arrayBuffer()), compression: 'zlib' };
+        }
+      }
+      return { bytes: raw, compression: 'none' };
+    }
+
+    async function compressBytes(raw, mode) {
+      if (mode === 'gzip' && typeof CompressionStream !== 'undefined') {
+        const cs = new CompressionStream('gzip');
+        const writer = cs.writable.getWriter();
+        writer.write(raw);
+        writer.close();
+        return new Uint8Array(await new Response(cs.readable).arrayBuffer());
+      }
+      if (mode === 'zlib' && typeof CompressionStream !== 'undefined') {
+        const cs = new CompressionStream('deflate');
+        const writer = cs.writable.getWriter();
+        writer.write(raw);
+        writer.close();
+        return new Uint8Array(await new Response(cs.readable).arrayBuffer());
+      }
+      if (mode === 'gzip') {
+        return gzipStoredFallback(raw);
+      }
+      return raw;
+    }
+
+    function gzipStoredFallback(data) {
+      const out = [0x1f, 0x8b, 0x08, 0, 0, 0, 0, 0, 0, 0xff];
+      let pos = 0;
+      while (pos < data.length) {
+        const blockLen = Math.min(65535, data.length - pos);
+        const isLast = pos + blockLen >= data.length;
+        out.push(isLast ? 0x01 : 0x00);
+        out.push(blockLen & 0xff, (blockLen >> 8) & 0xff);
+        out.push((~blockLen) & 0xff, ((~blockLen) >> 8) & 0xff);
+        for (let i = 0; i < blockLen; i++) out.push(data[pos++]);
+      }
+      let c = 0xffffffff;
+      for (let i = 0; i < data.length; i++) {
+        c ^= data[i];
+        for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+      }
+      const crc = (c ^ 0xffffffff) >>> 0;
+      out.push(crc & 0xff, (crc >> 8) & 0xff, (crc >> 16) & 0xff, (crc >> 24) & 0xff);
+      out.push(data.length & 0xff, (data.length >> 8) & 0xff, (data.length >> 16) & 0xff, (data.length >> 24) & 0xff);
+      return new Uint8Array(out);
+    }
+
+    /* ---- Typed Binary NBT Reader ---- */
+    class TypedNBTReader {
+      constructor(uint8, littleEndian = false) {
+        this.buf = uint8;
+        this.view = new DataView(uint8.buffer, uint8.byteOffset, uint8.byteLength);
+        this.pos = 0;
+        this.le = littleEndian;
+        this.decoder = new TextDecoder('utf-8');
+      }
+      readByte() { return this.view.getInt8(this.pos++); }
+      readUByte() { return this.view.getUint8(this.pos++); }
+      readShort() { const v = this.view.getInt16(this.pos, this.le); this.pos += 2; return v; }
+      readUShort() { const v = this.view.getUint16(this.pos, this.le); this.pos += 2; return v; }
+      readInt() { const v = this.view.getInt32(this.pos, this.le); this.pos += 4; return v; }
+      readLong() {
+        const v = this.view.getBigInt64(this.pos, this.le);
+        this.pos += 8;
+        return v.toString();
+      }
+      readFloat() { const v = this.view.getFloat32(this.pos, this.le); this.pos += 4; return Number(v.toPrecision(7)); }
+      readDouble() { const v = this.view.getFloat64(this.pos, this.le); this.pos += 8; return v; }
+      readString() {
+        const len = this.readUShort();
+        if (this.pos + len > this.buf.length) throw new Error('String length out of bounds');
+        const str = this.decoder.decode(this.buf.subarray(this.pos, this.pos + len));
+        this.pos += len;
+        return str;
+      }
+      readPayload(typeName) {
+        switch (typeName) {
+          case 'byte': return this.readByte();
+          case 'short': return this.readShort();
+          case 'int': return this.readInt();
+          case 'long': return this.readLong();
+          case 'float': return this.readFloat();
+          case 'double': return this.readDouble();
+          case 'byte_array': {
+            const len = this.readInt();
+            if (len < 0 || this.pos + len > this.buf.length) throw new Error('Invalid byte_array length');
+            const arr = [];
+            for (let i = 0; i < len; i++) arr.push(this.readByte());
+            return arr;
+          }
+          case 'string': return this.readString();
+          case 'list': {
+            const itemTypeId = this.readUByte();
+            const itemType = ID_TO_TAG[itemTypeId] || 'end';
+            const len = this.readInt();
+            if (len < 0 || len > 5000000) throw new Error('Invalid list length');
+            const items = [];
+            for (let i = 0; i < len; i++) {
+              items.push({ type: itemType, value: this.readPayload(itemType) });
+            }
+            return { itemType, items };
+          }
+          case 'compound': {
+            const entries = {};
+            while (this.pos < this.buf.length) {
+              const tagId = this.readUByte();
+              if (tagId === 0) break;
+              const childType = ID_TO_TAG[tagId];
+              if (!childType) throw new Error('Unknown tag ID: ' + tagId);
+              const key = this.readString();
+              entries[key] = { type: childType, value: this.readPayload(childType) };
+            }
+            return entries;
+          }
+          case 'int_array': {
+            const len = this.readInt();
+            if (len < 0 || this.pos + len * 4 > this.buf.length) throw new Error('Invalid int_array length');
+            const arr = [];
+            for (let i = 0; i < len; i++) arr.push(this.readInt());
+            return arr;
+          }
+          case 'long_array': {
+            const len = this.readInt();
+            if (len < 0 || this.pos + len * 8 > this.buf.length) throw new Error('Invalid long_array length');
+            const arr = [];
+            for (let i = 0; i < len; i++) arr.push(this.readLong());
+            return arr;
+          }
+          default: return null;
+        }
+      }
+      readRoot() {
+        const rootId = this.readUByte();
+        const rootType = ID_TO_TAG[rootId];
+        if (!rootType || rootId === 0) throw new Error('Invalid root NBT tag ID: ' + rootId);
+        const rootName = this.readString();
+        return { name: rootName, type: rootType, value: this.readPayload(rootType) };
+      }
+    }
+
+    /* ---- Typed Binary NBT Writer ---- */
+    function serializeTypedNBT(rootNode, le = true) {
+      const p = [];
+      const enc = new TextEncoder();
+
+      function writeShort(v) {
+        if (le) p.push(v & 0xff, (v >> 8) & 0xff);
+        else p.push((v >> 8) & 0xff, v & 0xff);
+      }
+      function writeInt(v) {
+        if (le) p.push(v & 0xff, (v >> 8) & 0xff, (v >> 16) & 0xff, (v >> 24) & 0xff);
+        else p.push((v >> 24) & 0xff, (v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff);
+      }
+      function writeLong(v) {
+        const n = BigInt(v || 0);
+        if (le) {
+          for (let i = 0; i < 8; i++) p.push(Number((n >> BigInt(i * 8)) & 0xffn));
+        } else {
+          for (let i = 7; i >= 0; i--) p.push(Number((n >> BigInt(i * 8)) & 0xffn));
+        }
+      }
+      function writeStr(s) {
+        const b = enc.encode(String(s ?? ''));
+        writeShort(b.length);
+        for (let i = 0; i < b.length; i++) p.push(b[i]);
+      }
+      function writePayload(type, val) {
+        switch (type) {
+          case 'byte': p.push(Number(val) & 0xff); break;
+          case 'short': writeShort(Number(val)); break;
+          case 'int': writeInt(Number(val)); break;
+          case 'long': writeLong(val); break;
+          case 'float': {
+            const ab = new ArrayBuffer(4);
+            new DataView(ab).setFloat32(0, Number(val), le);
+            for (const b of new Uint8Array(ab)) p.push(b);
+            break;
+          }
+          case 'double': {
+            const ab = new ArrayBuffer(8);
+            new DataView(ab).setFloat64(0, Number(val), le);
+            for (const b of new Uint8Array(ab)) p.push(b);
+            break;
+          }
+          case 'byte_array': {
+            writeInt(val.length);
+            for (const x of val) p.push(Number(x) & 0xff);
+            break;
+          }
+          case 'string': writeStr(val); break;
+          case 'list': {
+            const itemType = val.itemType || 'byte';
+            const items = val.items || [];
+            p.push(TAG_IDS[itemType] ?? 0);
+            writeInt(items.length);
+            for (const item of items) {
+              writePayload(itemType, item && typeof item === 'object' && 'value' in item ? item.value : item);
+            }
+            break;
+          }
+          case 'compound': {
+            for (const [k, child] of Object.entries(val || {})) {
+              if (!child || !child.type) continue;
+              p.push(TAG_IDS[child.type] ?? 0);
+              writeStr(k);
+              writePayload(child.type, child.value);
+            }
+            p.push(0);
+            break;
+          }
+          case 'int_array': {
+            writeInt(val.length);
+            for (const x of val) writeInt(Number(x));
+            break;
+          }
+          case 'long_array': {
+            writeInt(val.length);
+            for (const x of val) writeLong(x);
+            break;
+          }
+        }
+      }
+
+      p.push(TAG_IDS[rootNode.type] ?? 10);
+      writeStr(rootNode.name ?? '');
+      writePayload(rootNode.type, rootNode.value);
+      return new Uint8Array(p);
+    }
+
+    /* ---- Smart Auto-Detection (Bedrock level.dat 8-byte header, LE vs BE) ---- */
+    function autoParseNBTBytes(bytes, fileName) {
+      const ext = (fileName.split('.').pop() || '').toLowerCase();
+
+      // 1. Check Bedrock level.dat / .old_dat / .dat_old 8-byte header:
+      // [storageVersion: int32LE (usually 8..10), payloadLen: int32LE] followed by 0x0A (TAG_Compound)
+      if (bytes.length > 10 && bytes[8] === 10) {
+        const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        const ver = dv.getInt32(0, true);
+        const len = dv.getInt32(4, true);
+        if (ver >= 1 && ver <= 20 && Math.abs((bytes.length - 8) - len) <= 16) {
+          try {
+            const reader = new TypedNBTReader(bytes.subarray(8), true);
+            const root = reader.readRoot();
+            return { root, littleEndian: true, bedrockHeaderVersion: ver, formatLabel: `Bedrock level.dat (v${ver} LE)` };
+          } catch (e) {}
+        }
+      }
+
+      // 2. Try preferred endianness based on extension first, then fallback
+      const preferLE = ext === 'mcstructure' || ext === 'old_dat' || ext === 'dat_old';
+      const order = preferLE ? [true, false] : [false, true];
+
+      let lastErr = null;
+      for (const le of order) {
+        try {
+          const reader = new TypedNBTReader(bytes, le);
+          const root = reader.readRoot();
+          const label = ext === 'mcstructure'
+            ? 'Bedrock .mcstructure (LE)'
+            : ext === 'litematic'
+              ? 'Java .litematic (BE)'
+              : (le ? 'Little-Endian NBT (Bedrock)' : 'Big-Endian NBT (Java)');
+          return { root, littleEndian: le, bedrockHeaderVersion: null, formatLabel: label };
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      throw lastErr || new Error('Could not parse binary NBT data.');
+    }
+
+    /* ---- Count Tags & Detect Structure Palettes ---- */
+    function countTags(node) {
+      if (!node) return 0;
+      let count = 1;
+      if (node.type === 'compound' && node.value) {
+        for (const child of Object.values(node.value)) count += countTags(child);
+      } else if (node.type === 'list' && node.value && Array.isArray(node.value.items)) {
+        for (const item of node.value.items) count += countTags(item);
+      }
+      return count;
+    }
+
+    function detectPaletteBlocks() {
+      const panel = document.getElementById('paletteSwapPanel');
+      const sel = document.getElementById('paletteOldBlock');
+      sel.innerHTML = '';
+      const found = [];
+
+      const r = nbtState.root?.value;
+      if (!r) { panel.style.display = 'none'; return; }
+
+      // Check .mcstructure palette
+      const mcPal = r.structure?.value?.palette?.value?.default?.value?.block_palette?.value?.items;
+      if (Array.isArray(mcPal)) {
+        mcPal.forEach((item, idx) => {
+          const bName = item.value?.name?.value;
+          if (bName) found.push({ label: `${bName} (Palette #${idx})`, name: bName });
+        });
+      }
+
+      // Check .litematic Regions.*.BlockStatePalette
+      const regions = r.Regions?.value;
+      if (regions && typeof regions === 'object') {
+        for (const [rKey, rVal] of Object.entries(regions)) {
+          const pal = (rVal.value?.BlockStatePalette || rVal.value?.BlockStatesPalette)?.value?.items;
+          if (Array.isArray(pal)) {
+            pal.forEach((item, idx) => {
+              const bName = item.value?.Name?.value;
+              if (bName) found.push({ label: `${bName} (${rKey} #${idx})`, name: bName });
+            });
+          }
+        }
+      }
+
+      if (found.length > 0) {
+        const unique = [...new Map(found.map(f => [f.name, f])).values()];
+        for (const u of unique) {
+          const opt = document.createElement('option');
+          opt.value = u.name;
+          opt.textContent = u.label;
+          sel.appendChild(opt);
+        }
+        panel.style.display = 'block';
+      } else {
+        panel.style.display = 'none';
+      }
+    }
+
+    window.replacePaletteBlock = function () {
+      const oldName = document.getElementById('paletteOldBlock').value;
+      const newName = document.getElementById('paletteNewBlock').value.trim();
+      if (!oldName || !newName) return;
+
+      let replaced = 0;
+      const r = nbtState.root?.value;
+      const mcPal = r?.structure?.value?.palette?.value?.default?.value?.block_palette?.value?.items;
+      if (Array.isArray(mcPal)) {
+        mcPal.forEach(item => {
+          if (item.value?.name?.value === oldName) {
+            item.value.name.value = newName;
+            replaced++;
+          }
+        });
+      }
+
+      const regions = r?.Regions?.value;
+      if (regions && typeof regions === 'object') {
+        for (const rVal of Object.values(regions)) {
+          const pal = (rVal.value?.BlockStatePalette || rVal.value?.BlockStatesPalette)?.value?.items;
+          if (Array.isArray(pal)) {
+            pal.forEach(item => {
+              if (item.value?.Name?.value === oldName) {
+                item.value.Name.value = newName;
+                replaced++;
+              }
+            });
+          }
+        }
+      }
+
+      detectPaletteBlocks();
+      renderWorkspace();
+      AntigleForge.showToast(`Replaced ${replaced} palette entry (${oldName} → ${newName})`);
+    };
+
+    /* ---- Tree Renderer & Inline Editor ---- */
+    function getNodeByPath(pathArr) {
+      let curr = nbtState.root;
+      for (let i = 1; i < pathArr.length; i++) {
+        const step = pathArr[i];
+        if (curr.type === 'compound') curr = curr.value[step];
+        else if (curr.type === 'list') curr = curr.value.items[Number(step)];
+      }
+      return curr;
+    }
+
+    function formatPreviewValue(node) {
+      if (node.type === 'compound') {
+        const keys = Object.keys(node.value || {});
+        return `{ ${keys.length} ${keys.length === 1 ? 'entry' : 'entries'} }`;
+      }
+      if (node.type === 'list') {
+        const items = node.value?.items || [];
+        return `[ ${items.length} × ${node.value?.itemType || 'tag'} ]`;
+      }
+      if (node.type === 'byte_array' || node.type === 'int_array' || node.type === 'long_array') {
+        const arr = node.value || [];
+        const preview = arr.slice(0, 8).join(', ');
+        return `[${preview}${arr.length > 8 ? `, ... (${arr.length} items)` : ''}]`;
+      }
+      if (node.type === 'string') return `"${node.value}"`;
+      if (node.type === 'byte') return `${node.value}b`;
+      if (node.type === 'short') return `${node.value}s`;
+      if (node.type === 'long') return `${node.value}L`;
+      if (node.type === 'float') return `${node.value}f`;
+      if (node.type === 'double') return `${node.value}d`;
+      return String(node.value);
+    }
+
+    function matchesSearch(key, node, query) {
+      if (!query) return true;
+      const q = query.toLowerCase();
+      if (String(key).toLowerCase().includes(q)) return true;
+      if (node.type === 'compound' && node.value) {
+        return Object.entries(node.value).some(([k, v]) => matchesSearch(k, v, q));
+      }
+      if (node.type === 'list' && node.value?.items) {
+        return node.value.items.some((item, idx) => matchesSearch(idx, item, q));
+      }
+      return String(node.value).toLowerCase().includes(q);
+    }
+
+    function buildTreeDOM(key, node, pathArr, parentType) {
+      const query = (document.getElementById('nbtSearchInput')?.value || '').trim();
+      if (query && !matchesSearch(key, node, query)) return null;
+
+      const pathKey = pathArr.join('/');
+      const isContainer = node.type === 'compound' || node.type === 'list';
+      const isExpanded = query ? true : nbtState.expandedPaths.has(pathKey);
+
+      const wrap = document.createElement('div');
+      wrap.className = pathArr.length === 1 ? 'nbt-node nbt-node-root' : 'nbt-node';
+
+      const row = document.createElement('div');
+      row.className = 'nbt-row';
+
+      if (isContainer) {
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'nbt-toggle';
+        toggle.textContent = isExpanded ? '−' : '+';
+        toggle.setAttribute('aria-label', isExpanded ? 'Collapse tag' : 'Expand tag');
+        toggle.onclick = () => {
+          if (nbtState.expandedPaths.has(pathKey)) nbtState.expandedPaths.delete(pathKey);
+          else nbtState.expandedPaths.add(pathKey);
+          renderTree();
+        };
+        row.appendChild(toggle);
+      } else {
+        const sp = document.createElement('span');
+        sp.className = 'nbt-toggle-spacer';
+        row.appendChild(sp);
+      }
+
+      const badge = document.createElement('span');
+      badge.className = `nbt-badge nbt-badge-${node.type}`;
+      badge.textContent = node.type.replace('_array', '[]');
+      row.appendChild(badge);
+
+      const keySpan = document.createElement('span');
+      keySpan.className = 'nbt-key';
+      keySpan.textContent = key === '' ? '(root)' : String(key);
+      row.appendChild(keySpan);
+
+      const colon = document.createElement('span');
+      colon.className = 'nbt-colon';
+      colon.textContent = ':';
+      row.appendChild(colon);
+
+      const valSpan = document.createElement('span');
+      valSpan.className = 'nbt-val';
+      valSpan.textContent = formatPreviewValue(node);
+      if (!isContainer) {
+        valSpan.title = 'Click to edit value';
+        valSpan.onclick = () => startInlineEdit(row, valSpan, node);
+      }
+      row.appendChild(valSpan);
+
+      const actions = document.createElement('div');
+      actions.className = 'nbt-actions';
+
+      if (!isContainer) {
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'nbt-act-btn';
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => startInlineEdit(row, valSpan, node);
+        actions.appendChild(editBtn);
+      }
+
+      if (isContainer) {
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'nbt-act-btn';
+        addBtn.textContent = '+ Tag';
+        addBtn.onclick = () => addChildTag(node, pathKey);
+        actions.appendChild(addBtn);
+      }
+
+      if (pathArr.length > 1) {
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'nbt-act-btn';
+        delBtn.textContent = '×';
+        delBtn.title = 'Delete tag';
+        delBtn.onclick = () => deleteTagAtPath(pathArr);
+        actions.appendChild(delBtn);
+      }
+
+      row.appendChild(actions);
+      wrap.appendChild(row);
+
+      if (isContainer && isExpanded) {
+        const childrenWrap = document.createElement('div');
+        if (node.type === 'compound' && node.value) {
+          for (const [childKey, childNode] of Object.entries(node.value)) {
+            const childDOM = buildTreeDOM(childKey, childNode, [...pathArr, childKey], 'compound');
+            if (childDOM) childrenWrap.appendChild(childDOM);
+          }
+        } else if (node.type === 'list' && node.value?.items) {
+          const items = node.value.items;
+          const limit = Math.min(items.length, 250);
+          for (let i = 0; i < limit; i++) {
+            const childDOM = buildTreeDOM(`[${i}]`, items[i], [...pathArr, String(i)], 'list');
+            if (childDOM) childrenWrap.appendChild(childDOM);
+          }
+          if (items.length > limit) {
+            const more = document.createElement('div');
+            more.className = 'nbt-node';
+            more.style.color = '#B8B8C0';
+            more.style.padding = '4px 8px';
+            more.textContent = `... ${items.length - limit} more list items (use Typed JSON View to bulk edit large arrays)`;
+            childrenWrap.appendChild(more);
+          }
+        }
+        wrap.appendChild(childrenWrap);
+      }
+
+      return wrap;
+    }
+
+    function startInlineEdit(row, valSpan, node) {
+      if (row.querySelector('.nbt-inline-input')) return;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'nbt-inline-input';
+      if (node.type.endsWith('_array')) {
+        input.value = (node.value || []).join(', ');
+      } else {
+        input.value = String(node.value ?? '');
+      }
+
+      const save = () => {
+        const raw = input.value.trim();
+        if (node.type === 'byte') node.value = Math.max(-128, Math.min(127, parseInt(raw, 10) || 0));
+        else if (node.type === 'short') node.value = Math.max(-32768, Math.min(32767, parseInt(raw, 10) || 0));
+        else if (node.type === 'int') node.value = parseInt(raw, 10) || 0;
+        else if (node.type === 'long') {
+          try { node.value = BigInt(raw.replace(/L$/i, '')).toString(); } catch (e) { node.value = '0'; }
+        }
+        else if (node.type === 'float' || node.type === 'double') node.value = parseFloat(raw) || 0;
+        else if (node.type === 'byte_array' || node.type === 'int_array') {
+          node.value = raw ? raw.split(',').map(s => parseInt(s.trim(), 10) || 0) : [];
+        }
+        else if (node.type === 'long_array') {
+          node.value = raw ? raw.split(',').map(s => { try { return BigInt(s.trim()).toString(); } catch (e) { return '0'; } }) : [];
+        }
+        else node.value = input.value;
+
+        detectPaletteBlocks();
+        renderWorkspace();
+      };
+
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') save();
+        if (e.key === 'Escape') renderTree();
+      };
+      input.onblur = save;
+
+      valSpan.replaceWith(input);
+      input.focus();
+      input.select();
+    }
+
+    function addChildTag(containerNode, pathKey) {
+      nbtState.expandedPaths.add(pathKey);
+      if (containerNode.type === 'compound') {
+        const name = prompt('Enter new tag name:', 'newTag');
+        if (!name) return;
+        const type = (prompt('Enter tag type (byte, short, int, long, float, double, string, compound, list):', 'string') || 'string').toLowerCase().trim();
+        if (!TAG_IDS[type]) {
+          AntigleForge.showToast('Invalid tag type', true);
+          return;
+        }
+        let defaultVal = '';
+        if (['byte', 'short', 'int', 'float', 'double'].includes(type)) defaultVal = 0;
+        else if (type === 'long') defaultVal = '0';
+        else if (type === 'compound') defaultVal = {};
+        else if (type === 'list') defaultVal = { itemType: 'int', items: [] };
+        else if (type.endsWith('_array')) defaultVal = [];
+        containerNode.value[name] = { type, value: defaultVal };
+      } else if (containerNode.type === 'list') {
+        const itemType = containerNode.value.itemType || 'int';
+        let defaultVal = 0;
+        if (itemType === 'string') defaultVal = '';
+        else if (itemType === 'long') defaultVal = '0';
+        else if (itemType === 'compound') defaultVal = {};
+        else if (itemType === 'list') defaultVal = { itemType: 'int', items: [] };
+        containerNode.value.items.push({ type: itemType, value: defaultVal });
+      }
+      renderWorkspace();
+    }
+
+    function deleteTagAtPath(pathArr) {
+      const parentPath = pathArr.slice(0, -1);
+      const lastKey = pathArr[pathArr.length - 1];
+      const parent = getNodeByPath(parentPath);
+      if (!parent) return;
+      if (parent.type === 'compound') delete parent.value[lastKey];
+      else if (parent.type === 'list') parent.value.items.splice(Number(lastKey), 1);
+      renderWorkspace();
+    }
+
+    window.expandAllNodes = function (expand) {
+      nbtState.expandedPaths.clear();
+      nbtState.expandedPaths.add('root');
+      if (expand) {
+        function walk(node, pathArr) {
+          const pk = pathArr.join('/');
+          if (node.type === 'compound' && node.value) {
+            nbtState.expandedPaths.add(pk);
+            for (const [k, v] of Object.entries(node.value)) walk(v, [...pathArr, k]);
+          } else if (node.type === 'list' && node.value?.items) {
+            nbtState.expandedPaths.add(pk);
+            node.value.items.slice(0, 50).forEach((item, idx) => walk(item, [...pathArr, String(idx)]));
+          }
+        }
+        walk(nbtState.root, ['root']);
+      }
+      renderTree();
+    };
+
+    function renderTree() {
+      const container = document.getElementById('nbtTreeContainer');
+      container.innerHTML = '';
+      if (!nbtState.root) return;
+      const dom = buildTreeDOM(nbtState.root.name || '(root)', nbtState.root, ['root'], null);
+      if (dom) container.appendChild(dom);
+    }
+
+    function renderWorkspace() {
+      document.getElementById('nbtEditorWorkspace').style.display = 'block';
+      document.getElementById('metaFileName').textContent = nbtState.fileName;
+      document.getElementById('metaEndian').value = nbtState.littleEndian ? 'le' : 'be';
+      document.getElementById('metaCompression').value = nbtState.compression;
+      document.getElementById('metaTagCount').textContent = countTags(nbtState.root).toLocaleString();
+      renderTree();
+      document.getElementById('nbtJsonTextarea').value = JSON.stringify(nbtState.root, null, 2);
+    }
+
+    window.switchEditorView = function (view) {
+      const isTree = view === 'tree';
+      document.getElementById('tabTreeBtn').classList.toggle('active', isTree);
+      document.getElementById('tabJsonBtn').classList.toggle('active', !isTree);
+      document.getElementById('viewTree').style.display = isTree ? 'block' : 'none';
+      document.getElementById('viewJson').style.display = isTree ? 'none' : 'block';
+      if (!isTree) {
+        document.getElementById('nbtJsonTextarea').value = JSON.stringify(nbtState.root, null, 2);
+      }
+    };
+
+    window.applyJsonChanges = function () {
+      try {
+        const parsed = JSON.parse(document.getElementById('nbtJsonTextarea').value);
+        if (!parsed || !parsed.type) throw new Error('Root object must have a "type" and "value" property.');
+        nbtState.root = parsed;
+        detectPaletteBlocks();
+        renderWorkspace();
+        AntigleForge.showToast('Applied JSON changes to NBT tree!');
+      } catch (err) {
+        AntigleForge.showToast('Invalid JSON: ' + err.message, true);
+      }
+    };
+
+    window.copyJsonTree = function () {
+      AntigleForge.copyToClipboard(document.getElementById('nbtJsonTextarea').value);
+    };
+
+    window.downloadEditedNBT = async function () {
+      if (!nbtState.root) return;
+      const le = document.getElementById('metaEndian').value === 'le';
+      const comp = document.getElementById('metaCompression').value;
+      let rawPayload = serializeTypedNBT(nbtState.root, le);
+
+      // If this was a Bedrock level.dat / .old_dat with an 8-byte header and uncompressed LE, prepend the 8-byte header
+      if (nbtState.bedrockHeaderVersion !== null && le && comp === 'none') {
+        const withHeader = new Uint8Array(rawPayload.length + 8);
+        const dv = new DataView(withHeader.buffer);
+        dv.setInt32(0, nbtState.bedrockHeaderVersion, true);
+        dv.setInt32(4, rawPayload.length, true);
+        withHeader.set(rawPayload, 8);
+        rawPayload = withHeader;
+      }
+
+      const finalBytes = await compressBytes(rawPayload, comp);
+      const blob = new Blob([finalBytes], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nbtState.fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      AntigleForge.showToast(`Downloaded ${nbtState.fileName} (${finalBytes.length.toLocaleString()} bytes)`);
+    };
+
+    /* ---- File Upload & Sample Presets ---- */
+    const uploadZone = document.getElementById('nbtUploadZone');
+    const fileInput = document.getElementById('nbtFileInput');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleNBTFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleNBTFile(e.target.files[0]);
+    });
+    document.getElementById('nbtSearchInput').addEventListener('input', () => renderTree());
+
+    async function handleNBTFile(file) {
+      document.getElementById('nbtErrorMsg').style.display = 'none';
+      document.getElementById('nbtStatusMsg').style.display = 'none';
+      try {
+        const raw = new Uint8Array(await file.arrayBuffer());
+        const { bytes, compression } = await decompressBytes(raw);
+        const parsed = autoParseNBTBytes(bytes, file.name);
+
+        nbtState.fileName = file.name;
+        nbtState.littleEndian = parsed.littleEndian;
+        nbtState.compression = compression;
+        nbtState.bedrockHeaderVersion = parsed.bedrockHeaderVersion;
+        nbtState.root = parsed.root;
+        nbtState.expandedPaths = new Set(['root']);
+
+        document.getElementById('metaFormat').textContent = parsed.formatLabel;
+        document.getElementById('nbtStatusMsg').textContent =
+          `Loaded "${file.name}" (${(file.size / 1024).toFixed(1)} KB) — ${parsed.formatLabel}`;
+        document.getElementById('nbtStatusMsg').style.display = 'block';
+
+        detectPaletteBlocks();
+        renderWorkspace();
+      } catch (err) {
+        document.getElementById('nbtErrorMsg').textContent = `Could not parse "${file.name}": ${err.message}`;
+        document.getElementById('nbtErrorMsg').style.display = 'block';
+      }
+    }
+
+    window.loadSample = function (kind) {
+      document.getElementById('nbtErrorMsg').style.display = 'none';
+      if (kind === 'bedrock_dat') {
+        nbtState.fileName = 'level.dat';
+        nbtState.littleEndian = true;
+        nbtState.compression = 'none';
+        nbtState.bedrockHeaderVersion = 10;
+        nbtState.root = {
+          name: '',
+          type: 'compound',
+          value: {
+            LevelName: { type: 'string', value: 'AntigleForge Survival World' },
+            GameType: { type: 'int', value: 0 },
+            Difficulty: { type: 'int', value: 2 },
+            SpawnX: { type: 'int', value: 0 },
+            SpawnY: { type: 'int', value: 68 },
+            SpawnZ: { type: 'int', value: 0 },
+            RandomSeed: { type: 'long', value: '84920174829104712' },
+            Time: { type: 'long', value: '24000' },
+            commandsEnabled: { type: 'byte', value: 1 },
+            keepinventory: { type: 'byte', value: 1 },
+            mobgriefing: { type: 'byte', value: 1 },
+            dodaylightcycle: { type: 'byte', value: 1 }
+          }
+        };
+        document.getElementById('metaFormat').textContent = 'Bedrock level.dat (v10 LE)';
+      } else if (kind === 'java_dat') {
+        nbtState.fileName = 'level.dat';
+        nbtState.littleEndian = false;
+        nbtState.compression = 'gzip';
+        nbtState.bedrockHeaderVersion = null;
+        nbtState.root = {
+          name: '',
+          type: 'compound',
+          value: {
+            Data: {
+              type: 'compound',
+              value: {
+                LevelName: { type: 'string', value: 'AntigleForge Java World' },
+                GameType: { type: 'int', value: 1 },
+                Difficulty: { type: 'byte', value: 2 },
+                allowCommands: { type: 'byte', value: 1 },
+                SpawnX: { type: 'int', value: 128 },
+                SpawnY: { type: 'int', value: 70 },
+                SpawnZ: { type: 'int', value: -64 },
+                DayTime: { type: 'long', value: '6000' },
+                DataVersion: { type: 'int', value: 3953 }
+              }
+            }
+          }
+        };
+        document.getElementById('metaFormat').textContent = 'Java level.dat (GZip BE)';
+      } else if (kind === 'mcstructure') {
+        nbtState.fileName = 'tower_sample.mcstructure';
+        nbtState.littleEndian = true;
+        nbtState.compression = 'none';
+        nbtState.bedrockHeaderVersion = null;
+        nbtState.root = {
+          name: '',
+          type: 'compound',
+          value: {
+            format_version: { type: 'int', value: 1 },
+            size: { type: 'list', value: { itemType: 'int', items: [{ type: 'int', value: 2 }, { type: 'int', value: 2 }, { type: 'int', value: 2 }] } },
+            structure: {
+              type: 'compound',
+              value: {
+                block_indices: {
+                  type: 'list',
+                  value: {
+                    itemType: 'list',
+                    items: [
+                      { type: 'list', value: { itemType: 'int', items: new Array(8).fill(0).map(() => ({ type: 'int', value: 0 })) } },
+                      { type: 'list', value: { itemType: 'int', items: new Array(8).fill(-1).map(() => ({ type: 'int', value: -1 })) } }
+                    ]
+                  }
+                },
+                entities: { type: 'list', value: { itemType: 'compound', items: [] } },
+                palette: {
+                  type: 'compound',
+                  value: {
+                    default: {
+                      type: 'compound',
+                      value: {
+                        block_palette: {
+                          type: 'list',
+                          value: {
+                            itemType: 'compound',
+                            items: [
+                              { type: 'compound', value: { name: { type: 'string', value: 'minecraft:stone_bricks' }, states: { type: 'compound', value: {} }, version: { type: 'int', value: 18085424 } } }
+                            ]
+                          }
+                        },
+                        block_position_data: { type: 'compound', value: {} }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            structure_world_origin: { type: 'list', value: { itemType: 'int', items: [{ type: 'int', value: 0 }, { type: 'int', value: 0 }, { type: 'int', value: 0 }] } }
+          }
+        };
+        document.getElementById('metaFormat').textContent = 'Bedrock .mcstructure (LE)';
+      } else if (kind === 'litematic') {
+        nbtState.fileName = 'castle_sample.litematic';
+        nbtState.littleEndian = false;
+        nbtState.compression = 'gzip';
+        nbtState.bedrockHeaderVersion = null;
+        nbtState.root = {
+          name: '',
+          type: 'compound',
+          value: {
+            MinecraftDataVersion: { type: 'int', value: 3700 },
+            Version: { type: 'int', value: 6 },
+            Metadata: {
+              type: 'compound',
+              value: {
+                Name: { type: 'string', value: 'Castle Gate' },
+                Author: { type: 'string', value: 'AntigleForge' },
+                Description: { type: 'string', value: 'Sample Litematica schematic' },
+                RegionCount: { type: 'int', value: 1 },
+                TotalBlocks: { type: 'int', value: 8 },
+                TotalVolume: { type: 'int', value: 8 }
+              }
+            },
+            Regions: {
+              type: 'compound',
+              value: {
+                Main: {
+                  type: 'compound',
+                  value: {
+                    Position: { type: 'compound', value: { x: { type: 'int', value: 0 }, y: { type: 'int', value: 0 }, z: { type: 'int', value: 0 } } },
+                    Size: { type: 'compound', value: { x: { type: 'int', value: 2 }, y: { type: 'int', value: 2 }, z: { type: 'int', value: 2 } } },
+                    BlockStatePalette: {
+                      type: 'list',
+                      value: {
+                        itemType: 'compound',
+                        items: [
+                          { type: 'compound', value: { Name: { type: 'string', value: 'minecraft:air' } } },
+                          { type: 'compound', value: { Name: { type: 'string', value: 'minecraft:cobblestone' } } }
+                        ]
+                      }
+                    },
+                    BlockStates: { type: 'long_array', value: ['1229782938247303441'] },
+                    TileEntities: { type: 'list', value: { itemType: 'compound', items: [] } },
+                    Entities: { type: 'list', value: { itemType: 'compound', items: [] } }
+                  }
+                }
+              }
+            }
+          }
+        };
+        document.getElementById('metaFormat').textContent = 'Java .litematic (GZip BE)';
+      }
+
+      nbtState.expandedPaths = new Set(['root', 'root/Data', 'root/Metadata', 'root/Regions', 'root/Regions/Main', 'root/structure']);
+      document.getElementById('nbtStatusMsg').textContent = `Loaded sample: ${nbtState.fileName}`;
+      document.getElementById('nbtStatusMsg').style.display = 'block';
+      detectPaletteBlocks();
+      renderWorkspace();
+    };
+
+    AntigleComponents.init([
+      { q: 'Which Minecraft NBT file formats are supported?', a: 'This editor supports <strong>.dat</strong>, <strong>.old_dat</strong> (<strong>.dat_old</strong>), <strong>.mcstructure</strong>, <strong>.litematic</strong>, <strong>.nbt</strong>, <strong>.schematic</strong>, and <strong>.schem</strong> across both Minecraft Bedrock Edition (Little-Endian, including the 8-byte <code>level.dat</code> header) and Java Edition (GZip/Zlib Big-Endian).' },
+      { q: 'Are my world or structure files uploaded to any server?', a: 'No. Every byte is decompressed, parsed, edited, and re-serialized <strong>100% locally in your browser</strong>. Your world data never leaves your device.' },
+      { q: 'How do I edit a tag or swap blocks in a structure?', a: 'Click any tag value in the tree (or click <strong>Edit</strong>) to modify it inline and press Enter. When you load a <code>.mcstructure</code> or <code>.litematic</code> file, the <strong>Structure Block Palette Quick-Replacer</strong> automatically appears so you can swap any block ID in one click.' },
+      { q: 'Will downloading preserve my original file format and compression?', a: 'Yes. The editor automatically detects and preserves Little-Endian vs. Big-Endian byte order, GZip/Zlib compression, and Bedrock <code>level.dat</code> 8-byte headers when you click <strong>Download File</strong>.' }
+    ]);
+
+    // Load a default sample so the editor is immediately interactive
+    loadSample('bedrock_dat');
+  </script>
+</body>
+</html>
