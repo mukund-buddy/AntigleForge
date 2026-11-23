@@ -1,0 +1,554 @@
+/* ==========================================================================
+   Minecraft GUI skin — applied to <body class="mc-mode"> when a world is open.
+   The landing page keeps the normal AntigleForge theme.
+   ========================================================================== */
+
+body.mc-mode { background: #0b0907; }
+
+/* Subtle dirt backdrop behind the editor only */
+body.mc-mode #editor .tool-card-main {
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.05) 0 6px, rgba(255, 255, 255, 0.03) 6px 12px),
+    #8a6a44;
+  border: 4px solid #2a2018;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 2px #b08a5c, 0 12px 0 #4a3728, 0 26px 40px rgba(0, 0, 0, 0.55);
+  padding: 8px;
+}
+
+body.mc-mode #editor .tool-card-header {
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  color: #3f3f3f;
+  background: #c6c6c6;
+  border-top: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+  border-right: 3px solid #555555;
+  border-bottom: 3px solid #555555;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  text-shadow: none;
+}
+
+body.mc-mode #editor .tool-card-header h2 {
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+/* ------------------------------------------------------------- MC surfaces */
+
+.mc-mode .mc-workspace {
+  margin-top: 0;
+  background: #c6c6c6;
+  border-top: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+  border-right: 3px solid #555555;
+  border-bottom: 3px solid #555555;
+  border-radius: 0;
+  box-shadow: none;
+  color: #3f3f3f;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+}
+
+.mc-mode .mc-topbar {
+  background: #8b8b8b;
+  border-bottom: 2px solid #373737;
+  padding: 8px 10px;
+  gap: 8px;
+  box-shadow: inset 0 2px 0 #b9b9b9;
+}
+
+.mc-mode .mc-topbar .mc-file {
+  color: #ffffff;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 11px;
+  font-weight: 400;
+  text-shadow: 2px 2px 0 #3f3f3f;
+}
+
+.mc-mode .mc-topbar .mc-meta {
+  color: #e8e8e8;
+  font-size: 9.5px;
+  text-shadow: 1px 1px 0 #3f3f3f;
+}
+
+.mc-mode .mc-tabs {
+  background: #8b8b8b;
+  border-bottom: 3px solid #373737;
+  padding: 6px 6px 0;
+  gap: 3px;
+}
+
+.mc-mode .mc-tab {
+  color: #e9e9e9;
+  background: #6f6f6f;
+  border: 2px solid;
+  border-color: #a6a6a6 #3a3a3a #3a3a3a #a6a6a6;
+  border-radius: 0;
+  padding: 8px 12px;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-shadow: 2px 2px 0 #3f3f3f;
+  margin-bottom: 3px;
+}
+
+.mc-mode .mc-tab:hover { background: #7d8f6a; color: #fff; }
+
+.mc-mode .mc-tab.active {
+  background: #c6c6c6;
+  color: #3f3f3f;
+  border-color: #ffffff #555 #555 #ffffff;
+  text-shadow: none;
+  border-bottom-color: #c6c6c6;
+  margin-bottom: 0;
+  padding-bottom: 11px;
+}
+
+.mc-mode .mc-tab:disabled { opacity: 0.5; }
+
+.mc-mode .mc-panel {
+  background: #c6c6c6;
+  padding: 12px 12px 16px;
+}
+
+/* --------------------------------------------------------------- MC blocks */
+
+.mc-mode .mc-section {
+  border-bottom: 2px solid #a9a9a9;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.mc-mode .mc-section-head { margin-bottom: 8px; }
+
+.mc-mode .mc-section-title {
+  color: #3f3f3f;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.mc-mode .mc-section-note {
+  color: #6d6d6d;
+  font-size: 9.5px;
+  font-family: var(--font-body);
+}
+
+.mc-mode .mc-field > label,
+.mc-mode .mc-field > .mc-label {
+  color: #3f3f3f;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.mc-mode .mc-field input[type="text"],
+.mc-mode .mc-field input[type="number"],
+.mc-mode .mc-field select,
+.mc-mode .mc-field textarea {
+  color: #ffffff;
+  background: #000000;
+  border: 2px solid;
+  border-color: #373737 #a9a9a9 #a9a9a9 #373737;
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 7px 8px;
+}
+
+.mc-mode .mc-field input:focus,
+.mc-mode .mc-field select:focus,
+.mc-mode .mc-field textarea:focus {
+  border-color: #ffffff;
+  box-shadow: none;
+  outline: 1px solid #ffffff;
+  outline-offset: 1px;
+}
+
+.mc-mode .mc-field select { color: #fff; }
+.mc-mode .mc-field select option { background: #1b1b1b; color: #fff; }
+
+.mc-mode .mc-check {
+  background: #b3b3b3;
+  border: 2px solid;
+  border-color: #ffffff #6f6f6f #6f6f6f #ffffff;
+  border-radius: 0;
+  padding: 7px 8px;
+}
+
+.mc-mode .mc-check span {
+  color: #2f2f2f;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* Help text — plain-language explanation under every setting */
+.mc-mode .mc-hint,
+.mc-mode .mc-why {
+  color: #4b4b4b;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.mc-mode .mc-why {
+  margin-top: 5px;
+  padding: 6px 8px;
+  color: #f2f2f2;
+  background: #3f3f3f;
+  border-left: 3px solid #e8b32d;
+  font-size: 10.5px;
+}
+
+.mc-mode .mc-why::before {
+  content: "?  ";
+  color: #e8b32d;
+  font-weight: 700;
+}
+
+.mc-mode .mc-cards { gap: 8px; margin-bottom: 14px; }
+
+.mc-mode .mc-card {
+  background: #b3b3b3;
+  border: 2px solid;
+  border-color: #ffffff #6f6f6f #6f6f6f #ffffff;
+  border-radius: 0;
+  padding: 8px 9px;
+}
+
+.mc-mode .mc-card .k {
+  color: #4a4a4a;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 8px;
+  letter-spacing: 0.01em;
+}
+
+.mc-mode .mc-card .v {
+  color: #1f1f1f;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 11.5px;
+}
+
+/* ----------------------------------------------------------- MC quick setup */
+
+.mc-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 8px;
+}
+
+.mc-preset {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px;
+  color: #ffffff;
+  background: #6f6f6f;
+  border: 2px solid;
+  border-color: #a6a6a6 #373737 #373737 #a6a6a6;
+  border-radius: 0;
+  text-align: left;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 10px;
+  text-shadow: 2px 2px 0 #333;
+  cursor: pointer;
+}
+
+.mc-preset small {
+  color: #dedede;
+  font-family: var(--font-body);
+  font-size: 10px;
+  line-height: 1.4;
+  text-shadow: none;
+}
+
+.mc-preset:hover { background: #7f9a6a; }
+
+.mc-preset:active {
+  border-color: #373737 #a6a6a6 #a6a6a6 #373737;
+  transform: translateY(1px);
+}
+
+.mc-preset.reset { background: #7a4a4a; }
+.mc-preset.reset:hover { background: #9a5a5a; }
+
+/* -------------------------------------------------------------- MC banners */
+
+.mc-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 9px 11px;
+  color: #ffffff;
+  background: #3f3f3f;
+  border: 2px solid #1b1b1b;
+  border-left: 5px solid #e8b32d;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.mc-banner.warn { border-left-color: #d9a13a; }
+.mc-banner.good { border-left-color: #6fcf7f; }
+.mc-banner .txt { flex: 1 1 200px; }
+.mc-banner b { font-family: 'Silkscreen', var(--font-body), monospace; font-weight: 400; font-size: 10px; }
+
+/* ----------------------------------------------------------- MC form buttons */
+
+.mc-mode .btn {
+  border-radius: 0;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  min-height: 34px;
+  padding: 8px 14px;
+  font-size: 10px;
+  background: #6f6f6f;
+  color: #ffffff;
+  border: 2px solid;
+  border-color: #a6a6a6 #373737 #373737 #a6a6a6;
+  box-shadow: none;
+  text-shadow: 2px 2px 0 #333;
+}
+
+.mc-mode .btn:hover,
+.mc-mode .btn:focus-visible {
+  background: #7f8f9a;
+  border-color: #c6c6c6 #373737 #373737 #c6c6c6;
+  transform: none;
+  box-shadow: none;
+}
+
+.mc-mode .btn:active {
+  border-color: #373737 #a6a6a6 #a6a6a6 #373737;
+  transform: translateY(1px);
+}
+
+.mc-mode .btn-primary {
+  background: #4c8a3f;
+  border-color: #8fd07a #234a1c #234a1c #8fd07a;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.mc-mode .btn-primary:hover,
+.mc-mode .btn-primary:focus-visible {
+  background: #5aa04a;
+  border-color: #a9e794 #234a1c #234a1c #a9e794;
+}
+
+.mc-mode .btn-ghost {
+  background: #8b8b8b;
+  color: #ffffff;
+}
+
+.mc-mode .btn-ghost:hover { background: #a0a0a0; }
+
+/* ------------------------------------------------------------------ MC list */
+
+.mc-mode .mc-table { border: 2px solid #373737; border-radius: 0; }
+
+.mc-mode .mc-table-head {
+  color: #e8e8e8;
+  background: #3f3f3f;
+  border-bottom: 2px solid #1b1b1b;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 8px;
+}
+
+.mc-mode .mc-row {
+  background: #b3b3b3;
+  border-bottom: 1px solid #9a9a9a;
+}
+
+.mc-mode .mc-row:nth-child(even) { background: #adadad; }
+.mc-mode .mc-row:hover { background: #a9c39a; }
+.mc-mode .mc-row.active { background: #8fae7f; }
+
+.mc-mode .mc-row .p { color: #1f1f1f; font-family: var(--font-mono); font-size: 11px; }
+.mc-mode .mc-row .sz { color: #4a4a4a; }
+.mc-mode .mc-row .edit-dot { background: #2f6b22; }
+
+.mc-mode .mc-viewer {
+  background: #b3b3b3;
+  border: 2px solid;
+  border-color: #6f6f6f #ffffff #ffffff #6f6f6f;
+  border-radius: 0;
+}
+
+.mc-mode .mc-viewer-head .path {
+  color: #1f1f1f;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 9px;
+}
+
+.mc-mode .mc-viewer textarea {
+  color: #ffffff;
+  background: #000;
+  border: 2px solid;
+  border-color: #373737 #a9a9a9 #a9a9a9 #373737;
+  border-radius: 0;
+}
+
+.mc-mode .mc-empty { color: #4a4a4a; }
+
+/* ---------------------------------------------------------------- MC rules */
+
+.mc-mode .mc-rule {
+  background: #b3b3b3;
+  border: 2px solid;
+  border-color: #ffffff #6f6f6f #6f6f6f #ffffff;
+  border-radius: 0;
+  padding: 6px 8px;
+}
+
+.mc-mode .mc-rule .name { color: #1f1f1f; font-size: 11px; }
+.mc-mode .rule-desc { color: #4f4f4f; font-family: var(--font-body); font-size: 10px; }
+
+.mc-mode .mc-rule input {
+  color: #fff;
+  background: #000;
+  border: 2px solid;
+  border-color: #373737 #a9a9a9 #a9a9a9 #373737;
+  border-radius: 0;
+  font-family: var(--font-mono);
+}
+
+.mc-mode .mc-rule .mc-del {
+  color: #fff;
+  background: #7a4a4a;
+  border: 2px solid;
+  border-color: #b98a8a #3a1f1f #3a1f1f #b98a8a;
+  border-radius: 0;
+}
+
+.mc-mode .mc-rule .mc-del:hover { background: #9a5a5a; }
+
+/* ----------------------------------------------------------------- MC tree */
+
+.mc-mode .mc-tree {
+  background: #1b1b1b;
+  border: 2px solid;
+  border-color: #373737 #ffffff #ffffff #373737;
+  border-radius: 0;
+  color: #e0e0e0;
+}
+
+.mc-mode .mc-node-row:hover { background: #2e3b2a; }
+.mc-mode .mc-node-name { color: #d8d8d8; }
+.mc-mode .mc-node-eq { color: #8a8a8a; }
+
+.mc-mode .mc-node-val {
+  color: #fff;
+  background: #000;
+  border: 2px solid;
+  border-color: #373737 #a9a9a9 #a9a9a9 #373737;
+  border-radius: 0;
+}
+
+.mc-mode .mc-node-btn {
+  color: #d8d8d8;
+  background: #4a4a4a;
+  border: 2px solid;
+  border-color: #8a8a8a #222 #222 #8a8a8a;
+  border-radius: 0;
+}
+
+.mc-mode .mc-node-btn:hover { background: #5f7a52; }
+
+.mc-mode .mc-add-row {
+  background: #b3b3b3;
+  border: 2px dashed #6f6f6f;
+  border-radius: 0;
+}
+
+.mc-mode .mc-add-row input,
+.mc-mode .mc-add-row select {
+  color: #fff;
+  background: #000;
+  border: 2px solid;
+  border-color: #373737 #a9a9a9 #a9a9a9 #373737;
+  border-radius: 0;
+}
+
+/* --------------------------------------------------------------- MC export */
+
+.mc-mode .mc-export-btn {
+  background: #b3b3b3;
+  border: 2px solid;
+  border-color: #ffffff #6f6f6f #6f6f6f #ffffff;
+  border-radius: 0;
+  color: #1f1f1f;
+}
+
+.mc-mode .mc-export-btn:hover { background: #a9c39a; transform: none; }
+
+.mc-mode .mc-export-btn strong {
+  color: #1f1f1f;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 9.5px;
+  text-transform: none;
+}
+
+.mc-mode .mc-export-btn small { color: #4a4a4a; }
+
+.mc-mode .mc-export-btn.accent {
+  background: #4c8a3f;
+  border-color: #8fd07a #234a1c #234a1c #8fd07a;
+  box-shadow: none;
+}
+
+.mc-mode .mc-export-btn.accent strong { color: #fff; text-shadow: 2px 2px 0 #234a1c; }
+.mc-mode .mc-export-btn.accent small { color: #eaf5e6; }
+.mc-mode .mc-export-btn.accent:hover { background: #5aa04a; }
+
+/* --------------------------------------------------------------- MC toasts */
+
+.mc-mode .mc-toast {
+  color: #ffffff;
+  background: #212121;
+  border: 2px solid #555;
+  border-left: 4px solid #e8b32d;
+  border-radius: 0;
+  font-family: 'Silkscreen', var(--font-body), monospace;
+  font-size: 9.5px;
+  line-height: 1.6;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.mc-mode .mc-toast.success { border-left-color: #6fcf7f; }
+.mc-mode .mc-toast.error { border-left-color: #d9534f; }
+
+/* --------------------------------------------------------------- MC mobile */
+
+@media (max-width: 760px) {
+  body.mc-mode #editor .tool-card-main { padding: 6px; }
+  .mc-mode .mc-tab { padding: 7px 9px; font-size: 9px; }
+  .mc-mode .mc-tab.active { padding-bottom: 10px; }
+  .mc-mode .mc-topbar { padding: 7px 8px; }
+  .mc-mode .mc-topbar .mc-file { font-size: 9.5px; }
+  .mc-mode .mc-panel { padding: 10px 8px 14px; }
+  .mc-mode .mc-why { font-size: 10px; }
+  .mc-mode .mc-node-val { min-width: 60px; }
+  .mc-mode .btn { padding: 8px 11px; }
+
+  /* Bigger touch targets */
+  .mc-mode .mc-check { padding: 10px 9px; }
+  .mc-mode .mc-preset { padding: 12px; }
+  .mc-mode .mc-tab { min-height: 40px; }
+}
+
+@media (max-width: 420px) {
+  .mc-mode .mc-card { padding: 7px; }
+  .mc-mode .mc-card .v { font-size: 10.5px; }
+  .mc-mode .mc-cards { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+}

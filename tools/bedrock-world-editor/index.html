@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bedrock World Editor — Edit .mcworld Files in Browser</title>
+  <meta name="description" content="Edit Minecraft Bedrock .mcworld worlds, game rules, player data and NBT files in your browser. Free, private, no uploads.">
+  <meta name="theme-color" content="#0D0D0D">
+  <link rel="canonical" href="https://antigleforge.pages.dev/tools/bedrock-world-editor/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AntigleForge">
+  <meta property="og:title" content="Bedrock World Editor — Edit .mcworld Files in Your Browser">
+  <meta property="og:description" content="Free Minecraft Bedrock world editor. Change world settings, game rules, player data and any NBT file, then export the .mcworld again — 100% in your browser.">
+  <meta property="og:url" content="https://antigleforge.pages.dev/tools/bedrock-world-editor/">
+  <meta property="og:image" content="https://antigleforge.pages.dev/assets/images/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bedrock World Editor — Edit .mcworld Files in Your Browser">
+  <meta name="twitter:description" content="Edit Minecraft Bedrock worlds, game rules and NBT files offline in your browser. Free, no uploads.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Bedrock World Editor",
+    "url": "https://antigleforge.pages.dev/tools/bedrock-world-editor/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (browser)",
+    "description": "Client-side Minecraft Bedrock world editor for .mcworld archives and NBT files. No uploads, no backend.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "isPartOf": { "@type": "WebSite", "name": "AntigleForge", "url": "https://antigleforge.pages.dev/" }
+  }
+  </script>
+  <link rel="icon" type="image/svg+xml" href="./assets/images/logo-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;600&family=Courier+Prime:wght@400;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/theme.css?v=5">
+  <link rel="stylesheet" href="./assets/css/editor.css?v=1">
+  <link rel="stylesheet" href="./assets/css/minecraft.css?v=1">
+</head>
+<body>
+
+  <header class="navbar" id="navbar">
+    <div class="navbar-container">
+      <a class="navbar-brand" href="./index.html" aria-label="AntigleForge home">
+        <img class="brand-logo" src="./assets/images/logo-mark.svg" alt="" width="36" height="36">
+        <span class="brand-text">ANTIGLE<span class="brand-accent">FORGE</span></span>
+      </a>
+      <nav class="navbar-nav" id="navbarNav" aria-label="Main">
+        <a class="nav-link" href="https://antigleforge.pages.dev/tools.html">All Tools</a>
+        <a class="nav-link active" href="./index.html">World Editor</a>
+        <a class="nav-link" href="https://antigleforge.pages.dev/tools/nbt-editor.html">NBT Editor</a>
+        <a class="nav-link" href="#faq">FAQ</a>
+      </nav>
+      <div class="navbar-actions">
+        <a class="btn btn-primary" href="#editor">Open editor</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="main-content">
+    <section class="tool-page">
+      <div class="container">
+        <div class="back-row">
+          <a href="https://antigleforge.pages.dev/tools.html" class="back-link">‹ Back to all tools</a>
+        </div>
+
+        <div class="tool-header reveal">
+          <div class="tool-badges">
+            <span class="badge badge-bedrock">Bedrock</span>
+            <span class="badge">NO BACKEND · FREE</span>
+            <span class="badge">v1.1</span>
+          </div>
+          <h1 class="tool-title">Bedrock World Editor</h1>
+          <p class="tool-subtitle">
+            Open a <strong>.mcworld</strong>, edit world settings, player data and any NBT file, then rebuild the archive —
+            directly in your browser. Nothing is uploaded, and it works on phones, tablets, Mac and PC.
+          </p>
+        </div>
+
+        <div class="tool-container" id="editor">
+          <div class="tool-card-main reveal">
+            <div class="tool-card-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                <line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+              <h2 id="dropTitle">Open a world or Minecraft file</h2>
+            </div>
+
+            <div id="landing">
+              <div class="mc-drop" id="mcDrop" role="button" tabindex="0" aria-labelledby="dropTitle">
+                <div class="icon" aria-hidden="true">
+                  <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <div class="title">Drop your .mcworld here</div>
+                <div class="subtitle">
+                  <strong>.mcworld</strong>, <strong>.mctemplate</strong>, <strong>.zip</strong> —
+                  or any <strong>.dat</strong>, <strong>.nbt</strong>, <strong>.mcstructure</strong>, <strong>.litematic</strong> file
+                </div>
+                <input type="file" id="fileInput" accept=".mcworld,.mctemplate,.zip,.dat,.dat_old,.old_dat,.nbt,.mcstructure,.litematic,.schematic,.schem">
+                <input type="file" id="folderInput" webkitdirectory directory multiple>
+                <input type="file" id="singleInput" accept=".dat,.dat_old,.old_dat,.nbt,.mcstructure,.litematic,.schematic,.schem">
+                <div class="mc-drop-actions">
+                  <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                    Choose a file
+                  </button>
+                  <button type="button" class="btn btn-ghost" onclick="document.getElementById('folderInput').click()">
+                    Open world folder
+                  </button>
+                </div>
+              </div>
+
+              <div class="mc-sample-row">
+                <button type="button" class="preset-btn" id="btnDemo">Try a sample world</button>
+                <button type="button" class="preset-btn" id="btnSingle">Edit a single NBT file</button>
+              </div>
+
+              <div class="edition-note" style="margin-top:16px">
+                <strong>Your world never leaves this device.</strong>
+                The archive is unpacked in memory with JavaScript. There is no server, no account and no upload — close the tab and nothing is left behind.
+              </div>
+            </div>
+
+            <div id="workspace" class="mc-workspace mc-hidden">
+              <div class="mc-topbar">
+                <div class="mc-file">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  <span id="mcFileName">world.mcworld</span>
+                </div>
+                <div class="mc-meta" id="mcFileMeta"></div>
+                <div class="mc-spacer"></div>
+                <span class="mc-dirty mc-hidden" id="mcDirty">Unsaved edits</span>
+                <button type="button" class="btn btn-ghost" id="mcClose" style="min-height:32px;padding:6px 12px;font-size:11px">Close</button>
+                <button type="button" class="btn btn-primary" id="mcQuickSave" style="min-height:32px;padding:6px 14px;font-size:11px">Download .mcworld</button>
+              </div>
+
+              <div class="mc-tabs" role="tablist" aria-label="Editor sections">
+                <button class="mc-tab active" data-tab="world" role="tab">World</button>
+                <button class="mc-tab" data-tab="player" role="tab">Player</button>
+                <button class="mc-tab" data-tab="files" role="tab">Files</button>
+                <button class="mc-tab" data-tab="nbt" role="tab">NBT</button>
+                <button class="mc-tab" data-tab="export" role="tab">Export</button>
+              </div>
+
+              <div class="mc-panel" id="mcPanel"></div>
+            </div>
+          </div>
+        </div>
+
+        <section class="section" style="padding-left:0;padding-right:0">
+          <div class="section-header reveal">
+            <h2 class="section-title">What You Can Edit</h2>
+            <p class="section-desc">Everything is done locally — no uploads, no accounts.</p>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card reveal">
+              <div class="feature-icon" aria-hidden="true">⚙</div>
+              <h3 class="feature-title">World settings</h3>
+              <p class="feature-desc">Game mode, difficulty, cheats, spawn point, seed, time of day and every game rule.</p>
+            </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon" aria-hidden="true">🧭</div>
+              <h3 class="feature-title">Player data</h3>
+              <p class="feature-desc">Health, XP, dimension and position when the world stores a Player tag.</p>
+            </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon" aria-hidden="true">📁</div>
+              <h3 class="feature-title">Any file inside</h3>
+              <p class="feature-desc">Browse the archive, preview images, edit text and manifest files, replace or delete entries.</p>
+            </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon" aria-hidden="true">🌳</div>
+              <h3 class="feature-title">Full NBT tree</h3>
+              <p class="feature-desc">Every tag is editable — add, rename, retype or delete values, including all array types.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" style="padding-left:0;padding-right:0">
+          <div class="section-header reveal">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-desc">Three steps, no install.</p>
+          </div>
+          <div class="guide-step reveal">
+            <strong>1 · Open</strong>
+            <p>Drop a <code>.mcworld</code> or pick the world folder. The zip is unpacked in memory and level.dat is decoded as Bedrock NBT.</p>
+          </div>
+          <div class="guide-step reveal">
+            <strong>2 · Edit</strong>
+            <p>Use the friendly World and Player tabs, or dive into the raw NBT tree and file browser for anything else.</p>
+          </div>
+          <div class="guide-step reveal">
+            <strong>3 · Export</strong>
+            <p>The archive is rebuilt and downloaded as <code>.mcworld</code>. Open it on your device and Minecraft imports it.</p>
+          </div>
+        </section>
+
+        <section class="faq-section" id="faq">
+          <h2 class="faq-title">Frequently Asked Questions</h2>
+          <div class="faq-block">
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                <span class="faq-question-text">Does this upload my world anywhere?</span>
+                <span class="faq-arrow" aria-hidden="true">▾</span>
+              </button>
+              <div class="faq-answer">
+                <p>No. The archive is read in your browser with JavaScript. There is no backend, so there is nowhere for the file to go.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                <span class="faq-question-text">Can I edit terrain or build blocks?</span>
+                <span class="faq-arrow" aria-hidden="true">▾</span>
+              </button>
+              <div class="faq-answer">
+                <p>Not yet. Terrain and blocks are stored in the LevelDB database inside <code>db/</code>. This tool lists, replaces and deletes those files, and edits every NBT file, but does not decode chunks yet.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                <span class="faq-question-text">Which files are supported?</span>
+                <span class="faq-arrow" aria-hidden="true">▾</span>
+              </button>
+              <div class="faq-answer">
+                <p><code>.mcworld</code>, <code>.mctemplate</code> and <code>.zip</code> archives; <code>.dat</code>, <code>.dat_old</code>, <code>.nbt</code>, <code>.mcstructure</code>, <code>.litematic</code>, <code>.schematic</code> NBT files; plus any text or image file inside a world.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                <span class="faq-question-text">Will my phone handle a big world?</span>
+                <span class="faq-arrow" aria-hidden="true">▾</span>
+              </button>
+              <div class="faq-answer">
+                <p>Worlds with many chunks can be large. Opening and exporting happen in memory, so for very big worlds desktop browsers are more comfortable, but phones work for typical worlds.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                <span class="faq-question-text">Is it safe for my world?</span>
+                <span class="faq-arrow" aria-hidden="true">▾</span>
+              </button>
+              <div class="faq-answer">
+                <p>Always keep a backup of the original world before importing an edited one. This tool never modifies the file on disk until you download the new archive.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col-brand">
+          <div class="footer-brand">
+            <img class="brand-logo-sm" src="./assets/images/logo-mark.svg" alt="" width="28" height="28">
+            <span class="brand-text-sm">ANTIGLE<span class="brand-accent">FORGE</span></span>
+          </div>
+          <p class="footer-desc">Free, fast and private Minecraft tools that run entirely in your browser.</p>
+        </div>
+        <div>
+          <h3 class="footer-heading">Tools</h3>
+          <ul class="footer-list">
+            <li><a class="footer-link" href="https://antigleforge.pages.dev/tools.html">All tools</a></li>
+            <li><a class="footer-link" href="https://antigleforge.pages.dev/tools/nbt-editor.html">NBT editor</a></li>
+            <li><a class="footer-link" href="https://antigleforge.pages.dev/tools/shape-generator.html">Shape generator</a></li>
+            <li><a class="footer-link" href="https://antigleforge.pages.dev/tools/command-generator.html">Command generator</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-heading">This tool</h3>
+          <ul class="footer-list">
+            <li><a class="footer-link" href="#editor">Open a world</a></li>
+            <li><a class="footer-link" href="#faq">FAQ</a></li>
+            <li><a class="footer-link" href="https://antigleforge.pages.dev/">AntigleForge home</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="year">2026</span> AntigleForge · Not affiliated with Mojang or Microsoft.</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mc-toasts" id="mcToasts" aria-live="polite"></div>
+
+  <script src="./assets/js/vendor/fflate.min.js"></script>
+  <script src="./assets/js/nbt.js"></script>
+  <script src="./assets/js/mcworld.js"></script>
+  <script src="./assets/js/editor.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

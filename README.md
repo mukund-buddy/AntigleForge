@@ -5,7 +5,7 @@
 # ⚒️ ANTIGLEFORGE
 
 ### **Build Smarter. Play Better.**
-*A suite of 26 free, instant, and 100% client-side Minecraft Bedrock & Java Edition utilities engineered for zero latency, zero tracking, and zero server uploads.*
+*A suite of 27 free, instant, and 100% client-side Minecraft Bedrock & Java Edition utilities engineered for zero latency, zero tracking, and zero server uploads.*
 
 [![Live Demo](https://img.shields.io/badge/LIVE_DEMO-antigleforge.pages.dev-C62828?style=for-the-badge&logo=cloudflare&logoColor=white)](https://antigleforge.pages.dev/)
 [![Tools Count](https://img.shields.io/badge/MINECRAFT_TOOLS-26_UTILITIES-E8B32D?style=for-the-badge&logo=minecraft&logoColor=black)](https://antigleforge.pages.dev/tools)
@@ -13,7 +13,7 @@
 [![Lighthouse](https://img.shields.io/badge/LIGHTHOUSE-100%2F100_READY-2563EB?style=for-the-badge&logo=googlechrome&logoColor=white)](#4-key-features)
 [![License: MIT](https://img.shields.io/badge/LICENSE-MIT-F5ECD9?style=for-the-badge)](./LICENSE)
 
-[🌐 **Explore Live Site**](https://antigleforge.pages.dev/) · [🧰 **Browse All 26 Tools**](https://antigleforge.pages.dev/tools) · [📺 **YouTube (@notgamingplayz)**](https://youtube.com/@notgamingplayz) · [📸 **Instagram (@antigle_official)**](https://www.instagram.com/antigle_official/)
+[🌐 **Explore Live Site**](https://antigleforge.pages.dev/) · [🧰 **Browse All 27 Tools**](https://antigleforge.pages.dev/tools) · [📺 **YouTube (@notgamingplayz)**](https://youtube.com/@notgamingplayz) · [📸 **Instagram (@antigle_official)**](https://www.instagram.com/antigle_official/)
 
 </div>
 
@@ -30,7 +30,7 @@ Most existing Minecraft utility websites suffer from three major flaws:
 3. **Fragmented or Outdated Tooling:** Creators have to jump across a dozen websites to edit `.mcstructure` / `.litematic` / `level.dat` NBT files, generate 3D shapes, build `manifest.json` packs, or calculate optimal anvil enchantment trees for modern 1.21+ weapons like the **Mace** and **Spear**.
 
 ### 💡 The AntigleForge Solution
-AntigleForge consolidates **26 specialized Minecraft calculators, generators, converters, and binary structure/NBT editors** into a single, cohesive **"Paper on Dark Forge"** interface (`#0D0D0D` dark forge grid paired with high-contrast `#F2EAD9` parchment workspaces). Every calculation, 3D WebGL render, GZip decompression, and binary NBT serialization happens **100% locally inside your browser tab**—with zero backend delays, zero accounts, and zero file uploads.
+AntigleForge consolidates **27 specialized Minecraft calculators, generators, converters, and binary structure/NBT editors** into a single, cohesive **"Paper on Dark Forge"** interface (`#0D0D0D` dark forge grid paired with high-contrast `#F2EAD9` parchment workspaces). Every calculation, 3D WebGL render, GZip decompression, and binary NBT serialization happens **100% locally inside your browser tab**—with zero backend delays, zero accounts, and zero file uploads.
 
 ---
 
@@ -42,7 +42,7 @@ AntigleForge consolidates **26 specialized Minecraft calculators, generators, co
 ![AntigleForge Homepage Hero Preview](./assets/images/presentation/hero-preview.png)
 
 ### Quick Directory Hub & Accessible FAQ Accordion
-![AntigleForge 26 Tools Quick Directory](./assets/images/presentation/tools-directory.png)
+![AntigleForge 27 Tools Quick Directory](./assets/images/presentation/tools-directory.png)
 
 ### Upgraded Enchantment Calculator (Sword, Mace, Spear, Trident, Armor & Optimal Anvil Order)
 ![AntigleForge Enchantment Calculator](./assets/images/presentation/enchantment-calculator.png)
@@ -54,8 +54,9 @@ AntigleForge consolidates **26 specialized Minecraft calculators, generators, co
 
 ## 3. ✨ Key Features
 
-### 🛠️ Complete 26-Tool Minecraft Suite
+### 🛠️ Complete 27-Tool Minecraft Suite
 * **🧬 Binary NBT & Structure File Tools:**
+  * **Bedrock World Editor (`tools/bedrock-world-editor/`):** Open a .mcworld, edit level.dat settings, game rules, player abilities and the world icon, browse or replace any internal file, and rebuild the archive - fully in the browser.
   * **NBT Editor (`tools/nbt-editor.html`):** Inspect, search, edit inline values, add/delete tags, swap structure palette blocks in one click, and re-export binary `.dat` (Java GZip & Bedrock 8-byte header `level.dat`), `.old_dat` (`.dat_old`), `.mcstructure`, `.litematic`, `.nbt`, `.schematic`, and `.schem` files.
   * **3D Shape Generator (`tools/shape-generator.html`):** Interactive Three.js 3D voxel preview for 9 geometric shapes (Circle, Oval, Rectangle, Equilateral/Right Triangle, Parallelogram, Star, Diamond, Hexagon) with direct Bedrock `.mcstructure` and PNG export.
   * **Building Material Calculator (`tools/building-material-calculator.html`):** Upload existing `.mcstructure` or `.litematic` files to count exact blocks, stacks, shulker boxes, and double chests—or generate and export 3D shapes (Cuboid, Hollow Cuboid, Walls, Floor, Sphere, Dome, Cylinder, Stepped Pyramid) as `.mcstructure` and `.litematic`.
@@ -76,7 +77,7 @@ AntigleForge consolidates **26 specialized Minecraft calculators, generators, co
 
 ### 🚀 Lighthouse 100/100 Engineering (Performance, A11y, Best Practices, SEO)
 * **Zero Layout Shift (`CLS = 0.000`):** Uses `@font-face` metric overrides (`size-adjust`, `ascent-override`, `descent-override`) for `Anton`, `Oswald`, and `Courier Prime`, non-render-blocking font stylesheets, and explicit `width`/`height` attributes on every `<svg>`.
-* **Technical SEO & Structured Data:** Strict `<h1>` → `<h2>` → `<h3>` DOM outline across all 32 pages, homepage **Quick Directory** linking all 26 utilities to eliminate orphan pages, `@graph` `JSON-LD` (`WebSite`, `SoftwareApplication`, `FAQPage`), `robots.txt`, and `sitemap.xml`.
+* **Technical SEO & Structured Data:** Strict `<h1>` → `<h2>` → `<h3>` DOM outline across all 33 pages, homepage **Quick Directory** linking all 27 utilities to eliminate orphan pages, `@graph` `JSON-LD` (`WebSite`, `SoftwareApplication`, `FAQPage`), `robots.txt`, and `sitemap.xml`.
 * **Hardened Edge Security (`_headers`):** Enforces `Content-Security-Policy`, `Strict-Transport-Security` (HSTS preload), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Permissions-Policy`, and 1-year `immutable` asset caching on Cloudflare Pages.
 
 ---
@@ -85,7 +86,7 @@ AntigleForge consolidates **26 specialized Minecraft calculators, generators, co
 
 | Layer / Category | Technology / Standard | Purpose in AntigleForge |
 | :--- | :--- | :--- |
-| **Frontend Markup** | HTML5 (Semantic MPA + ARIA 1.2) | 32 standalone, crawlable pages with strict `<h1>`–`<h3>` hierarchy and screen-reader landmarks |
+| **Frontend Markup** | HTML5 (Semantic MPA + ARIA 1.2) | 33 standalone, crawlable pages with strict `<h1>`–`<h3>` hierarchy and screen-reader landmarks |
 | **Styling & Design Tokens** | Vanilla CSS3 (`theme.css`, `tool-panel.css`) | Custom 8pt token system, fluid `clamp()` typography, responsive CSS Grid/Flexbox, and Paper-on-Dark contrast layer |
 | **Core Logic & State** | Vanilla ES6+ JavaScript (`components.js`, `main.js`, `performance.js`) | Zero-framework DOM rendering, shared header/footer/FAQ injection, fuzzy Levenshtein tool search, and adaptive FPS mode |
 | **Binary Parsing & Compression** | `DataView`, `BigInt64`, `DecompressionStream` / `CompressionStream` | Client-side Little-Endian & Big-Endian NBT parsing/serialization and GZip/Zlib decompression for `.dat`, `.old_dat`, `.mcstructure`, and `.litematic` |
@@ -156,8 +157,8 @@ node minify.js --restore
 
 ```text
 AntigleForge/
-├── index.html                          # Homepage (Hero, 7 Featured Cards, 26-Tool Quick Directory, JSON-LD)
-├── tools.html                          # Searchable & filterable catalog of all 26 Minecraft tools
+├── index.html                          # Homepage (Hero, 7 Featured Cards, 27-Tool Quick Directory, JSON-LD)
+├── tools.html                          # Searchable & filterable catalog of all 27 Minecraft tools
 ├── mode.html                           # Visual Mode vs. Performance Mode switcher
 ├── about.html                          # Project mission, creator credits & Mojang disclaimer
 ├── privacy.html                        # Zero-collection privacy policy
@@ -188,7 +189,7 @@ AntigleForge/
 │       ├── performance.js              # Adaptive FPS monitor & Performance Mode state manager
 │       └── tools/
 │           └── command-generator.js    # Command syntax definitions & parameter builders
-└── tools/                              # 26 Standalone Client-Side Minecraft Utilities
+└── tools/                              # 27 Standalone Client-Side Minecraft Utilities
     ├── beacon-color-calculator.html    # 6-layer stained glass beacon beam color mixer
     ├── building-material-calculator.html # Structure uploader (.mcstructure/.litematic) & 3D shape exporter
     ├── color-converter.html            # Minecraft § section code, Hex & RGB converter
